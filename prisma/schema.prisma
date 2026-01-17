@@ -31,10 +31,13 @@ model User {
   lname            String      @db.Text
   areas_of_study   String[]
   ethnicity        Ethnicity
+  dateOfBirth      DateTime?   @map("date_of_birth") @db.Date
+  yearOfStudy      Int?        @map("year_of_study")
   images           String[]    @default([]) @db.Text
   createdAt        DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt        DateTime    @updatedAt @map("updated_at") @db.Timestamptz(6)
   description      String?     @default("null") @db.Text
+
 
   // relations to join table for likes
   likedUsers       UserLike[]  @relation("LikedUsers")   // the rows where this user liked someone
