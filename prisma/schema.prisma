@@ -21,6 +21,16 @@ enum Ethnicity {
   OTHER
 }
 
+enum Genres {
+  pop
+  rock
+  metal
+  hiphop
+  blues
+  latin
+  bollywood
+}
+
 model User {
   id               String      @id @default(uuid()) @db.Uuid
   userId           String      @unique @map("user_id") @db.Uuid
@@ -36,7 +46,10 @@ model User {
   images           String[]    @default([]) @db.Text
   createdAt        DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt        DateTime    @updatedAt @map("updated_at") @db.Timestamptz(6)
-  description      String?     @default("null") @db.Text
+  description      String      @default("null") @db.Text
+  aiSummary        String?     @map("ai_summary") @db.Text
+  musicGenres      Genres[]    
+  lookingFor       String      @default("null") @db.Text
 
 
   // relations to join table for likes
