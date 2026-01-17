@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowRight, ArrowLeft, Upload, Check } from 'lucide-react';
 
 // Define all the steps in the questionnaire
-const TOTAL_STEPS = 17; // 0-16: PDF upload + 15 questions + final review
+const TOTAL_STEPS = 18; // 0-17: PDF upload + campus + 15 questions + final review
 
 export default function QuestionnairePage() {
   const router = useRouter();
@@ -18,6 +18,7 @@ export default function QuestionnairePage() {
   
   // Form data
   const [formData, setFormData] = useState({
+    campus: '',
     hobbies: [] as string[],
     favoriteBands: [] as string[],
     musicGenres: [] as string[],
@@ -106,21 +107,22 @@ export default function QuestionnairePage() {
   const canProceed = () => {
     switch (currentStep) {
       case 0: return testMode || pdfFile !== null;
-      case 1: return formData.hobbies.length > 0;
-      case 2: return formData.favoriteBands.length > 0;
-      case 3: return formData.musicGenres.length > 0;
-      case 4: return formData.sportsTeams.length > 0;
-      case 5: return formData.footballPreference !== '';
-      case 6: return formData.clubs.length > 0;
-      case 7: return formData.studyPreference !== '';
-      case 8: return formData.favCampusSpots.length > 0;
-      case 9: return formData.personalityTraits.length > 0;
-      case 10: return formData.values.length > 0;
-      case 11: return formData.goingOutFrequency !== '';
-      case 12: return formData.idealWeekend !== '';
-      case 13: return formData.aboutMe !== '';
-      case 14: return formData.lookingFor !== '';
-      case 15: return formData.dealBreakers.length > 0;
+      case 1: return formData.campus !== '';
+      case 2: return formData.hobbies.length > 0;
+      case 3: return formData.favoriteBands.length > 0;
+      case 4: return formData.musicGenres.length > 0;
+      case 5: return formData.sportsTeams.length > 0;
+      case 6: return formData.footballPreference !== '';
+      case 7: return formData.clubs.length > 0;
+      case 8: return formData.studyPreference !== '';
+      case 9: return formData.favCampusSpots.length > 0;
+      case 10: return formData.personalityTraits.length > 0;
+      case 11: return formData.values.length > 0;
+      case 12: return formData.goingOutFrequency !== '';
+      case 13: return formData.idealWeekend !== '';
+      case 14: return formData.aboutMe !== '';
+      case 15: return formData.lookingFor !== '';
+      case 16: return formData.dealBreakers.length > 0;
       default: return true;
     }
   };
@@ -201,8 +203,50 @@ export default function QuestionnairePage() {
             </div>
           )}
 
-          {/* Step 1: Hobbies */}
+          {/* Step 1: Campus Selection */}
           {currentStep === 1 && (
+            <div className="flex-1 flex flex-col">
+              <div className="mb-6">
+                <h2 className="text-3xl font-bold text-[#002A5C] mb-4">
+                  Which UofT campus are you on? 🏫
+                </h2>
+                <p className="text-lg text-[#002A5C]/70">
+                  Select your main campus
+                </p>
+              </div>
+
+              <div className="grid gap-4">
+                {[
+                  { value: 'St. George', icon: '🏛️', description: 'Downtown Toronto - Main Campus' },
+                  { value: 'Mississauga', icon: '🌳', description: 'UTM - Mississauga Campus' },
+                  { value: 'Scarborough', icon: '🏞️', description: 'UTSC - Scarborough Campus' }
+                ].map((campus) => (
+                  <button
+                    key={campus.value}
+                    onClick={() => setFormData(prev => ({ ...prev, campus: campus.value }))}
+                    className={`px-6 py-5 rounded-xl font-medium text-left transition ${
+                      formData.campus === campus.value
+                        ? 'bg-gradient-to-r from-[#002A5C] to-[#007FA3] text-white'
+                        : 'bg-[#007FA3]/10 text-[#002A5C] hover:bg-[#007FA3]/20'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-3xl">{campus.icon}</span>
+                      <div>
+                        <div className="text-lg font-semibold">{campus.value}</div>
+                        <div className={`text-sm ${formData.campus === campus.value ? 'text-white/80' : 'text-[#002A5C]/60'}`}>
+                          {campus.description}
+                        </div>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Step 2: Hobbies */}
+          {currentStep === 2 && (
             <div className="flex-1 flex flex-col">
               <div className="mb-6">
                 <h2 className="text-3xl font-bold text-[#002A5C] mb-4">
@@ -244,8 +288,8 @@ export default function QuestionnairePage() {
             </div>
           )}
 
-          {/* Step 2: Favorite Bands/Artists */}
-          {currentStep === 2 && (
+          {/* Step 3: Favorite Bands/Artists */}
+          {currentStep === 3 && (
             <div className="flex-1 flex flex-col">
               <div className="mb-6">
                 <h2 className="text-3xl font-bold text-[#002A5C] mb-4">
@@ -287,8 +331,8 @@ export default function QuestionnairePage() {
             </div>
           )}
 
-          {/* Step 3: Music Genres */}
-          {currentStep === 3 && (
+          {/* Step 4: Music Genres */}
+          {currentStep === 4 && (
             <div className="flex-1 flex flex-col">
               <div className="mb-6">
                 <h2 className="text-3xl font-bold text-[#002A5C] mb-4">
@@ -317,8 +361,8 @@ export default function QuestionnairePage() {
             </div>
           )}
 
-          {/* Step 4: Sports Teams */}
-          {currentStep === 4 && (
+          {/* Step 5: Sports Teams */}
+          {currentStep === 5 && (
             <div className="flex-1 flex flex-col">
               <div className="mb-6">
                 <h2 className="text-3xl font-bold text-[#002A5C] mb-4">
@@ -371,8 +415,8 @@ export default function QuestionnairePage() {
             </div>
           )}
 
-          {/* Step 5: Football Preference */}
-          {currentStep === 5 && (
+          {/* Step 6: Football Preference */}
+          {currentStep === 6 && (
             <div className="flex-1 flex flex-col">
               <div className="mb-6">
                 <h2 className="text-3xl font-bold text-[#002A5C] mb-4">
@@ -401,8 +445,8 @@ export default function QuestionnairePage() {
             </div>
           )}
 
-          {/* Step 6: UofT Clubs */}
-          {currentStep === 6 && (
+          {/* Step 7: UofT Clubs */}
+          {currentStep === 7 && (
             <div className="flex-1 flex flex-col">
               <div className="mb-6">
                 <h2 className="text-3xl font-bold text-[#002A5C] mb-4">
@@ -455,8 +499,8 @@ export default function QuestionnairePage() {
             </div>
           )}
 
-          {/* Step 7: Study Preference */}
-          {currentStep === 7 && (
+          {/* Step 8: Study Preference */}
+          {currentStep === 8 && (
             <div className="flex-1 flex flex-col">
               <div className="mb-6">
                 <h2 className="text-3xl font-bold text-[#002A5C] mb-4">
@@ -485,8 +529,8 @@ export default function QuestionnairePage() {
             </div>
           )}
 
-          {/* Step 8: Favorite Campus Spots */}
-          {currentStep === 8 && (
+          {/* Step 9: Favorite Campus Spots */}
+          {currentStep === 9 && (
             <div className="flex-1 flex flex-col">
               <div className="mb-6">
                 <h2 className="text-3xl font-bold text-[#002A5C] mb-4">
@@ -532,8 +576,8 @@ export default function QuestionnairePage() {
             </div>
           )}
 
-          {/* Step 9: Personality Traits */}
-          {currentStep === 9 && (
+          {/* Step 10: Personality Traits */}
+          {currentStep === 10 && (
             <div className="flex-1 flex flex-col">
               <div className="mb-6">
                 <h2 className="text-3xl font-bold text-[#002A5C] mb-4">
@@ -562,8 +606,8 @@ export default function QuestionnairePage() {
             </div>
           )}
 
-          {/* Step 10: Core Values */}
-          {currentStep === 10 && (
+          {/* Step 11: Core Values */}
+          {currentStep === 11 && (
             <div className="flex-1 flex flex-col">
               <div className="mb-6">
                 <h2 className="text-3xl font-bold text-[#002A5C] mb-4">
@@ -592,8 +636,8 @@ export default function QuestionnairePage() {
             </div>
           )}
 
-          {/* Step 11: Going Out Frequency */}
-          {currentStep === 11 && (
+          {/* Step 12: Going Out Frequency */}
+          {currentStep === 12 && (
             <div className="flex-1 flex flex-col">
               <div className="mb-6">
                 <h2 className="text-3xl font-bold text-[#002A5C] mb-4">
@@ -622,8 +666,8 @@ export default function QuestionnairePage() {
             </div>
           )}
 
-          {/* Step 12: Ideal Weekend */}
-          {currentStep === 12 && (
+          {/* Step 13: Ideal Weekend */}
+          {currentStep === 13 && (
             <div className="flex-1 flex flex-col">
               <div className="mb-6">
                 <h2 className="text-3xl font-bold text-[#002A5C] mb-4">
@@ -644,8 +688,8 @@ export default function QuestionnairePage() {
             </div>
           )}
 
-          {/* Step 13: About Me */}
-          {currentStep === 13 && (
+          {/* Step 14: About Me */}
+          {currentStep === 14 && (
             <div className="flex-1 flex flex-col">
               <div className="mb-6">
                 <h2 className="text-3xl font-bold text-[#002A5C] mb-4">
@@ -666,8 +710,8 @@ export default function QuestionnairePage() {
             </div>
           )}
 
-          {/* Step 14: Looking For */}
-          {currentStep === 14 && (
+          {/* Step 15: Looking For */}
+          {currentStep === 15 && (
             <div className="flex-1 flex flex-col">
               <div className="mb-6">
                 <h2 className="text-3xl font-bold text-[#002A5C] mb-4">
@@ -688,8 +732,8 @@ export default function QuestionnairePage() {
             </div>
           )}
 
-          {/* Step 15: Deal Breakers */}
-          {currentStep === 15 && (
+          {/* Step 16: Deal Breakers */}
+          {currentStep === 16 && (
             <div className="flex-1 flex flex-col">
               <div className="mb-6">
                 <h2 className="text-3xl font-bold text-[#002A5C] mb-4">
@@ -743,7 +787,7 @@ export default function QuestionnairePage() {
           )}
 
           {/* Final Review Step */}
-          {currentStep === 16 && (
+          {currentStep === 17 && (
             <div className="flex-1 flex flex-col">
               <div className="mb-6">
                 <h2 className="text-3xl font-bold text-[#002A5C] mb-4">
@@ -758,6 +802,10 @@ export default function QuestionnairePage() {
                 <div className="p-4 bg-[#007FA3]/5 rounded-xl">
                   <h3 className="font-semibold text-[#002A5C] mb-2">Schedule</h3>
                   <p className="text-sm text-[#002A5C]/70">{pdfPreview}</p>
+                </div>
+                <div className="p-4 bg-[#007FA3]/5 rounded-xl">
+                  <h3 className="font-semibold text-[#002A5C] mb-2">Campus</h3>
+                  <p className="text-sm text-[#002A5C]/70">{formData.campus}</p>
                 </div>
                 <div className="p-4 bg-[#007FA3]/5 rounded-xl">
                   <h3 className="font-semibold text-[#002A5C] mb-2">Hobbies</h3>
