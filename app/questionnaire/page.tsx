@@ -208,8 +208,8 @@ export default function QuestionnairePage() {
       const result = await response.json();
       console.log('Questionnaire submitted successfully:', result);
 
-      // Redirect to dashboard or profile page after successful submission
-      router.push('/dashboard');
+      // Redirect to profile page to add photos and name
+      router.push('/profile');
     } catch (error) {
       console.error('Error submitting questionnaire:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to submit questionnaire. Please try again.';

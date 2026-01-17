@@ -38,8 +38,30 @@ export function LoginForm({
         password,
       });
       if (error) throw error;
-      // Redirect to dashboard after successful login
-      router.push("/dashboard");
+
+      // Check if user has completed the questionnaire
+      const response = await fetch("/api/profile");
+      const data = await response.json();
+
+      if (data.profile) {
+        // Get the full user profile with questionnaire data
+        const userId = data.profile.user_id;
+        const profileResponse = await fetch(`/api/profile/${userId}`);
+        const profileData = await profileResponse.json();
+
+        // Check if questionnaire is completed by checking if hobbies exist
+        const hasCompletedQuestionnaire =
+          profileData.user?.hobbies && profileData.user.hobbies.length > 0;
+
+        if (hasCompletedQuestionnaire) {
+          router.push("/dashboard");
+        } else {
+          router.push("/questionnaire");
+        }
+      } else {
+        // No profile exists, redirect to questionnaire
+        router.push("/questionnaire");
+      }
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
     } finally {

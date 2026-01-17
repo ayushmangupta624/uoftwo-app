@@ -5,9 +5,7 @@ import HeroSection from "./components/hero-page/hero-section/HeroSection";
 
 export default function Home() {
   return (
-    // <AuthRedirect>
     <div className="min-h-screen relative overflow-hidden">
-      {/* Hero Section */}
       <HeroSection />
 
       {/* How It Works Section */}
@@ -163,7 +161,7 @@ export default function Home() {
               Join hundreds of UofT students already connecting on campus.
             </p>
             <Link
-              href="/onboarding"
+              href="/auth/sign-up"
               className="group relative inline-flex items-center justify-center px-10 py-4 text-lg font-semibold text-[#4a2e2e] bg-gradient-to-r from-[#E6D4D4] to-[#D9C4C4] rounded-full hover:from-[#D9C4C4] hover:to-[#E6D4D4] transition-all shadow-2xl hover:shadow-[0_20px_60px_rgba(217,196,196,0.3)] hover:scale-105 border border-[#A67C7C]/30"
             >
               <span className="relative z-10">Start Your Journey</span>
@@ -177,6 +175,5 @@ export default function Home() {
         </div>
       </section>
     </div>
-    // </AuthRedirect>
   );
 }
