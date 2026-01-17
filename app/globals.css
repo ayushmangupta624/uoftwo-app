@@ -4,15 +4,78 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  background: var(--secondary-color);
-  font-family: "Inter", Helvetica, sans-serif;
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --uoft-blue: #002A5C;
+  --uoft-blue-light: #007FA3;
 }
 
-/* Text */
-h1 {
-  font: var(--h1-font);
-  color: var(--h1-color);
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-uoft-blue: var(--uoft-blue);
+  --color-uoft-blue-light: var(--uoft-blue-light);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Custom scrollbar for UofT theme */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--uoft-blue-light);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--uoft-blue);
+}
+
+/* Custom animations for buildings */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes fall {
+  0% {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh);
+    opacity: 0;
+  }
 }
 
 h2 {
