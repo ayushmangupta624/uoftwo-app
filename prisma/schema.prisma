@@ -33,6 +33,7 @@ model User {
   lname            String    @db.Text
   areas_of_study   String[]  
   ethnicity        Ethnicity  
+  images           String[]  @default([]) @db.Text
 
   @@map("users")
 }

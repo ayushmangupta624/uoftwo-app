@@ -64,9 +64,19 @@ async function DashboardContent() {
     !profile ||
     !profile.gender ||
     !profile.genderPreference ||
-    profile.genderPreference.length === 0
+    profile.genderPreference.length === 0 ||
+    !profile.fname ||
+    !profile.lname
   ) {
     redirect("/profile");
+  }
+
+  // Check if user has uploaded all 4 images
+  const images = ((profile as any).images as string[]) || [];
+  const hasAllImages = images.length === 4 && images.every((img) => img && img.trim() !== "");
+
+  if (!hasAllImages) {
+    redirect("/upload-images");
   }
 
   return (

@@ -28,6 +28,7 @@ async function ProfileFormWrapper({ userId }: { userId: string }) {
         lname: (profile as any).lname,
         areas_of_study: ((profile as any).areas_of_study || []) as string[],
         ethnicity: (profile as any).ethnicity as "ASIAN" | "BLACK" | "HISPANIC" | "WHITE" | "NATIVE" | "MIDDLE_EASTERN" | "OTHER",
+        images: profile.images || [], 
         created_at: profile.createdAt.toISOString(),
         updated_at: profile.updatedAt.toISOString(),
       }

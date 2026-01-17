@@ -12,6 +12,7 @@ export interface UserProfile {
   lname?: string;
   areas_of_study?: string[];
   ethnicity?: Ethnicity;
+  images?: string[];
   created_at?: string;
   updated_at?: string;
 }
