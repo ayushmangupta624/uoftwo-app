@@ -51,7 +51,15 @@ model User {
   aiSummary        String?     @map("ai_summary") @db.Text
   musicGenres      Genres[]    
   lookingFor       String      @default("null") @db.Text
+  
+  // AI-generated personality features (10 features extracted from questionnaire)
+  features         Json        @default("[]") // Array of {name: string, score: number}
+  featureEmbedding String[]    @default([]) @map("feature_embedding") @db.Text // 768-dim semantic embedding
 
+  // Schedule and feedback relations
+  schedule         Schedule?
+  profileViews     ProfileView[]   @relation("ProfileViewer")
+  viewedBy         ProfileView[]   @relation("ProfileViewed")
 
   // relations to join table for likes
   likedUsers       UserLike[]  @relation("LikedUsers")   // the rows where this user liked someone
@@ -154,6 +162,35 @@ model MessageReply {
   @@map("message_replies")
 }
 
+model Schedule {
+  id          String   @id @default(uuid()) @db.Uuid
+  userId      String   @unique @map("user_id") @db.Uuid
+  pdfUrl      String?  @map("pdf_url") @db.Text
+  courses     Json     @default("[]") // Array of ParsedCourse objects
+  buildings   String[] @default([]) // Extracted building codes
+  timeSlots   Json     @default("[]") // Structured time slot data
+  parsedAt    DateTime @default(now()) @map("parsed_at") @db.Timestamptz(6)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
+  user        User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
+  @@map("schedules")
+}
 
+model ProfileView {
+  id              String   @id @default(uuid()) @db.Uuid
+  viewerId        String   @map("viewer_id") @db.Uuid
+  viewedProfileId String   @map("viewed_profile_id") @db.Uuid
+  duration        Int      @default(0) // in seconds
+  scrollDepth     Float    @default(0.0) // 0.0 to 1.0
+  interacted      Boolean  @default(false) // liked or passed
+  interactionType String?  @map("interaction_type") @db.Text // "like" or "pass"
+  viewedAt        DateTime @default(now()) @map("viewed_at") @db.Timestamptz(6)
+
+  viewer          User     @relation("ProfileViewer", fields: [viewerId], references: [userId], onDelete: Cascade)
+  viewedProfile   User     @relation("ProfileViewed", fields: [viewedProfileId], references: [userId], onDelete: Cascade)
+
+  @@index([viewerId])
+  @@index([viewedProfileId])
+  @@map("profile_views")
+}

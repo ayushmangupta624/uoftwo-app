@@ -1,34 +1,22 @@
-import { QuestionnaireData } from '@/types';
+// lib/preferenceCalculator.ts
 
-const ARCHETYPES = [
-  'STEM Scholar',
-  'Dark Academia',
-  'Outdoorsy Explorer',
-  'Creative Spirit',
-  'Social Butterfly',
-  'Coffee Shop Philosopher',
-  'Gym Rat / Athlete',
-  'Night Owl Grinder',
-  'Culture Enthusiast',
-  'Chill Minimalist',
-] as const;
+import { QuestionnaireData } from '@/types';
+import { PERSONALITY_FEATURES } from './aiProfileGenerator';
 
 /**
- * Calculate implicit user preferences based on their profile viewing behavior
- * Returns archetype and building preference scores
+ * Calculate implicit user preferences based on profile viewing behavior
+ * Tracks 10 personality feature scores instead of archetypes
  */
 export function calculateImplicitPreferences(profileViews: any[]): {
-  archetypeScores: Record<string, number>;
-  buildingScores: Record<string, number>;
+  featureScores: Record<string, number>;
   confidenceScore: number;
   viewCount: number;
 } {
-  const archetypeScores: Record<string, number> = {};
-  const buildingScores: Record<string, number> = {};
+  const featureScores: Record<string, number> = {};
   
-  // Initialize all archetypes with 0
-  ARCHETYPES.forEach(archetype => {
-    archetypeScores[archetype] = 0;
+  // Initialize all features with 0
+  PERSONALITY_FEATURES.forEach(feature => {
+    featureScores[feature] = 0;
   });
 
   let totalEngagementScore = 0;
@@ -48,147 +36,172 @@ export function calculateImplicitPreferences(profileViews: any[]): {
     
     const engagementScore = durationWeight * interactionBonus * scrollWeight;
     totalEngagementScore += engagementScore;
-    
+
     if (view.interacted) {
       interactedCount++;
     }
 
-    // Assuming the viewed profile has archetype and building info
-    // This would come from the actual profile data
-    if (view.viewedProfile?.archetype) {
-      archetypeScores[view.viewedProfile.archetype] += engagementScore;
-    }
-    
-    if (view.viewedProfile?.building?.name) {
-      buildingScores[view.viewedProfile.building.name] = 
-        (buildingScores[view.viewedProfile.building.name] || 0) + engagementScore;
+    // Extract features from the viewed profile
+    if (view.viewedProfile?.features) {
+      const viewedFeatures = Array.isArray(view.viewedProfile.features) 
+        ? view.viewedProfile.features 
+        : JSON.parse(view.viewedProfile.features || '[]');
+
+      // Weight liked profiles more than passed profiles
+      const likeMultiplier = view.interactionType === 'like' ? 1.0 : -0.3;
+
+      viewedFeatures.forEach((feature: { name: string; score: number }) => {
+        if (featureScores.hasOwnProperty(feature.name)) {
+          featureScores[feature.name] += engagementScore * feature.score * likeMultiplier;
+        }
+      });
     }
   });
 
-  // Normalize scores to 0-1 range
-  if (totalEngagementScore > 0) {
-    ARCHETYPES.forEach(archetype => {
-      archetypeScores[archetype] = Math.min(1, archetypeScores[archetype] / totalEngagementScore);
-    });
-    
-    Object.keys(buildingScores).forEach(building => {
-      buildingScores[building] = Math.min(1, buildingScores[building] / totalEngagementScore);
-    });
+  // Normalize feature scores
+  const maxScore = Math.max(...Object.values(featureScores), 1);
+  for (const feature in featureScores) {
+    featureScores[feature] = featureScores[feature] / maxScore;
   }
 
-  // Confidence score: 0-1 based on sample size and interaction rate
-  // Need at least 5 views for any confidence
-  // Interaction rate also factors in (people who interact are more engaged)
-  const interactionRate = profileViews.length > 0 ? interactedCount / profileViews.length : 0;
-  const confidenceScore = Math.min(
-    1,
-    Math.max(0, (profileViews.length - 5) / 50) * (0.5 + interactionRate * 0.5)
-  );
+  // Confidence increases with number of views, caps at 5+ views
+  const confidenceScore = Math.min(profileViews.length / 5, 1);
 
   return {
-    archetypeScores,
-    buildingScores,
+    featureScores,
     confidenceScore,
-    viewCount: profileViews.length,
+    viewCount: profileViews.length
   };
 }
 
 /**
- * Blend explicit (questionnaire) and implicit (viewing behavior) preferences
- * With constant ratio: 50% questionnaire, 25% viewing behavior (25% reserved for schedule)
- * Returns both archetype and building scores after blending
+ * Extract explicit feature preferences from questionnaire answers
+ */
+export function extractQuestionnairePreferences(questionnaire: QuestionnaireData): Record<string, number> {
+  const featureScores: Record<string, number> = {};
+
+  // Initialize all features
+  PERSONALITY_FEATURES.forEach(feature => {
+    featureScores[feature] = 0.5; // Start neutral
+  });
+
+  // academic_focus: STEM vs Arts
+  const stemKeywords = ['computer', 'engineering', 'math', 'science', 'physics', 'chem', 'bio'];
+  const artsKeywords = ['literature', 'history', 'philosophy', 'art', 'music', 'drama'];
+  const program = questionnaire.aboutMe?.toLowerCase() || '';
+  const stemMatch = stemKeywords.some(k => program.includes(k));
+  const artsMatch = artsKeywords.some(k => program.includes(k));
+  featureScores.academic_focus = stemMatch ? 0.8 : artsMatch ? 0.2 : 0.5;
+
+  // creativity: artistic hobbies
+  const creativeHobbies = ['art', 'paint', 'draw', 'music', 'write', 'creative', 'design', 'photo'];
+  const hasCreative = questionnaire.hobbies.some(h => 
+    creativeHobbies.some(k => h.toLowerCase().includes(k))
+  );
+  featureScores.creativity = hasCreative ? 0.8 : 0.3;
+
+  // social_energy: going out frequency
+  const goingOutMap: Record<string, number> = {
+    'Never': 0.1,
+    'Rarely': 0.3,
+    'Sometimes': 0.5,
+    'Often': 0.7,
+    'Always': 0.9
+  };
+  featureScores.social_energy = goingOutMap[questionnaire.goingOutFrequency || 'Sometimes'] || 0.5;
+
+  // physical_activity: sports mentioned
+  const sportsCount = questionnaire.sportsTeams?.length || 0;
+  const hasAthletics = questionnaire.hobbies.some(h => 
+    ['gym', 'sport', 'run', 'swim', 'bike', 'athletic'].some(k => h.toLowerCase().includes(k))
+  );
+  featureScores.physical_activity = sportsCount > 0 || hasAthletics ? 0.8 : 0.2;
+
+  // cultural_engagement: museums, arts, culture
+  const culturalInterests = ['museum', 'culture', 'theater', 'concert', 'gallery', 'opera'];
+  const hasCultural = questionnaire.hobbies.some(h => 
+    culturalInterests.some(k => h.toLowerCase().includes(k))
+  );
+  featureScores.cultural_engagement = hasCultural ? 0.8 : 0.3;
+
+  // study_style: collaborative vs solo
+  const studyMap: Record<string, number> = {
+    'Solo': 0.2,
+    'Group': 0.8,
+    'Flexible': 0.5,
+    'Collaborative': 0.8
+  };
+  featureScores.study_style = studyMap[questionnaire.studyPreference || 'Flexible'] || 0.5;
+
+  // nightlife: already handled in social_energy, add party keywords
+  const partyKeywords = ['party', 'club', 'bar', 'nightlife'];
+  const hasParty = questionnaire.hobbies.some(h => 
+    partyKeywords.some(k => h.toLowerCase().includes(k))
+  );
+  featureScores.nightlife = hasParty ? 0.9 : featureScores.social_energy;
+
+  // intellectual_depth: philosophy, deep discussions
+  const intellectualKeywords = ['philosophy', 'debate', 'discuss', 'read', 'book', 'intellectual'];
+  const hasIntellectual = questionnaire.hobbies.some(h => 
+    intellectualKeywords.some(k => h.toLowerCase().includes(k))
+  );
+  featureScores.intellectual_depth = hasIntellectual ? 0.8 : 0.4;
+
+  // adventure_seeking: outdoor/travel activities
+  const adventureKeywords = ['travel', 'hike', 'explore', 'adventure', 'outdoor', 'camp'];
+  const hasAdventure = questionnaire.hobbies.some(h => 
+    adventureKeywords.some(k => h.toLowerCase().includes(k))
+  );
+  featureScores.adventure_seeking = hasAdventure ? 0.8 : 0.3;
+
+  // mindfulness: yoga, meditation, chill activities
+  const mindfulKeywords = ['yoga', 'meditate', 'zen', 'mindful', 'calm', 'peaceful', 'chill'];
+  const hasMindful = questionnaire.hobbies.some(h => 
+    mindfulKeywords.some(k => h.toLowerCase().includes(k))
+  );
+  const stressedKeywords = ['grind', 'hustle', 'competitive', 'intense'];
+  const hasStressed = questionnaire.personalityTraits.some(t => 
+    stressedKeywords.some(k => t.toLowerCase().includes(k))
+  );
+  featureScores.mindfulness = hasMindful ? 0.8 : hasStressed ? 0.2 : 0.5;
+
+  return featureScores;
+}
+
+/**
+ * Blend explicit questionnaire preferences with implicit viewing behavior
+ * Formula: 60% questionnaire + 40% viewing behavior
  */
 export function blendPreferences(
-  questionnairePreferences: Record<string, number>,
-  implicitPreferences: Record<string, number>,
+  questionnaireFeatures: Record<string, number>,
+  implicitFeatures: Record<string, number>,
   implicitConfidence: number
 ): {
-  archetypeScores: Record<string, number>;
-  buildingScores: Record<string, number>;
+  blendedFeatures: Record<string, number>;
+  questionnaireWeight: number;
+  implicitWeight: number;
 } {
-  const QUESTIONNAIRE_WEIGHT = 0.5;
-  const IMPLICIT_WEIGHT = 0.25;
+  const blendedFeatures: Record<string, number> = {};
 
-  // Adjust implicit weight by confidence - low confidence views get less weight
-  const adjustedImplicitWeight = IMPLICIT_WEIGHT * implicitConfidence;
-  const adjustedQuestionnaireWeight = QUESTIONNAIRE_WEIGHT + (IMPLICIT_WEIGHT * (1 - implicitConfidence));
+  // Adjust weights based on implicit confidence
+  // If confidence is low (< 5 views), rely more on questionnaire
+  const baseImplicitWeight = 0.4;
+  const adjustedImplicitWeight = baseImplicitWeight * implicitConfidence;
+  const adjustedQuestionnaireWeight = 1 - adjustedImplicitWeight;
 
-  // Blend the preferences
-  const blended: Record<string, number> = {};
-  Object.keys(questionnairePreferences).forEach(key => {
-    const qScore = questionnairePreferences[key] || 0;
-    const iScore = implicitPreferences[key] || 0;
-    
-    blended[key] = (qScore * adjustedQuestionnaireWeight) + (iScore * adjustedImplicitWeight);
-  });
+  // Blend each feature
+  for (const feature of PERSONALITY_FEATURES) {
+    const questionnaireScore = questionnaireFeatures[feature] || 0;
+    const implicitScore = implicitFeatures[feature] || 0;
+
+    blendedFeatures[feature] = 
+      questionnaireScore * adjustedQuestionnaireWeight +
+      implicitScore * adjustedImplicitWeight;
+  }
 
   return {
-    archetypeScores: blended,
-    buildingScores: {}, // Building scores handled similarly if needed
+    blendedFeatures,
+    questionnaireWeight: adjustedQuestionnaireWeight,
+    implicitWeight: adjustedImplicitWeight
   };
-}
-
-/**
- * Extract archetype preferences from questionnaire data
- */
-export function extractQuestionnairePreferences(
-  questionnaire: QuestionnaireData
-): Record<string, number> {
-  const preferences: Record<string, number> = {};
-
-  // Initialize all archetypes
-  ARCHETYPES.forEach(archetype => {
-    preferences[archetype] = 0;
-  });
-
-  // Map questionnaire data to archetypes
-  // This is a simplified example - you'd want to build this out more
-  
-  if (questionnaire.studyPreference === 'alone') {
-    preferences['Dark Academia'] += 0.3;
-    preferences['Night Owl Grinder'] += 0.3;
-  } else if (questionnaire.studyPreference === 'groups') {
-    preferences['Social Butterfly'] += 0.3;
-    preferences['STEM Scholar'] += 0.2;
-  }
-
-  if (questionnaire.goingOutFrequency === 'very_often' || questionnaire.goingOutFrequency === 'often') {
-    preferences['Social Butterfly'] += 0.3;
-    preferences['Outdoorsy Explorer'] += 0.2;
-  }
-
-  if (questionnaire.hobbies.includes('reading') || questionnaire.hobbies.includes('writing')) {
-    preferences['Dark Academia'] += 0.2;
-    preferences['Coffee Shop Philosopher'] += 0.2;
-  }
-
-  if (questionnaire.hobbies.includes('fitness') || questionnaire.hobbies.includes('sports')) {
-    preferences['Gym Rat / Athlete'] += 0.3;
-    preferences['Outdoorsy Explorer'] += 0.2;
-  }
-
-  if (questionnaire.hobbies.includes('art') || questionnaire.hobbies.includes('music') || questionnaire.hobbies.includes('theater')) {
-    preferences['Creative Spirit'] += 0.3;
-    preferences['Culture Enthusiast'] += 0.2;
-  }
-
-  if (questionnaire.personalityTraits.includes('introverted')) {
-    preferences['Dark Academia'] += 0.15;
-    preferences['Chill Minimalist'] += 0.15;
-  }
-
-  if (questionnaire.personalityTraits.includes('extroverted')) {
-    preferences['Social Butterfly'] += 0.25;
-    preferences['Culture Enthusiast'] += 0.15;
-  }
-
-  // Normalize to 0-1 range
-  const maxScore = Math.max(...Object.values(preferences));
-  if (maxScore > 0) {
-    Object.keys(preferences).forEach(key => {
-      preferences[key] = Math.min(1, preferences[key] / maxScore);
-    });
-  }
-
-  return preferences;
 }

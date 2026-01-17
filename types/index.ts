@@ -25,27 +25,16 @@ export interface ParsedCourse {
   time?: string;
 }
 
-export interface BuildingMetadata {
+export interface PersonalityFeature {
   name: string;
-  shortName: string;
-  description: string;
-  colorGradient: string; // Tailwind gradient classes
-  primaryColor: string; // Hex color
-  secondaryColor: string; // Hex color
-  icon: string; // Emoji or icon identifier
-  architecturalStyle: string;
-  vibe: string;
-  commonActivities: string[];
-  aesthetic: string; // Visual aesthetic description for UI decoration
-  backgroundImage?: string; // Optional background image URL (for future use)
+  score: number; // 0.0 - 1.0
 }
 
 export interface AIGeneratedProfile {
+  features: PersonalityFeature[]; // 10 personality/lifestyle features
   summary: string;
-  archetype: string;
   personalityInsights: string[];
   strengthsAsPartner: string[];
   idealMatchDescription: string;
   conversationStarters: string[];
-  building: BuildingMetadata; // Added building metadata
 }

@@ -7,7 +7,24 @@ import { OrbitControls, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { X } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { getBuildingForArchetype } from '@/lib/aiProfileGenerator';
+
+// Helper function to get building info for archetypes
+const getBuildingForArchetype = (archetype: string) => {
+  const buildingMap: Record<string, { primaryColor: string; colorGradient: string; icon: string; shortName: string }> = {
+    "STEM Scholar": { primaryColor: "#3b82f6", colorGradient: "from-blue-400 to-cyan-500", icon: "💻", shortName: "Bahen" },
+    "Outdoorsy Explorer": { primaryColor: "#10b981", colorGradient: "from-green-400 to-teal-500", icon: "🌳", shortName: "Hart House" },
+    "Coffee Shop Philosopher": { primaryColor: "#8b5cf6", colorGradient: "from-purple-400 to-pink-500", icon: "☕", shortName: "Robarts" },
+    "Social Butterfly": { primaryColor: "#f59e0b", colorGradient: "from-amber-400 to-orange-500", icon: "🦋", shortName: "Sidney Smith" },
+    "Night Owl Grinder": { primaryColor: "#6366f1", colorGradient: "from-indigo-400 to-purple-500", icon: "🦉", shortName: "Gerstein" },
+    "Dark Academia": { primaryColor: "#71717a", colorGradient: "from-gray-600 to-slate-700", icon: "📚", shortName: "Trinity" },
+    "Creative Spirit": { primaryColor: "#ec4899", colorGradient: "from-pink-400 to-rose-500", icon: "🎨", shortName: "Daniels" },
+    "Culture Enthusiast": { primaryColor: "#14b8a6", colorGradient: "from-teal-400 to-cyan-500", icon: "🏛️", shortName: "Victoria" },
+    "Gym Rat / Athlete": { primaryColor: "#ef4444", colorGradient: "from-red-400 to-orange-500", icon: "💪", shortName: "AC" },
+    "Artsy & Chill": { primaryColor: "#a855f7", colorGradient: "from-violet-400 to-purple-500", icon: "🎭", shortName: "Innis" },
+  };
+  
+  return buildingMap[archetype] || { primaryColor: "#6b7280", colorGradient: "from-gray-400 to-gray-600", icon: "🏫", shortName: "UC" };
+};
 
 // Mock user data with archetypes
 const mockUsers = [
