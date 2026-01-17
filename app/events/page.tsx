@@ -29,7 +29,7 @@ export default function Events() {
       title: "Study Buddy Mixer",
       date: "Monday, Jan 27, 2026",
       time: "6:00 PM - 8:00 PM",
-      location: "Gerstein Science Library",
+      location: "Knox College Library",
       attendees: 18,
       spots: 25,
       category: "Academic",
