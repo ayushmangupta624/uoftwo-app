@@ -1,5 +1,8 @@
-@import "tailwindcss";
 @import "./variables.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 body {
   background: var(--secondary-color);
