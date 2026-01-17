@@ -687,8 +687,23 @@ export function ProfileForm({ initialProfile, className }: ProfileFormProps) {
         throw new Error(errorData.error || "Failed to save profile");
       }
       
-      // Save questionnaire data if any exists
-      if (showQuestionnaireSection && (hobbies.length > 0 || campus)) {
+      // Save questionnaire data if any exists (regardless of whether section is expanded)
+      const hasQuestionnaireData = hobbies.length > 0 || 
+        musicGenres.length > 0 || 
+        favoriteBands.length > 0 || 
+        sportsTeams.length > 0 || 
+        clubs.length > 0 || 
+        favCampusSpots.length > 0 || 
+        personalityTraits.length > 0 || 
+        values.length > 0 || 
+        dealBreakers.length > 0 ||
+        campus || 
+        footballPreference || 
+        studyPreference || 
+        goingOutFrequency || 
+        idealWeekend;
+      
+      if (hasQuestionnaireData) {
         // Convert display formats back to database formats
         const dbHobbies = hobbies.map(h => formatHobbyForDatabase(h));
         const dbMusicGenres = musicGenres.map(g => GENRE_MAPPING[g] || g.toLowerCase());

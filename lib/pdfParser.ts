@@ -1,6 +1,6 @@
 // @ts-ignore - pdf-parse doesn't have TypeScript definitions
-import pdf from 'pdf-parse';
-import { ParsedCourse } from '@/types';
+import pdf from "pdf-parse";
+import { ParsedCourse } from "@/types";
 
 /**
  * Parse UofT ACORN schedule PDF and extract course information
@@ -17,11 +17,11 @@ export async function parseSchedulePdf(file: File): Promise<ParsedCourse[]> {
 
     // Parse course information from PDF text
     const courses = extractCoursesFromText(text);
-    
+
     return courses;
   } catch (error) {
-    console.error('Error parsing PDF:', error);
-    throw new Error('Failed to parse schedule PDF');
+    console.error("Error parsing PDF:", error);
+    throw new Error("Failed to parse schedule PDF");
   }
 }
 
@@ -32,21 +32,33 @@ export async function parseSchedulePdf(file: File): Promise<ParsedCourse[]> {
  */
 function extractCoursesFromText(text: string): ParsedCourse[] {
   const courses: ParsedCourse[] = [];
-  const lines = text.split('\n');
+  const lines = text.split("\n");
 
   // Regex patterns for ACORN schedule format
   // Pattern: COURSE_CODE SECTION DAY TIME BUILDING+ROOM
-  const coursePattern = /([A-Z]{3}\d{3}[HY]\d)\s+([A-Z])\s+([A-Z]{3}\d{4})\s+([A-Z]{2,3})\s+(\d{1,2}:\d{2}[AP]M)-(\d{1,2}:\d{2}[AP]M)\s+([A-Z]{2,4})(\d{3,4})?/;
-  
+  const coursePattern =
+    /([A-Z]{3}\d{3}[HY]\d)\s+([A-Z])\s+([A-Z]{3}\d{4})\s+([A-Z]{2,3})\s+(\d{1,2}:\d{2}[AP]M)-(\d{1,2}:\d{2}[AP]M)\s+([A-Z]{2,4})(\d{3,4})?/;
+
   // Alternative pattern for courses without room numbers
-  const coursePatternNoRoom = /([A-Z]{3}\d{3}[HY]\d)\s+([A-Z])\s+([A-Z]{3}\d{4})\s+([A-Z]{2,3})\s+(\d{1,2}:\d{2}[AP]M)-(\d{1,2}:\d{2}[AP]M)\s+([A-Z]{2,4})/;
+  const coursePatternNoRoom =
+    /([A-Z]{3}\d{3}[HY]\d)\s+([A-Z])\s+([A-Z]{3}\d{4})\s+([A-Z]{2,3})\s+(\d{1,2}:\d{2}[AP]M)-(\d{1,2}:\d{2}[AP]M)\s+([A-Z]{2,4})/;
 
   for (const line of lines) {
     const match = line.match(coursePattern) || line.match(coursePatternNoRoom);
-    
+
     if (match) {
-      const [_, courseCode, semester, section, day, startTime, endTime, building, room] = match;
-      
+      const [
+        _,
+        courseCode,
+        semester,
+        section,
+        day,
+        startTime,
+        endTime,
+        building,
+        room,
+      ] = match;
+
       courses.push({
         courseCode: courseCode,
         courseName: extractCourseName(lines, line),
@@ -57,8 +69,12 @@ function extractCoursesFromText(text: string): ParsedCourse[] {
   }
 
   // Remove duplicates (same course, different sections)
-  const uniqueCourses = courses.filter((course, index, self) =>
-    index === self.findIndex((c) => c.courseCode === course.courseCode && c.time === course.time)
+  const uniqueCourses = courses.filter(
+    (course, index, self) =>
+      index ===
+      self.findIndex(
+        (c) => c.courseCode === course.courseCode && c.time === course.time,
+      ),
   );
 
   return uniqueCourses;
@@ -67,9 +83,12 @@ function extractCoursesFromText(text: string): ParsedCourse[] {
 /**
  * Try to extract course name from nearby lines
  */
-function extractCourseName(lines: string[], courseLine: string): string | undefined {
+function extractCourseName(
+  lines: string[],
+  courseLine: string,
+): string | undefined {
   const courseIndex = lines.indexOf(courseLine);
-  
+
   // Check previous lines for course name (usually appears before course code)
   for (let i = Math.max(0, courseIndex - 3); i < courseIndex; i++) {
     const line = lines[i].trim();
@@ -78,7 +97,7 @@ function extractCourseName(lines: string[], courseLine: string): string | undefi
       return line;
     }
   }
-  
+
   return undefined;
 }
 
@@ -87,30 +106,30 @@ function extractCourseName(lines: string[], courseLine: string): string | undefi
  */
 export function getBuildingFullName(code: string): string {
   const buildingMap: Record<string, string> = {
-    'BA': 'Bahen Centre',
-    'GB': 'Galbraith Building',
-    'MP': 'McLennan Physical Labs',
-    'MS': 'Medical Sciences Building',
-    'SS': 'Sidney Smith Hall',
-    'RW': 'Ramsay Wright Zoological Labs',
-    'UC': 'University College',
-    'VC': 'Victoria College',
-    'AB': 'Alumni Hall',
-    'BR': 'Brennan Hall',
-    'CR': 'Carr Hall',
-    'ES': 'Earth Sciences Centre',
-    'GE': 'Gerstein Science Information Centre',
-    'HA': 'Health Sciences Building',
-    'KP': 'Koffler Student Services',
-    'LM': 'Lash Miller Chemical Labs',
-    'MC': 'Mechanical Engineering Building',
-    'NF': 'Northrop Frye Hall',
-    'OI': 'Ontario Institute for Studies in Education',
-    'PB': 'Pharmacy Building',
-    'RS': 'Robarts Library',
-    'SF': 'Sandford Fleming Building',
-    'WB': 'Wallberg Building',
-    'WW': 'Woodsworth College',
+    BA: "Bahen Centre",
+    GB: "Galbraith Building",
+    MP: "McLennan Physical Labs",
+    MS: "Medical Sciences Building",
+    SS: "Sidney Smith Hall",
+    RW: "Ramsay Wright Zoological Labs",
+    UC: "University College",
+    VC: "Victoria College",
+    AB: "Alumni Hall",
+    BR: "Brennan Hall",
+    CR: "Carr Hall",
+    ES: "Earth Sciences Centre",
+    GE: "Gerstein Science Information Centre",
+    HA: "Health Sciences Building",
+    KP: "Koffler Student Services",
+    LM: "Lash Miller Chemical Labs",
+    MC: "Mechanical Engineering Building",
+    NF: "Northrop Frye Hall",
+    OI: "Ontario Institute for Studies in Education",
+    PB: "Pharmacy Building",
+    RS: "Robarts Library",
+    SF: "Sandford Fleming Building",
+    WB: "Wallberg Building",
+    WW: "Woodsworth College",
   };
 
   return buildingMap[code] || code;
@@ -119,7 +138,10 @@ export function getBuildingFullName(code: string): string {
 /**
  * Export parsed schedule to JSON
  */
-export function exportScheduleToJson(courses: ParsedCourse[], userId: string): string {
+export function exportScheduleToJson(
+  courses: ParsedCourse[],
+  userId: string,
+): string {
   const scheduleData = {
     userId,
     courses,

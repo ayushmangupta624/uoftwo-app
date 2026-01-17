@@ -184,7 +184,7 @@ model User {
   description      String      @default("null") @db.Text
   campus           String      @default("null") @db.Text
   aiSummary        String?     @map("ai_summary") @db.Text
-  musicGenres      Genres[]    
+  musicGenres      Genres[]    @default([])
   lookingFor       String      @default("null") @db.Text
     
   // Questionnaire fields

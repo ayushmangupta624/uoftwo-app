@@ -15,7 +15,8 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    console.log(body);
+    console.log("Questionnaire body received:", body);
+    console.log("musicGenres from body:", body.musicGenres);
     const {
       campus,
       hobbies,
@@ -200,9 +201,12 @@ export async function POST(request: Request) {
       Alternative: "rock",
     };
 
-    const musicGenresEnum = musicGenres
+    const musicGenresEnum = (musicGenres || [])
       .map((genre: string) => genreMap[genre] || null)
       .filter((genre: string | null): genre is string => genre !== null);
+    
+    console.log("Original musicGenres:", musicGenres);
+    console.log("Mapped musicGenresEnum:", musicGenresEnum);
 
     // Create or update the user's profile with questionnaire data
     const updatedProfile = await prisma.user.upsert({
@@ -250,6 +254,8 @@ export async function POST(request: Request) {
         updatedAt: new Date(),
       },
     });
+
+    console.log("Saved profile musicGenres:", updatedProfile.musicGenres);
 
     return NextResponse.json({
       success: true,
