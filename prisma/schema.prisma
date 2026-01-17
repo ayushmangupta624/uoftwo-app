@@ -1,0 +1,211 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id                String   @id @default(cuid())
+  email             String   @unique
+  name              String
+  passwordHash      String
+  
+  // Profile info
+  year              Int?     // 1-4+ for undergrad
+  program           String?
+  bio               String?
+  profilePicture    String?
+  
+  // AI Generated
+  aiProfile         String?  @db.Text
+  archetype         String?
+  embedding         Json?    // Store as JSON array for Supabase compatibility
+  profileCompleted  Boolean  @default(false)
+  
+  // Relations
+  schedule          Schedule?
+  questionnaire     Questionnaire?
+  interests         Interest[]
+  matchesInitiated  Match[]  @relation("UserMatches")
+  matchesReceived   Match[]  @relation("MatchedUser")
+  conversations     Conversation[]
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  @@index([email])
+}
+
+model Schedule {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  rawFileUrl        String?  // S3 URL
+  fileType          String   // 'pdf' or 'image'
+  
+  courses           Course[]
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model Course {
+  id                String   @id @default(cuid())
+  scheduleId        String
+  schedule          Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  
+  courseCode        String   // e.g., "CSC148H1"
+  courseName        String?
+  semester          String   // "Fall", "Winter", "Year"
+  
+  timeSlots         TimeSlot[]
+  
+  @@index([courseCode])
+}
+
+model TimeSlot {
+  id                String   @id @default(cuid())
+  courseId          String
+  course            Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  
+  dayOfWeek         Int      // 0=Monday, 6=Sunday
+  startTime         String   // "09:00"
+  endTime           String   // "11:00"
+  location          String?
+}
+
+model Questionnaire {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Hobbies
+  hobbies           String[]
+  
+  // Music
+  favoriteBands     String[]
+  musicGenres       String[]
+  
+  // Sports
+  sportsTeams       String[]
+  footballPreference String?  // 'real_madrid' | 'barca' | 'neither' | 'dont_follow'
+  
+  // UofT Specific
+  clubs             String[]
+  studyPreference   String?   // 'alone' | 'groups' | 'flexible'
+  favCampusSpots    String[]
+  
+  // Personality
+  personalityTraits String[]
+  values            String[]
+  
+  // Lifestyle
+  goingOutFrequency String?  // 'rarely' | 'sometimes' | 'often' | 'very_often'
+  idealWeekend      String?  @db.Text
+  
+  // Free text
+  aboutMe           String?   @db.Text
+  lookingFor        String?   @db.Text
+  dealBreakers      String[]
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model Interest {
+  id                String   @id @default(cuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  category          String   // 'music', 'sports', 'hobbies', 'academic', etc.
+  name              String
+  importance        Int      @default(3) // 1-5 scale
+  
+  @@unique([userId, category, name])
+}
+
+model Match {
+  id                String   @id @default(cuid())
+  userId            String
+  user              User     @relation("UserMatches", fields: [userId], references: [id], onDelete: Cascade)
+  
+  matchedUserId     String
+  matchedUser       User     @relation("MatchedUser", fields: [matchedUserId], references: [id], onDelete: Cascade)
+  
+  score             Float    // Overall match score 0-100
+  status            String   @default("pending") // 'pending' | 'accepted' | 'rejected' | 'mutual'
+  
+  // Match breakdown
+  profileSimilarity Float?
+  scheduleCompatibility Float?
+  sharedInterests   String[]
+  
+  // Activity suggestions
+  suggestions       ActivitySuggestion[]
+  
+  conversation      Conversation?
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  @@unique([userId, matchedUserId])
+  @@index([userId, status])
+  @@index([matchedUserId, status])
+}
+
+model ActivitySuggestion {
+  id                String   @id @default(cuid())
+  matchId           String
+  match             Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  
+  title             String
+  description       String   @db.Text
+  category          String   // 'date' | 'study' | 'event' | 'casual' | 'sports' | 'cultural'
+  location          String?
+  estimatedCost     String?  // 'free' | '$' | '$$' | '$$$'
+  timePreference    String?  // 'morning' | 'afternoon' | 'evening' | 'flexible'
+  
+  reason            String   @db.Text // Why this was suggested (based on interests)
+  
+  wasUsed           Boolean  @default(false)
+  rating            Int?     // 1-5 if users rate the suggestion
+  
+  createdAt         DateTime @default(now())
+}
+
+model Conversation {
+  id                String   @id @default(cuid())
+  matchId           String   @unique
+  match             Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  
+  participants      User[]
+  messages          Message[]
+  
+  icebreakers       String[] // AI-generated conversation starters
+  lastMessageAt     DateTime?
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model Message {
+  id                String   @id @default(cuid())
+  conversationId    String
+  conversation      Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  
+  senderId          String
+  content           String   @db.Text
+  
+  read              Boolean  @default(false)
+  
+  createdAt         DateTime @default(now())
+  
+  @@index([conversationId])
+}
