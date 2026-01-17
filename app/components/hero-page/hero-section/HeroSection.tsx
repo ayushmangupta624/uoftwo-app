@@ -13,9 +13,9 @@ export default function HeroSection() {
       <div className="text-center relative z-10">
         {/* Logo */}
         <div className="flex justify-center mb-8">
-          <div className="relative h-32 w-32">
+          <div className="relative h-40 w-40">
             <Image
-              src="/u-of-two-logo.png"
+              src="/uoftwo-logo.png"
               alt="U of Two Logo"
               fill
               className="object-contain drop-shadow-2xl"

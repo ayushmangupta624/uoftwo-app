@@ -328,6 +328,9 @@
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { LogOut, Upload, X, ImageIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 import {
   Card,
   CardContent,
@@ -340,8 +343,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Gender, UserProfile, Ethnicity } from "@/types/profile";
 import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
-import { Upload, X, ImageIcon } from "lucide-react";
 
 const GENDERS: Gender[] = ["male", "female", "other", "non-binary"];
 
@@ -414,8 +415,17 @@ export function ProfileForm({ initialProfile, className }: ProfileFormProps) {
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const router = useRouter();
   const fileInputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/auth/login");
+    router.refresh();
+  };
   
   // Questionnaire fields
   const [campus, setCampus] = useState("");
@@ -756,6 +766,20 @@ export function ProfileForm({ initialProfile, className }: ProfileFormProps) {
 
   return (
     <div className={cn("flex flex-col gap-6", className)}>
+      {/* Logout Button */}
+      <div className="flex justify-end">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={handleLogout}
+          disabled={isLoggingOut}
+          className="flex items-center gap-2"
+        >
+          <LogOut className="h-4 w-4" />
+          {isLoggingOut ? "Logging out..." : "Logout"}
+        </Button>
+      </div>
+      
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">

@@ -1,8 +1,0 @@
-.navbar-container {
-  background: linear-gradient(135deg, #6B4646 0%, #8B5F5F 100%);
-}
-
-.navbar-container:hover {
-  background: linear-gradient(135deg, #5a3939 0%, #6B4646 100%);
-  transition: background 0.3s ease;
-}
