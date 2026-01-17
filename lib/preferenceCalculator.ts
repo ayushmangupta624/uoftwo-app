@@ -1,194 +1,116 @@
-import { QuestionnaireData } from '@/types';
-
-const ARCHETYPES = [
-  'STEM Scholar',
-  'Dark Academia',
-  'Outdoorsy Explorer',
-  'Creative Spirit',
-  'Social Butterfly',
-  'Coffee Shop Philosopher',
-  'Gym Rat / Athlete',
-  'Night Owl Grinder',
-  'Culture Enthusiast',
-  'Chill Minimalist',
-] as const;
+import { AIGeneratedProfile } from '@/types';
 
 /**
- * Calculate implicit user preferences based on their profile viewing behavior
- * Returns archetype and building preference scores
+ * Calculate user preferences based on questionnaire data, schedule, and AI summary
+ * No longer uses archetypes - focuses on raw profile characteristics
  */
-export function calculateImplicitPreferences(profileViews: any[]): {
-  archetypeScores: Record<string, number>;
-  buildingScores: Record<string, number>;
-  confidenceScore: number;
-  viewCount: number;
-} {
-  const archetypeScores: Record<string, number> = {};
-  const buildingScores: Record<string, number> = {};
-  
-  // Initialize all archetypes with 0
-  ARCHETYPES.forEach(archetype => {
-    archetypeScores[archetype] = 0;
-  });
+export function extractUserProfileFeatures(
+  aiProfile: AIGeneratedProfile
+): Record<string, number> {
+  const features: Record<string, number> = {};
 
-  let totalEngagementScore = 0;
-  let interactedCount = 0;
+  const summary = aiProfile.summary.toLowerCase();
+  const insights = aiProfile.personalityInsights.map(i => i.toLowerCase()).join(' ');
+  const strengths = aiProfile.strengthsAsPartner.map(s => s.toLowerCase()).join(' ');
+  const fullText = `${summary} ${insights} ${strengths}`;
 
-  // Process each profile view
-  profileViews.forEach(view => {
-    // Weight by duration: views under 5 seconds are less meaningful
-    // Views over 30 seconds are very high engagement
-    let durationWeight = Math.max(0, Math.min((view.duration || 0) / 30, 1));
-    
-    // Interaction multiplier: if they liked/passed, it's explicit signal
-    const interactionBonus = view.interacted ? 1.5 : 1;
-    
-    // Scroll depth matters: more scrolling = more interest
-    const scrollWeight = (view.scrollDepth || 0.5);
-    
-    const engagementScore = durationWeight * interactionBonus * scrollWeight;
-    totalEngagementScore += engagementScore;
-    
-    if (view.interacted) {
-      interactedCount++;
-    }
+  // Extract personality and lifestyle features
+  const featureKeywords: Record<string, string[]> = {
+    'academic_focused': ['academic', 'school', 'study', 'learning', 'grades', 'intellectual', 'research'],
+    'creative': ['art', 'music', 'creative', 'design', 'imagination', 'artistic', 'theater'],
+    'social': ['social', 'outgoing', 'friendly', 'people', 'networking', 'community', 'events'],
+    'athletic': ['fitness', 'athletic', 'gym', 'sport', 'exercise', 'active', 'competitive'],
+    'outdoors': ['hiking', 'outdoor', 'nature', 'adventure', 'exploration', 'trail', 'fresh air'],
+    'intellectual': ['philosophy', 'ideas', 'discussion', 'debate', 'thinking', 'thoughtful', 'reflective'],
+    'ambitious': ['dedicated', 'hardworking', 'ambitious', 'passionate', 'determined', 'persistent'],
+    'cultural': ['cultural', 'diverse', 'global', 'appreciation', 'worldly', 'perspectives'],
+    'introverted': ['introverted', 'quiet', 'private', 'alone', 'contemplative', 'peaceful'],
+    'extroverted': ['extroverted', 'outgoing', 'social', 'energetic', 'spontaneous', 'adventurous'],
+  };
 
-    // Assuming the viewed profile has archetype and building info
-    // This would come from the actual profile data
-    if (view.viewedProfile?.archetype) {
-      archetypeScores[view.viewedProfile.archetype] += engagementScore;
-    }
-    
-    if (view.viewedProfile?.building?.name) {
-      buildingScores[view.viewedProfile.building.name] = 
-        (buildingScores[view.viewedProfile.building.name] || 0) + engagementScore;
-    }
-  });
-
-  // Normalize scores to 0-1 range
-  if (totalEngagementScore > 0) {
-    ARCHETYPES.forEach(archetype => {
-      archetypeScores[archetype] = Math.min(1, archetypeScores[archetype] / totalEngagementScore);
+  // Score each feature based on keyword matches
+  Object.entries(featureKeywords).forEach(([feature, keywords]) => {
+    let score = 0;
+    keywords.forEach(keyword => {
+      const count = (fullText.match(new RegExp(keyword, 'g')) || []).length;
+      score += count * 0.1;
     });
-    
-    Object.keys(buildingScores).forEach(building => {
-      buildingScores[building] = Math.min(1, buildingScores[building] / totalEngagementScore);
+    features[feature] = score;
+  });
+
+  // Normalize to 0-1 range
+  const maxScore = Math.max(...Object.values(features));
+  if (maxScore > 0) {
+    Object.keys(features).forEach(key => {
+      features[key] = Math.min(1, features[key] / maxScore);
     });
   }
 
-  // Confidence score: 0-1 based on sample size and interaction rate
-  // Need at least 5 views for any confidence
-  // Interaction rate also factors in (people who interact are more engaged)
-  const interactionRate = profileViews.length > 0 ? interactedCount / profileViews.length : 0;
-  const confidenceScore = Math.min(
-    1,
-    Math.max(0, (profileViews.length - 5) / 50) * (0.5 + interactionRate * 0.5)
-  );
-
-  return {
-    archetypeScores,
-    buildingScores,
-    confidenceScore,
-    viewCount: profileViews.length,
-  };
+  return features;
 }
 
 /**
- * Blend explicit (questionnaire) and implicit (viewing behavior) preferences
- * With constant ratio: 50% questionnaire, 25% viewing behavior (25% reserved for schedule)
- * Returns both archetype and building scores after blending
+ * Calculate compatibility between two users based on profile features
+ * Uses cosine similarity on feature vectors
+ */
+export function calculateFeatureSimilarity(
+  features1: Record<string, number>,
+  features2: Record<string, number>
+): number {
+  let dotProduct = 0;
+  let magnitude1 = 0;
+  let magnitude2 = 0;
+
+  const allFeatures = new Set([...Object.keys(features1), ...Object.keys(features2)]);
+
+  allFeatures.forEach(feature => {
+    const f1 = features1[feature] || 0;
+    const f2 = features2[feature] || 0;
+
+    dotProduct += f1 * f2;
+    magnitude1 += f1 * f1;
+    magnitude2 += f2 * f2;
+  });
+
+  if (magnitude1 > 0 && magnitude2 > 0) {
+    return dotProduct / (Math.sqrt(magnitude1) * Math.sqrt(magnitude2));
+  }
+
+  return 0;
+}
+
+/**
+ * Blend explicit (questionnaire + AI) and implicit (viewing behavior) preferences
+ * With constant ratio: 60% explicit, 20% implicit (20% reserved for schedule)
+ * Returns blended feature scores
  */
 export function blendPreferences(
-  questionnairePreferences: Record<string, number>,
-  implicitPreferences: Record<string, number>,
+  explicitFeatures: Record<string, number>,
+  implicitFeatures: Record<string, number>,
   implicitConfidence: number
 ): {
-  archetypeScores: Record<string, number>;
-  buildingScores: Record<string, number>;
+  features: Record<string, number>;
 } {
-  const QUESTIONNAIRE_WEIGHT = 0.5;
-  const IMPLICIT_WEIGHT = 0.25;
+  const EXPLICIT_WEIGHT = 0.6;
+  const IMPLICIT_WEIGHT = 0.2;
 
   // Adjust implicit weight by confidence - low confidence views get less weight
   const adjustedImplicitWeight = IMPLICIT_WEIGHT * implicitConfidence;
-  const adjustedQuestionnaireWeight = QUESTIONNAIRE_WEIGHT + (IMPLICIT_WEIGHT * (1 - implicitConfidence));
+  const adjustedExplicitWeight = EXPLICIT_WEIGHT + (IMPLICIT_WEIGHT * (1 - implicitConfidence));
 
-  // Blend the preferences
+  // Blend the features
   const blended: Record<string, number> = {};
-  Object.keys(questionnairePreferences).forEach(key => {
-    const qScore = questionnairePreferences[key] || 0;
-    const iScore = implicitPreferences[key] || 0;
+  
+  const allFeatures = new Set([...Object.keys(explicitFeatures), ...Object.keys(implicitFeatures)]);
+  
+  allFeatures.forEach(feature => {
+    const eScore = explicitFeatures[feature] || 0;
+    const iScore = implicitFeatures[feature] || 0;
     
-    blended[key] = (qScore * adjustedQuestionnaireWeight) + (iScore * adjustedImplicitWeight);
+    blended[feature] = (eScore * adjustedExplicitWeight) + (iScore * adjustedImplicitWeight);
   });
 
   return {
-    archetypeScores: blended,
-    buildingScores: {}, // Building scores handled similarly if needed
+    features: blended,
   };
-}
-
-/**
- * Extract archetype preferences from questionnaire data
- */
-export function extractQuestionnairePreferences(
-  questionnaire: QuestionnaireData
-): Record<string, number> {
-  const preferences: Record<string, number> = {};
-
-  // Initialize all archetypes
-  ARCHETYPES.forEach(archetype => {
-    preferences[archetype] = 0;
-  });
-
-  // Map questionnaire data to archetypes
-  // This is a simplified example - you'd want to build this out more
-  
-  if (questionnaire.studyPreference === 'alone') {
-    preferences['Dark Academia'] += 0.3;
-    preferences['Night Owl Grinder'] += 0.3;
-  } else if (questionnaire.studyPreference === 'groups') {
-    preferences['Social Butterfly'] += 0.3;
-    preferences['STEM Scholar'] += 0.2;
-  }
-
-  if (questionnaire.goingOutFrequency === 'very_often' || questionnaire.goingOutFrequency === 'often') {
-    preferences['Social Butterfly'] += 0.3;
-    preferences['Outdoorsy Explorer'] += 0.2;
-  }
-
-  if (questionnaire.hobbies.includes('reading') || questionnaire.hobbies.includes('writing')) {
-    preferences['Dark Academia'] += 0.2;
-    preferences['Coffee Shop Philosopher'] += 0.2;
-  }
-
-  if (questionnaire.hobbies.includes('fitness') || questionnaire.hobbies.includes('sports')) {
-    preferences['Gym Rat / Athlete'] += 0.3;
-    preferences['Outdoorsy Explorer'] += 0.2;
-  }
-
-  if (questionnaire.hobbies.includes('art') || questionnaire.hobbies.includes('music') || questionnaire.hobbies.includes('theater')) {
-    preferences['Creative Spirit'] += 0.3;
-    preferences['Culture Enthusiast'] += 0.2;
-  }
-
-  if (questionnaire.personalityTraits.includes('introverted')) {
-    preferences['Dark Academia'] += 0.15;
-    preferences['Chill Minimalist'] += 0.15;
-  }
-
-  if (questionnaire.personalityTraits.includes('extroverted')) {
-    preferences['Social Butterfly'] += 0.25;
-    preferences['Culture Enthusiast'] += 0.15;
-  }
-
-  // Normalize to 0-1 range
-  const maxScore = Math.max(...Object.values(preferences));
-  if (maxScore > 0) {
-    Object.keys(preferences).forEach(key => {
-      preferences[key] = Math.min(1, preferences[key] / maxScore);
-    });
-  }
-
-  return preferences;
 }

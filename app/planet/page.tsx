@@ -7,9 +7,8 @@ import { OrbitControls, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { X } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { getBuildingForArchetype } from '@/lib/aiProfileGenerator';
 
-// Mock user data with archetypes
+// Mock user data - simplified without archetypes
 const mockUsers = [
   {
     id: 1,
@@ -17,7 +16,6 @@ const mockUsers = [
     age: 21,
     program: "Computer Science",
     year: "3rd Year",
-    archetype: "STEM Scholar",
     bio: "Love coding and coffee! Looking for study buddies and maybe something more 💻☕",
     interests: ["Coding", "Coffee", "Gaming"],
     image: "💻"
@@ -28,7 +26,6 @@ const mockUsers = [
     age: 20,
     program: "Engineering",
     year: "2nd Year",
-    archetype: "Outdoorsy Explorer",
     bio: "Engineering student who loves hiking and late-night problem sets",
     interests: ["Hiking", "Photography", "Music"],
     image: "🌳"
@@ -39,7 +36,6 @@ const mockUsers = [
     age: 22,
     program: "Psychology & Philosophy",
     year: "4th Year",
-    archetype: "Coffee Shop Philosopher",
     bio: "Deep conversations over tea? Count me in! 🍵",
     interests: ["Reading", "Art", "Yoga"],
     image: "☕"
@@ -50,7 +46,6 @@ const mockUsers = [
     age: 19,
     program: "Business",
     year: "1st Year",
-    archetype: "Social Butterfly",
     bio: "Always down for campus events and making new friends!",
     interests: ["Networking", "Sports", "Travel"],
     image: "🦋"
@@ -61,7 +56,6 @@ const mockUsers = [
     age: 21,
     program: "Biology",
     year: "3rd Year",
-    archetype: "Night Owl Grinder",
     bio: "Pre-med student looking for someone to explore the city with",
     interests: ["Medicine", "Cooking", "Dancing"],
     image: "🦉"
@@ -72,7 +66,6 @@ const mockUsers = [
     age: 20,
     program: "English Literature",
     year: "2nd Year",
-    archetype: "Dark Academia",
     bio: "Bookworm seeking fellow literature lover for coffee dates",
     interests: ["Writing", "Poetry", "Theatre"],
     image: "📚"
@@ -83,7 +76,6 @@ const mockUsers = [
     age: 22,
     program: "Mathematics",
     year: "4th Year",
-    archetype: "STEM Scholar",
     bio: "Math nerd by day, indie music enthusiast by night 🎵",
     interests: ["Math", "Music", "Astronomy"],
     image: "💻"
@@ -94,7 +86,6 @@ const mockUsers = [
     age: 21,
     program: "Economics",
     year: "3rd Year",
-    archetype: "Social Butterfly",
     bio: "Entrepreneur mindset, looking for my co-founder in life",
     interests: ["Startups", "Finance", "Fitness"],
     image: "🦋"
@@ -105,7 +96,6 @@ const mockUsers = [
     age: 19,
     program: "Architecture",
     year: "1st Year",
-    archetype: "Creative Spirit",
     bio: "Building dreams one sketch at a time ✏️",
     interests: ["Design", "Art", "Photography"],
     image: "🎨"
@@ -116,7 +106,6 @@ const mockUsers = [
     age: 20,
     program: "Political Science",
     year: "2nd Year",
-    archetype: "Culture Enthusiast",
     bio: "Debater, thinker, and hopeless romantic",
     interests: ["Politics", "Debate", "History"],
     image: "🏛️"
@@ -127,7 +116,6 @@ const mockUsers = [
     age: 22,
     program: "Chemistry",
     year: "4th Year",
-    archetype: "STEM Scholar",
     bio: "We have chemistry... literally! Let's find out if we have it figuratively too",
     interests: ["Science", "Wine", "Jazz"],
     image: "💻"
@@ -138,7 +126,6 @@ const mockUsers = [
     age: 21,
     program: "Kinesiology",
     year: "3rd Year",
-    archetype: "Gym Rat / Athlete",
     bio: "Athletic trainer looking for gym partner and life partner!",
     interests: ["Fitness", "Nutrition", "Basketball"],
     image: "💪"
@@ -149,7 +136,6 @@ const mockUsers = [
     age: 20,
     program: "Music Performance",
     year: "2nd Year",
-    archetype: "Creative Spirit",
     bio: "Violinist seeking my perfect harmony 🎻",
     interests: ["Classical Music", "Concert", "Ballet"],
     image: "🎨"
@@ -160,7 +146,6 @@ const mockUsers = [
     age: 19,
     program: "Computer Engineering",
     year: "1st Year",
-    archetype: "STEM Scholar",
     bio: "Building robots and relationships, one line of code at a time",
     interests: ["Robotics", "AI", "Anime"],
     image: "💻"
@@ -171,7 +156,6 @@ const mockUsers = [
     age: 21,
     program: "Environmental Science",
     year: "3rd Year",
-    archetype: "Outdoorsy Explorer",
     bio: "Saving the planet, one date at a time 🌍",
     interests: ["Sustainability", "Hiking", "Photography"],
     image: "🌳"
@@ -182,7 +166,6 @@ const mockUsers = [
     age: 22,
     program: "Film Studies",
     year: "4th Year",
-    archetype: "Creative Spirit",
     bio: "Filmmaker looking for my leading lady/man",
     interests: ["Cinema", "Directing", "Screenwriting"],
     image: "🎨"
@@ -193,7 +176,6 @@ const mockUsers = [
     age: 20,
     program: "Neuroscience",
     year: "2nd Year",
-    archetype: "Chill Minimalist",
     bio: "Mind reader (almost). Let me figure you out over coffee",
     interests: ["Brain Science", "Puzzles", "Meditation"],
     image: "🧘"
@@ -204,7 +186,6 @@ const mockUsers = [
     age: 21,
     program: "History",
     year: "3rd Year",
-    archetype: "Culture Enthusiast",
     bio: "Living in the past, dreaming of our future",
     interests: ["History", "Museums", "Travel"],
     image: "🏛️"
@@ -215,7 +196,6 @@ const mockUsers = [
     age: 19,
     program: "Sociology",
     year: "1st Year",
-    archetype: "Social Butterfly",
     bio: "Understanding society, but still trying to understand love ❤️",
     interests: ["Social Justice", "Community", "Podcasts"],
     image: "🦋"
@@ -226,7 +206,6 @@ const mockUsers = [
     age: 22,
     program: "Physics",
     year: "4th Year",
-    archetype: "Night Owl Grinder",
     bio: "There's a strong gravitational pull between us 🌟",
     interests: ["Space", "Astronomy", "Sci-Fi"],
     image: "🦉"
@@ -253,9 +232,10 @@ function UserDot({ position, user, onClick, isBoosted = false }: UserDotProps) {
   });
 
   const color = useMemo(() => {
-    const building = getBuildingForArchetype(user.archetype);
-    return building.primaryColor;
-  }, [user.archetype]);
+    // Generate consistent color based on user ID
+    const hue = (user.id * 137.5) % 360;
+    return `hsl(${hue}, 70%, 50%)`;
+  }, [user.id]);
 
   return (
     <mesh
@@ -334,78 +314,14 @@ function UserSphere({ onUserClick, boostedUserId, users }: { onUserClick: (user:
   );
 }
 
-function AnimatedGlobeGroup({ 
-  users, 
-  onUserClick, 
-  boostedUserId,
-  isNext = false,
-  isTransitioning = false
-}: { 
-  users: typeof mockUsers;
-  onUserClick: (user: typeof mockUsers[0]) => void;
-  boostedUserId: number | null;
-  isNext?: boolean;
-  isTransitioning?: boolean;
-}) {
-  const groupRef = useRef<THREE.Group>(null);
-  
-  useFrame(() => {
-    if (groupRef.current && isTransitioning) {
-      if (isNext) {
-        // Next globe: starts small in back-left, rotates to center and grows
-        const progress = Math.min((Date.now() % 1500) / 1500, 1);
-        const easeProgress = 1 - Math.pow(1 - progress, 3); // ease-out
-        
-        // Position: arc from left-back to center
-        groupRef.current.position.x = -8 * (1 - easeProgress);
-        groupRef.current.position.z = 3 * (1 - easeProgress);
-        
-        // Scale: grow from small to full
-        const scale = 0.3 + (0.7 * easeProgress);
-        groupRef.current.scale.set(scale, scale, scale);
-        
-        // Rotation: gentle spin
-        groupRef.current.rotation.y = -easeProgress * Math.PI * 0.5;
-      } else {
-        // Current globe: stays in place but shrinks and moves to the right
-        const progress = Math.min((Date.now() % 1500) / 1500, 1);
-        const easeProgress = 1 - Math.pow(1 - progress, 3);
-        
-        groupRef.current.position.x = 8 * easeProgress;
-        groupRef.current.position.z = 3 * easeProgress;
-        
-        const scale = 1 - (0.7 * easeProgress);
-        groupRef.current.scale.set(scale, scale, scale);
-        
-        groupRef.current.rotation.y = easeProgress * Math.PI * 0.5;
-      }
-    } else if (groupRef.current && !isTransitioning && !isNext) {
-      // Normal state - center position
-      groupRef.current.position.x = 0;
-      groupRef.current.position.z = 0;
-      groupRef.current.scale.set(1, 1, 1);
-    }
-  });
-  
-  return (
-    <group ref={groupRef}>
-      <UserSphere onUserClick={onUserClick} boostedUserId={boostedUserId} users={users} />
-    </group>
-  );
-}
-
 function Scene({ 
   onUserClick, 
   boostedUserId, 
   users,
-  nextUsers,
-  isTransitioning 
 }: { 
   onUserClick: (user: typeof mockUsers[0]) => void; 
   boostedUserId: number | null; 
   users: typeof mockUsers;
-  nextUsers: typeof mockUsers;
-  isTransitioning: boolean;
 }) {
   return (
     <>
@@ -414,25 +330,7 @@ function Scene({
       <pointLight position={[-10, -10, -10]} intensity={0.5} />
       <spotLight position={[0, 10, 0]} angle={0.3} penumbra={1} intensity={0.5} />
       
-      {/* Current globe */}
-      <AnimatedGlobeGroup
-        onUserClick={onUserClick}
-        boostedUserId={boostedUserId}
-        users={users}
-        isNext={false}
-        isTransitioning={isTransitioning}
-      />
-      
-      {/* Next globe during transition */}
-      {isTransitioning && nextUsers.length > 0 && (
-        <AnimatedGlobeGroup
-          onUserClick={onUserClick}
-          boostedUserId={boostedUserId}
-          users={nextUsers}
-          isNext={true}
-          isTransitioning={isTransitioning}
-        />
-      )}
+      <UserSphere onUserClick={onUserClick} boostedUserId={boostedUserId} users={users} />
       
       <OrbitControls
         enablePan={false}
@@ -440,7 +338,6 @@ function Scene({
         minDistance={6}
         maxDistance={18}
         rotateSpeed={0.5}
-        enabled={!isTransitioning}
       />
     </>
   );
@@ -456,28 +353,15 @@ function UserProfileModal({ user, onClose }: UserProfileModalProps) {
   
   if (!user) return null;
 
-  const building = getBuildingForArchetype(user.archetype);
-
   const handleConnect = () => {
-    // Navigate to the user's full profile page
     router.push(`/profile/${user.id}`);
-  };
-
-  const getArchetypeColor = (archetype: string) => {
-    const colors: { [key: string]: string } = {
-      "New College": "from-blue-400 to-cyan-500",
-      "Oak House": "from-amber-400 to-orange-500",
-      "Chestnut": "from-purple-400 to-pink-500",
-      "Innis": "from-green-400 to-teal-500",
-    };
-    return colors[archetype] || "from-gray-400 to-gray-500";
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
       <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden transform transition-all">
         {/* Header with gradient */}
-        <div className={`relative h-32 bg-gradient-to-br ${building.colorGradient} p-6`}>
+        <div className="relative h-32 bg-gradient-to-br from-[#002A5C] to-[#007FA3] p-6">
           <button
             onClick={onClose}
             className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm hover:bg-white/30 rounded-full p-2 transition-all"
@@ -497,21 +381,7 @@ function UserProfileModal({ user, onClose }: UserProfileModalProps) {
             <h2 className="text-2xl font-bold text-[#002A5C]">{user.name}, {user.age}</h2>
             <p className="text-gray-600">{user.program} • {user.year}</p>
           </div>
-
-          {/* Archetype Badge */}
-          <div className="inline-block mb-4">
-            <div className={`px-4 py-2 rounded-full bg-gradient-to-r ${building.colorGradient} text-white font-semibold text-sm shadow-lg`}>
-              {user.archetype}
-            </div>
-          </div>
           
-          {/* Building Badge */}
-          <div className="inline-block mb-4 ml-2">
-            <div className="px-4 py-2 rounded-full bg-gray-100 text-gray-700 font-medium text-sm">
-              {building.icon} {building.shortName}
-            </div>
-          </div>
-
           {/* Bio */}
           <div className="mb-4">
             <p className="text-gray-700 leading-relaxed">{user.bio}</p>
@@ -553,116 +423,34 @@ function UserProfileModal({ user, onClose }: UserProfileModalProps) {
   );
 }
 
-const archetypes = [
-  'STEM Scholar',
-  'Dark Academia',
-  'Outdoorsy Explorer',
-  'Creative Spirit',
-  'Social Butterfly',
-  'Coffee Shop Philosopher',
-  'Gym Rat / Athlete',
-  'Night Owl Grinder',
-  'Culture Enthusiast',
-  'Chill Minimalist'
-] as const;
-type Archetype = typeof archetypes[number];
-
 export default function PlanetPage() {
   const [selectedUser, setSelectedUser] = useState<typeof mockUsers[0] | null>(null);
   const [boostedUserId, setBoostedUserId] = useState<number | null>(null);
-  const [activeArchetype, setActiveArchetype] = useState<Archetype>('STEM Scholar');
-  const [nextArchetype, setNextArchetype] = useState<Archetype | null>(null);
-  const [isTransitioning, setIsTransitioning] = useState(false);
   const { isAuthenticated, hasCompletedOnboarding } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    // Redirect to home if not authenticated or haven't completed onboarding
     if (!isAuthenticated || !hasCompletedOnboarding) {
       router.push('/');
     }
   }, [isAuthenticated, hasCompletedOnboarding, router]);
 
   const handleBoost = () => {
-    const archetypeUsers = mockUsers.filter(u => u.archetype === activeArchetype);
-    const randomUser = archetypeUsers[Math.floor(Math.random() * archetypeUsers.length)];
+    const randomUser = mockUsers[Math.floor(Math.random() * mockUsers.length)];
     setBoostedUserId(randomUser.id);
     setTimeout(() => setBoostedUserId(null), 3000);
   };
 
-  const cycleToNextArchetype = () => {
-    if (isTransitioning) return;
-    
-    const currentIndex = archetypes.indexOf(activeArchetype);
-    const nextIndex = (currentIndex + 1) % archetypes.length;
-    const next = archetypes[nextIndex];
-    
-    setNextArchetype(next);
-    setIsTransitioning(true);
-    
-    // After animation completes, switch to new archetype
-    setTimeout(() => {
-      setActiveArchetype(next);
-      setNextArchetype(null);
-      setIsTransitioning(false);
-    }, 1500); // Match animation duration
-  };
-
-  const archetypeUsers = useMemo(() => {
-    return mockUsers.filter(user => user.archetype === activeArchetype);
-  }, [activeArchetype]);
-
-  const nextArchetypeUsers = useMemo(() => {
-    if (!nextArchetype) return [];
-    return mockUsers.filter(user => user.archetype === nextArchetype);
-  }, [nextArchetype]);
-
-  const getArchetypeInfo = (archetype: Archetype) => {
-    const building = getBuildingForArchetype(archetype);
-    return {
-      color: building.primaryColor,
-      gradient: building.colorGradient,
-      emoji: building.icon,
-      name: archetype,
-      building: building.shortName
-    };
-  };
-
-  // Don't render if not authorized
   if (!isAuthenticated || !hasCompletedOnboarding) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#001a3d] via-[#002A5C] to-[#003d7a] flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#0f172a] via-[#1a2a3a] to-[#2d3a47] flex items-center justify-center">
         <div className="text-white text-xl">Checking authorization...</div>
       </div>
     );
   }
 
-  const getArchetypeBackgroundImage = (archetype: Archetype) => {
-    const backgroundMap: { [key in Archetype]: string } = {
-      'STEM Scholar': '/archetype-backgrounds/stem-scholar.jpg',
-      'Dark Academia': '/archetype-backgrounds/dark-academia.jpg',
-      'Outdoorsy Explorer': '/archetype-backgrounds/outdoorsy-explorer.jpg',
-      'Creative Spirit': '/archetype-backgrounds/creative-spirit.jpg',
-      'Social Butterfly': '/archetype-backgrounds/social-butterfly.jpg',
-      'Coffee Shop Philosopher': '/archetype-backgrounds/coffee-shop.jpg',
-      'Gym Rat / Athlete': '/archetype-backgrounds/gym-athlete.jpg',
-      'Night Owl Grinder': '/archetype-backgrounds/night-owl.jpg',
-      'Culture Enthusiast': '/archetype-backgrounds/culture-enthusiast.jpg',
-      'Chill Minimalist': '/archetype-backgrounds/chill-minimalist.jpg',
-    };
-    return backgroundMap[archetype];
-  };
-
   return (
     <div className="h-[calc(100vh-4rem)] bg-gradient-to-br from-[#0f172a] via-[#1a2a3a] to-[#2d3a47] relative overflow-hidden">
-      {/* Archetype Background Image - Light/Watercolored */}
-      <div 
-        className="absolute inset-0 opacity-70 bg-cover bg-center bg-no-repeat transition-all duration-1000"
-        style={{
-          backgroundImage: `url(${getArchetypeBackgroundImage(activeArchetype)})`,
-        }}
-      ></div>
-
       {/* Background effects */}
       <div className="absolute inset-0">
         <div className="absolute top-20 left-20 w-[400px] h-[400px] bg-[#007FA3]/20 rounded-full blur-3xl"></div>
@@ -673,14 +461,11 @@ export default function PlanetPage() {
       <div className="relative z-10 pt-8 pb-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <div className="flex items-center justify-center gap-3 mb-3">
-              <span className="text-5xl">{getArchetypeInfo(activeArchetype).emoji}</span>
-              <h1 className="text-4xl sm:text-5xl font-bold text-white drop-shadow-2xl">
-                {activeArchetype}
-              </h1>
-            </div>
-            <p className="text-white/80 text-lg drop-shadow-lg">
-              {getArchetypeInfo(activeArchetype).building} • Rotate the sphere and click on profiles to discover your matches
+            <h1 className="text-4xl sm:text-5xl font-bold text-white drop-shadow-2xl">
+              Discover Matches
+            </h1>
+            <p className="text-white/80 text-lg drop-shadow-lg mt-2">
+              Rotate the sphere and click on profiles to explore potential matches
             </p>
           </div>
         </div>
@@ -695,60 +480,16 @@ export default function PlanetPage() {
         >
           <Suspense fallback={
             <Html center>
-              <div className="text-white text-xl">Loading planet...</div>
+              <div className="text-white text-xl">Loading profiles...</div>
             </Html>
           }>
             <Scene 
               onUserClick={setSelectedUser} 
               boostedUserId={boostedUserId} 
-              users={archetypeUsers}
-              nextUsers={nextArchetypeUsers}
-              isTransitioning={isTransitioning}
+              users={mockUsers}
             />
           </Suspense>
         </Canvas>
-      </div>
-
-      {/* Archetype Cycle Button - Bottom Right */}
-      <div className="absolute bottom-8 right-8 z-10">
-        <button
-          onClick={cycleToNextArchetype}
-          disabled={isTransitioning}
-          className={`
-            group relative overflow-hidden
-            bg-gradient-to-r ${getArchetypeInfo(activeArchetype).gradient}
-            text-white px-5 py-3 rounded-full font-semibold text-sm
-            shadow-2xl hover:shadow-3xl
-            transition-all duration-300 hover:scale-105
-            disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100
-            border-2 border-white/30
-          `}
-        >
-          {/* Animated background gradient */}
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer"></div>
-          
-          {/* Button content */}
-          <div className="relative flex items-center gap-2">
-            <span className="text-2xl animate-bounce">{getArchetypeInfo(activeArchetype).emoji}</span>
-            <div className="text-left">
-              <div className="text-[10px] uppercase tracking-wider opacity-90">Exploring</div>
-              <div className="font-bold text-sm">{activeArchetype}</div>
-            </div>
-            <div className="flex flex-col gap-0.5 ml-1 group-hover:translate-x-1 transition-transform">
-              <svg className="w-4 h-4 transform rotate-90" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-              </svg>
-            </div>
-          </div>
-
-          {/* Pulse effect */}
-          <div className="absolute inset-0 rounded-full animate-ping opacity-10 bg-white"></div>
-          
-          {/* User count badge */}
-          <div className="absolute -top-1 -right-1 bg-white text-gray-900 rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shadow-lg animate-pulse">
-            {archetypeUsers.length}
-          </div>
-        </button>
       </div>
 
       {/* Instructions */}
@@ -768,16 +509,15 @@ export default function PlanetPage() {
       <div className="absolute top-24 right-8 z-10 space-y-3">
         <div className="bg-white/10 backdrop-blur-md rounded-2xl px-4 py-3 border border-white/20">
           <p className="text-white/70 text-xs uppercase tracking-wide mb-1">
-            {activeArchetype}
+            Online Users
           </p>
-          <p className="text-white text-2xl font-bold">{archetypeUsers.length} Online</p>
-          <p className="text-white/60 text-xs mt-1">{getArchetypeInfo(activeArchetype).building}</p>
+          <p className="text-white text-2xl font-bold">{mockUsers.length}</p>
         </div>
         <button
           onClick={handleBoost}
-          className={`w-full bg-gradient-to-r ${getArchetypeInfo(activeArchetype).gradient} hover:opacity-90 text-white px-4 py-3 rounded-2xl font-semibold transition-all shadow-lg hover:shadow-xl`}
+          className="w-full bg-gradient-to-r from-[#002A5C] to-[#007FA3] hover:opacity-90 text-white px-4 py-3 rounded-2xl font-semibold transition-all shadow-lg hover:shadow-xl"
         >
-          ✨ Boost Random
+          ✨ Random Profile
         </button>
       </div>
 
@@ -786,4 +526,3 @@ export default function PlanetPage() {
     </div>
   );
 }
-

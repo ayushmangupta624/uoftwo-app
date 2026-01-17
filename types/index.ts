@@ -42,10 +42,8 @@ export interface BuildingMetadata {
 
 export interface AIGeneratedProfile {
   summary: string;
-  archetype: string;
   personalityInsights: string[];
   strengthsAsPartner: string[];
   idealMatchDescription: string;
   conversationStarters: string[];
-  building: BuildingMetadata; // Added building metadata
 }
