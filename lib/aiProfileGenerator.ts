@@ -44,14 +44,22 @@ About Me: ${userData.questionnaire.aboutMe || 'Not specified'}
 Looking For: ${userData.questionnaire.lookingFor || 'Not specified'}
 Deal Breakers: ${userData.questionnaire.dealBreakers.join(', ')}
 
-${userData.schedule ? `
-Current Courses: ${userData.schedule.map(c => c.courseCode).join(', ')}
-` : ''}
+${userData.schedule ? `Current Courses: ${userData.schedule.map(c => c.courseCode).join(', ')}` : ''}
 
 Please create a profile with the following sections:
 
 1. SUMMARY: A 3-4 sentence engaging bio that captures their personality and interests
-2. ARCHETYPE: A creative 2-3 word archetype/persona (e.g., "The Adventurous Scholar", "Coffee Shop Philosopher")
+2. ARCHETYPE: Choose EXACTLY ONE from this list that best matches their personality:
+   - STEM Scholar
+   - Dark Academia
+   - Outdoorsy Explorer
+   - Creative Spirit
+   - Social Butterfly
+   - Coffee Shop Philosopher
+   - Gym Rat / Athlete
+   - Night Owl Grinder
+   - Culture Enthusiast
+   - Chill Minimalist
 3. PERSONALITY_INSIGHTS: 4-5 bullet points about their personality, interests, and what makes them unique
 4. STRENGTHS_AS_PARTNER: 3-4 qualities that would make them a great partner/match
 5. IDEAL_MATCH: 2-3 sentences describing who would be compatible with them
@@ -60,12 +68,14 @@ Please create a profile with the following sections:
 Return the response in the following JSON format:
 {
   "summary": "string",
-  "archetype": "string",
+  "archetype": "string - MUST be exactly one of the 10 options listed above",
   "personalityInsights": ["string"],
   "strengthsAsPartner": ["string"],
   "idealMatchDescription": "string",
   "conversationStarters": ["string"]
 }
+
+IMPORTANT: The archetype MUST be exactly one of the 10 options provided. Do not create variations or combinations.
 
 Be authentic, specific, and avoid generic dating profile clichés. Make it personal and relatable.`;
 
