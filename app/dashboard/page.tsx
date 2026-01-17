@@ -84,23 +84,7 @@ async function DashboardContent() {
   }
 
   return (
-    <div className="flex-1 w-full flex flex-col gap-8">
-      <div className="w-full">
-        <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
-        <p className="text-muted-foreground">
-          Welcome back! Here are users that match your preferences.
-        </p>
-        <Suspense
-          fallback={
-            <div className="mt-4 text-sm text-muted-foreground">
-              Loading profile...
-            </div>
-          }
-        >
-          <ProfileInfo userId={user.id} />
-        </Suspense>
-      </div>
-
+    <div className="flex-1 w-full flex flex-col">
       <div className="w-full">
         <Suspense
           fallback={
