@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { MatchingUser } from "@/types/profile";
 import { Card, CardContent } from "@/components/ui/card";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Heart, X } from "lucide-react";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 
@@ -112,6 +112,10 @@ export function UserCard({
   const rotation = dragOffset.x * 0.15;
   const opacity = Math.max(0.5, 1 - Math.abs(dragOffset.x) / 400);
 
+  // Calculate overlay opacity based on drag distance
+  const likeOpacity = Math.min(Math.max(dragOffset.x / SWIPE_THRESHOLD, 0), 1);
+  const nopeOpacity = Math.min(Math.max(-dragOffset.x / SWIPE_THRESHOLD, 0), 1);
+
   const nextImage = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (images.length > 0) {
@@ -147,8 +151,40 @@ export function UserCard({
       onTouchEnd={handleTouchEnd}
       onMouseDown={handleMouseDown}
     >
-      <Card className="h-full w-full overflow-hidden">
+      <Card className="h-full w-full overflow-hidden relative">
         <div className="relative h-[70vh] w-full bg-muted">
+          {/* Full card green overlay for like */}
+          <div
+            className="absolute inset-0 bg-green-500 pointer-events-none"
+            style={{ opacity: likeOpacity * 0.5, zIndex: 30 }}
+          />
+
+          {/* Full card red overlay for dislike */}
+          <div
+            className="absolute inset-0 bg-red-500 pointer-events-none"
+            style={{ opacity: nopeOpacity * 0.5, zIndex: 30 }}
+          />
+
+          {/* Like icon overlay */}
+          <div
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none"
+            style={{ opacity: likeOpacity }}
+          >
+            <div className="bg-white rounded-full p-6 shadow-2xl border-8 border-green-500 transform rotate-[-15deg]">
+              <Heart className="w-24 h-24 text-green-500 fill-green-500 stroke-[2.5]" />
+            </div>
+          </div>
+
+          {/* Nope icon overlay */}
+          <div
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none"
+            style={{ opacity: nopeOpacity }}
+          >
+            <div className="bg-white rounded-full p-6 shadow-2xl border-8 border-red-500 transform rotate-[15deg]">
+              <X className="w-24 h-24 text-red-500 stroke-[4]" />
+            </div>
+          </div>
+
           {images.length > 0 &&
           images[currentImageIndex] &&
           images[currentImageIndex].trim() ? (
