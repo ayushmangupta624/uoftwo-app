@@ -16,6 +16,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+
 export function SignUpForm({
   className,
   ...props
@@ -27,11 +28,23 @@ export function SignUpForm({
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
+  function isUofTEmail(email: string) {
+    return /^[^@]+@mail\.utoronto\.ca$/i.test(email.trim());
+  }  
+
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     const supabase = createClient();
     setIsLoading(true);
     setError(null);
+
+    const normalizedEmail = email.trim().toLowerCase();
+
+    if (!isUofTEmail(normalizedEmail)) {
+      setError("Please use a UofT email address");
+      setIsLoading(false);
+      return;
+    }
 
     if (password !== repeatPassword) {
       setError("Passwords do not match");
@@ -44,7 +57,7 @@ export function SignUpForm({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/protected`,
+          emailRedirectTo: `${window.location.origin}/dashboard`,
         },
       });
       if (error) throw error;
