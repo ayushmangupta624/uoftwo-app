@@ -102,8 +102,8 @@ export function getBuildingForArchetype(archetype: string): BuildingMetadata {
       aesthetic: 'Athletic gear, protein shakers, Varsity Blues'
     },
     'Night Owl Grinder': {
-      name: 'Gerstein Science Information Centre',
-      shortName: 'Gerstein Library',
+      name: 'Knox College Library',
+      shortName: 'Knox College Library',
       description: 'The 24/7 sanctuary for night owls. Where late-night study sessions, research, and academic dedication meet. Open all night for those who work best when the world sleeps.',
       colorGradient: 'from-blue-600 to-indigo-800',
       primaryColor: '#2563eb',
@@ -325,14 +325,14 @@ export function getBuildingCompatibility(
 } {
   // Buildings that naturally complement each other
   const complementaryBuildings: Record<string, string[]> = {
-    'Bahen Centre': ['Gerstein Library', 'Sidney Smith'],
+    'Bahen Centre': ['Knox College Library', 'Sidney Smith'],
     'Robarts Library': ['Sidney Smith', 'New College'],
     "King's College Circle": ['Hart House', 'New College'],
     'Hart House': ["King's College Circle", 'ROM Area'],
     'Innis College': ['Hart House', "King's College Circle"],
     'Sidney Smith': ['Robarts Library', 'Bahen Centre'],
     'Athletic Centre': ["King's College Circle", 'Innis College'],
-    'Gerstein Library': ['Bahen Centre', 'Robarts Library'],
+    'Knox College Library': ['Bahen Centre', 'Robarts Library'],
     'ROM Area': ['Hart House', 'New College'],
     'New College': ['ROM Area', "King's College Circle"]
   };

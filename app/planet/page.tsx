@@ -324,10 +324,10 @@ function UserSphere({ onUserClick, boostedUserId, users }: { onUserClick: (user:
       <mesh>
         <sphereGeometry args={[4, 64, 64]} />
         <meshBasicMaterial
-          color="#007FA3"
+          color="#c0c0c8"
           wireframe
           transparent
-          opacity={0.05}
+          opacity={0.15}
         />
       </mesh>
     </group>
@@ -637,8 +637,32 @@ export default function PlanetPage() {
     );
   }
 
+  const getArchetypeBackgroundImage = (archetype: Archetype) => {
+    const backgroundMap: { [key in Archetype]: string } = {
+      'STEM Scholar': '/archetype-backgrounds/stem-scholar.jpg',
+      'Dark Academia': '/archetype-backgrounds/dark-academia.jpg',
+      'Outdoorsy Explorer': '/archetype-backgrounds/outdoorsy-explorer.jpg',
+      'Creative Spirit': '/archetype-backgrounds/creative-spirit.jpg',
+      'Social Butterfly': '/archetype-backgrounds/social-butterfly.jpg',
+      'Coffee Shop Philosopher': '/archetype-backgrounds/coffee-shop.jpg',
+      'Gym Rat / Athlete': '/archetype-backgrounds/gym-athlete.jpg',
+      'Night Owl Grinder': '/archetype-backgrounds/night-owl.jpg',
+      'Culture Enthusiast': '/archetype-backgrounds/culture-enthusiast.jpg',
+      'Chill Minimalist': '/archetype-backgrounds/chill-minimalist.jpg',
+    };
+    return backgroundMap[archetype];
+  };
+
   return (
-    <div className="h-[calc(100vh-4rem)] bg-gradient-to-br from-[#001a3d] via-[#002A5C] to-[#003d7a] relative overflow-hidden">
+    <div className="h-[calc(100vh-4rem)] bg-gradient-to-br from-[#0f172a] via-[#1a2a3a] to-[#2d3a47] relative overflow-hidden">
+      {/* Archetype Background Image - Light/Watercolored */}
+      <div 
+        className="absolute inset-0 opacity-70 bg-cover bg-center bg-no-repeat transition-all duration-1000"
+        style={{
+          backgroundImage: `url(${getArchetypeBackgroundImage(activeArchetype)})`,
+        }}
+      ></div>
+
       {/* Background effects */}
       <div className="absolute inset-0">
         <div className="absolute top-20 left-20 w-[400px] h-[400px] bg-[#007FA3]/20 rounded-full blur-3xl"></div>
