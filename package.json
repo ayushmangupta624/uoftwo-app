@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "animate.css": "^4.1.1",
     "lucide-react": "^0.562.0",
     "next": "16.1.3",
     "react": "19.2.3",
