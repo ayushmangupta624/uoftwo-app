@@ -1,0 +1,12 @@
+:root {
+  --primary-color: #6B4646;
+  --secondary-color: #A67C7C;
+  --tertiary-color: #8B5F5F;
+
+  /* text */
+  --h1-color: #4a2e2e;
+  --h1-font: 80px "Gravitas One", serif;
+
+  --h2-color: #4a2e2e;
+  --h2-font: 60px "Manrope", serif;
+}

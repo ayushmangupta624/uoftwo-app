@@ -1,9 +1,9 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ProfileForm } from "@/components/profile-form";
-import { prisma } from "@/lib/prisma";
 import { UserProfile } from "@/types/profile";
-import { Suspense, cache } from "react";
+import { prisma } from "@/lib/prisma";
+import { cache } from "react";
 
 // Cache the Prisma query to avoid duplicate fetches
 const getProfile = cache(async (userId: string) => {
@@ -17,7 +17,7 @@ async function ProfileFormWrapper({ userId }: { userId: string }) {
   const profile = await getProfile(userId);
 
   // Map Prisma schema to UserProfile format
-      const existingProfile: UserProfile | null = profile
+  const existingProfile: UserProfile | null = profile
     ? {
         id: profile.id,
         user_id: profile.userId,
@@ -47,11 +47,9 @@ async function ProfilePageContent() {
   }
 
   return (
-    <div className="flex-1 w-full flex flex-col gap-8">
-      <div className="w-full max-w-2xl mx-auto">
-        <Suspense fallback={<div className="text-center py-8 text-muted-foreground">Loading profile form...</div>}>
-          <ProfileFormWrapper userId={user.id} />
-        </Suspense>
+    <div className="flex-1 w-full flex flex-col">
+      <div className="w-full max-w-4xl mx-auto py-8 px-4">
+        <ProfileFormWrapper userId={user.id} />
       </div>
     </div>
   );
