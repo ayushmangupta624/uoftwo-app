@@ -19,7 +19,7 @@ export async function GET() {
       select: { likedId: true },
     });
 
-    const likedUserIds = likedUsers.map((lu) => lu.likedId);
+    const likedUserIds = likedUsers.map((lu: { likedId: string }) => lu.likedId);
 
     return NextResponse.json({ likedUserIds });
   } catch (error) {
