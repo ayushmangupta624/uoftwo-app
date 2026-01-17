@@ -6,9 +6,9 @@ export default function HeroSection() {
       <video className="hero-video" autoPlay loop muted playsInline>
         <source src="/hero-page/toronto-pano.mp4" type="video/mp4" />
       </video>
-      <div className="text-center relative z-10">
+      <div className="hero-overlay" />
+      <div className="hero-text">
         <h1>Meet the people you keep seeing in Robarts</h1>
-        <h2>Your GPA isn't the only thing worth investing in.</h2>
       </div>
     </div>
   );
