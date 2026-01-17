@@ -68,8 +68,6 @@ export default function QuestionnairePage() {
     console.log('Form Data:', formData);
     console.log('PDF File:', pdfFile);
     
-    // For now, redirect to profile or planet
-    router.push('/planet');
   };
 
   const addToArray = (field: keyof typeof formData, value: string) => {
