@@ -324,10 +324,10 @@ function UserSphere({ onUserClick, boostedUserId, users }: { onUserClick: (user:
       <mesh>
         <sphereGeometry args={[4, 64, 64]} />
         <meshBasicMaterial
-          color="#007FA3"
+          color="#c0c0c8"
           wireframe
           transparent
-          opacity={0.05}
+          opacity={0.15}
         />
       </mesh>
     </group>
@@ -654,10 +654,10 @@ export default function PlanetPage() {
   };
 
   return (
-    <div className="h-[calc(100vh-4rem)] bg-gradient-to-br from-[#001a3d] via-[#002A5C] to-[#003d7a] relative overflow-hidden">
+    <div className="h-[calc(100vh-4rem)] bg-gradient-to-br from-[#0f172a] via-[#1a2a3a] to-[#2d3a47] relative overflow-hidden">
       {/* Archetype Background Image - Light/Watercolored */}
       <div 
-        className="absolute inset-0 opacity-15 bg-cover bg-center bg-no-repeat transition-all duration-1000"
+        className="absolute inset-0 opacity-70 bg-cover bg-center bg-no-repeat transition-all duration-1000"
         style={{
           backgroundImage: `url(${getArchetypeBackgroundImage(activeArchetype)})`,
         }}
