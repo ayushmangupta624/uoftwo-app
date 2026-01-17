@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { calculateImplicitPreferences } from '@/lib/preferenceCalculator';
 
+
 /**
  * POST /api/profile-views
  * 
@@ -69,19 +70,17 @@ export async function POST(req: NextRequest) {
     // Calculate implicit preferences from all viewing behavior
     const implicitPrefs = calculateImplicitPreferences(allViews);
 
-    // Update or create user preference profile
+    // Update or create user preference profile with feature scores
     const updatedPreferences = await prisma.userPreferenceProfile.upsert({
       where: { userId },
       create: {
         userId,
-        archetypeScores: implicitPrefs.archetypeScores,
-        buildingScores: implicitPrefs.buildingScores,
+        featureScores: implicitPrefs.featureScores,
         confidenceScore: implicitPrefs.confidenceScore,
         viewCount: implicitPrefs.viewCount,
       },
       update: {
-        archetypeScores: implicitPrefs.archetypeScores,
-        buildingScores: implicitPrefs.buildingScores,
+        featureScores: implicitPrefs.featureScores,
         confidenceScore: implicitPrefs.confidenceScore,
         viewCount: implicitPrefs.viewCount,
         lastUpdated: new Date(),
@@ -100,8 +99,7 @@ export async function POST(req: NextRequest) {
           interacted: profileView.interacted,
         },
         preferences: {
-          archetypeScores: updatedPreferences.archetypeScores,
-          buildingScores: updatedPreferences.buildingScores,
+          featureScores: updatedPreferences.featureScores,
           confidenceScore: updatedPreferences.confidenceScore,
           viewCount: updatedPreferences.viewCount,
         },

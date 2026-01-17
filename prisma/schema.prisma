@@ -44,11 +44,10 @@ model UserPreferenceProfile {
   id                    String   @id @default(cuid())
   userId                String   @unique
   
-  // Archetype preference scores (0-1)
-  archetypeScores       Json     @default("{}")
-  
-  // Building preference scores (0-1)
-  buildingScores        Json     @default("{}")
+  // Feature preference scores (0-1) based on viewing behavior
+  // Features: academic_focused, creative, social, athletic, outdoors, 
+  // intellectual, ambitious, cultural, introverted, extroverted
+  featureScores         Json     @default("{}")
   
   // How confident we are in these preferences based on viewing sample size
   confidenceScore       Float    @default(0)

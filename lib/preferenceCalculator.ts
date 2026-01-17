@@ -114,3 +114,76 @@ export function blendPreferences(
     features: blended,
   };
 }
+
+/**
+ * Calculate implicit preferences from user's profile viewing behavior
+ * Analyzes which profiles they view longer, scroll deeper, and interact with
+ * Returns feature scores based on viewed profiles
+ */
+export function calculateImplicitPreferences(profileViews: Array<{
+  viewedProfileId: string;
+  duration: number | null;
+  scrollDepth: number | null;
+  interacted: boolean;
+  actionType: string | null;
+}>): {
+  featureScores: Record<string, number>;
+  confidenceScore: number;
+  viewCount: number;
+} {
+  if (profileViews.length === 0) {
+    return {
+      featureScores: {},
+      confidenceScore: 0,
+      viewCount: 0,
+    };
+  }
+
+  // For now, calculate confidence based on viewing patterns
+  // TODO: In production, fetch actual viewed profile data to extract features
+  
+  const viewCount = profileViews.length;
+  let totalEngagement = 0;
+
+  profileViews.forEach(view => {
+    // Calculate engagement weight (0-1)
+    let engagementWeight = 0;
+
+    // Duration: >30s = high engagement, <10s = low
+    if (view.duration) {
+      engagementWeight += Math.min(1, view.duration / 30) * 0.4;
+    }
+
+    // Scroll depth
+    const scrollDepth = view.scrollDepth ?? 0.5;
+    engagementWeight += scrollDepth * 0.3;
+
+    // Interaction (like, bookmark, etc.)
+    if (view.interacted) {
+      engagementWeight += 0.3;
+      // Positive actions get extra weight
+      if (view.actionType === 'like' || view.actionType === 'bookmark') {
+        engagementWeight += 0.3;
+      }
+    }
+
+    totalEngagement += engagementWeight;
+  });
+
+  // Calculate confidence score based on:
+  // - Number of views (more views = higher confidence)
+  // - Average engagement level
+  const baseConfidence = Math.min(1, viewCount / 20); // 20 views = 100% confidence
+  const avgEngagement = totalEngagement / viewCount;
+  const engagementBonus = avgEngagement * 0.3;
+
+  const confidenceScore = Math.min(1, baseConfidence + engagementBonus);
+
+  // Return empty feature scores for now
+  // In production, this would analyze the viewed profiles' AI-generated features
+  return {
+    featureScores: {},
+    confidenceScore,
+    viewCount,
+  };
+}
