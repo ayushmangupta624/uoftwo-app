@@ -1,0 +1,5 @@
+@import "../../variables.css";
+
+.navbar-container {
+  background-color: var(--primary-color);
+}

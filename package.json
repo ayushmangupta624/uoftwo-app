@@ -6,27 +6,36 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "next lint",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
+    "animate.css": "^4.1.1",
     "@google/generative-ai": "^0.24.1",
+    "@prisma/client": "^5.7.0",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.5.0",
+    "@vercel/blob": "^0.19.0",
     "lucide-react": "^0.562.0",
     "next": "16.1.3",
+    "next-auth": "^4.24.5",
     "openai": "^6.16.0",
+    "pdf-parse": "^1.1.1",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "tesseract.js": "^5.0.4",
     "three": "^0.182.0"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.1.3",
-    "tailwindcss": "^4",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "autoprefixer": "^10.0.1",
+    "eslint": "^8",
+    "eslint-config-next": "14.0.4",
+    "postcss": "^8",
+    "prisma": "^5.7.0",
+    "tailwindcss": "^3.3.0",
     "typescript": "^5"
   }
 }
