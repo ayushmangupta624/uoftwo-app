@@ -1,14 +1,13 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { MatchingUser } from "@/types/profile";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { X, Heart, Info, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 
-interface SwipeableCardProps {
+interface UserCardProps {
   user: MatchingUser;
   onSwipeLeft: () => void;
   onSwipeRight: () => void;
@@ -16,153 +15,146 @@ interface SwipeableCardProps {
   isActive: boolean;
 }
 
-export function SwipeableCard({
+export function UserCard({
   user,
   onSwipeLeft,
   onSwipeRight,
   onViewMore,
   isActive,
-}: SwipeableCardProps) {
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+}: UserCardProps) {
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+  const dragStartRef = useRef({ x: 0, y: 0 });
 
   const images = user.images || [];
+  const SWIPE_THRESHOLD = 100;
 
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (!isActive) return;
-    const touch = e.touches[0];
-    setDragStart({ x: touch.clientX, y: touch.clientY });
-    setIsDragging(true);
-  };
+  const completeSwipe = useCallback(
+    (deltaX: number) => {
+      if (Math.abs(deltaX) > SWIPE_THRESHOLD) {
+        setIsTransitioning(true);
+        // Animate the card off screen
+        setDragOffset({ x: deltaX > 0 ? 1000 : -1000, y: 0 });
 
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isActive || !isDragging) return;
-    const touch = e.touches[0];
-    const deltaX = touch.clientX - dragStart.x;
-    const deltaY = touch.clientY - dragStart.y;
-    setDragOffset({ x: deltaX, y: deltaY });
-  };
-
-  const handleTouchEnd = () => {
-    if (!isActive) return;
-    setIsDragging(false);
-    const threshold = 100;
-    
-    if (Math.abs(dragOffset.x) > threshold) {
-      if (dragOffset.x > 0) {
-        onSwipeRight();
-      } else {
-        onSwipeLeft();
-      }
-    }
-    
-    setDragOffset({ x: 0, y: 0 });
-  };
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (!isActive) return;
-    setDragStart({ x: e.clientX, y: e.clientY });
-    setIsDragging(true);
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isActive || !isDragging) return;
-    const deltaX = e.clientX - dragStart.x;
-    const deltaY = e.clientY - dragStart.y;
-    setDragOffset({ x: deltaX, y: deltaY });
-  };
-
-  const handleMouseUp = () => {
-    if (!isActive) return;
-    setIsDragging(false);
-    const threshold = 100;
-    
-    if (Math.abs(dragOffset.x) > threshold) {
-      if (dragOffset.x > 0) {
-        onSwipeRight();
-      } else {
-        onSwipeLeft();
-      }
-    }
-    
-    setDragOffset({ x: 0, y: 0 });
-  };
-
-  useEffect(() => {
-    if (isDragging) {
-      const handleGlobalMouseMove = (e: MouseEvent) => {
-        const deltaX = e.clientX - dragStart.x;
-        const deltaY = e.clientY - dragStart.y;
-        setDragOffset({ x: deltaX, y: deltaY });
-      };
-
-      const handleGlobalMouseUp = () => {
-        setIsDragging(false);
-        const threshold = 100;
-        
-        if (Math.abs(dragOffset.x) > threshold) {
-          if (dragOffset.x > 0) {
+        setTimeout(() => {
+          if (deltaX > 0) {
             onSwipeRight();
           } else {
             onSwipeLeft();
           }
-        }
-        
+          setDragOffset({ x: 0, y: 0 });
+          setIsTransitioning(false);
+        }, 300);
+      } else {
+        // Snap back to original position
         setDragOffset({ x: 0, y: 0 });
-      };
+      }
+    },
+    [onSwipeLeft, onSwipeRight],
+  );
 
-      window.addEventListener("mousemove", handleGlobalMouseMove);
-      window.addEventListener("mouseup", handleGlobalMouseUp);
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (!isActive || isTransitioning) return;
+    const touch = e.touches[0];
+    dragStartRef.current = { x: touch.clientX, y: touch.clientY };
+    setIsDragging(true);
+  };
 
-      return () => {
-        window.removeEventListener("mousemove", handleGlobalMouseMove);
-        window.removeEventListener("mouseup", handleGlobalMouseUp);
-      };
-    }
-  }, [isDragging, dragStart, dragOffset, onSwipeLeft, onSwipeRight]);
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isActive || !isDragging || isTransitioning) return;
+    const touch = e.touches[0];
+    const deltaX = touch.clientX - dragStartRef.current.x;
+    const deltaY = touch.clientY - dragStartRef.current.y;
+    setDragOffset({ x: deltaX, y: deltaY * 0.5 }); // Less vertical movement
+  };
 
-  const rotation = dragOffset.x * 0.1;
-  const opacity = 1 - Math.abs(dragOffset.x) / 300;
+  const handleTouchEnd = () => {
+    if (!isActive || isTransitioning) return;
+    setIsDragging(false);
+    completeSwipe(dragOffset.x);
+  };
 
-  const nextImage = () => {
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!isActive || isTransitioning) return;
+    e.preventDefault();
+    dragStartRef.current = { x: e.clientX, y: e.clientY };
+    setIsDragging(true);
+  };
+
+  useEffect(() => {
+    if (!isDragging) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isActive || isTransitioning) return;
+      const deltaX = e.clientX - dragStartRef.current.x;
+      const deltaY = e.clientY - dragStartRef.current.y;
+      setDragOffset({ x: deltaX, y: deltaY * 0.5 }); // Less vertical movement
+    };
+
+    const handleMouseUp = () => {
+      if (!isActive || isTransitioning) return;
+      setIsDragging(false);
+      completeSwipe(dragOffset.x);
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [isDragging, isActive, dragOffset.x, completeSwipe, isTransitioning]);
+
+  const rotation = dragOffset.x * 0.15;
+  const opacity = Math.max(0.5, 1 - Math.abs(dragOffset.x) / 400);
+
+  const nextImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (images.length > 0) {
       setCurrentImageIndex((prev) => (prev + 1) % images.length);
     }
   };
 
-  const prevImage = () => {
+  const prevImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (images.length > 0) {
-      setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+      setCurrentImageIndex(
+        (prev) => (prev - 1 + images.length) % images.length,
+      );
     }
   };
 
   return (
     <div
       ref={cardRef}
-      className={`absolute inset-0 transition-transform duration-200 ${
-        isActive ? "z-10" : "z-0"
-      }`}
+      className={`absolute inset-0 ${
+        isDragging || isTransitioning
+          ? ""
+          : "transition-all duration-300 ease-out"
+      } ${isActive ? "z-10" : "z-0"}`}
       style={{
         transform: `translateX(${dragOffset.x}px) translateY(${dragOffset.y}px) rotate(${rotation}deg)`,
         opacity: isActive ? opacity : 0.5,
         cursor: isDragging ? "grabbing" : "grab",
+        userSelect: "none",
       }}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
     >
       <Card className="h-full w-full overflow-hidden">
         <div className="relative h-[70vh] w-full bg-muted">
-          {images.length > 0 && images[currentImageIndex] && images[currentImageIndex].trim() ? (
+          {images.length > 0 &&
+          images[currentImageIndex] &&
+          images[currentImageIndex].trim() ? (
             <>
-              {images[currentImageIndex].startsWith("http") && 
-               images[currentImageIndex].includes("supabase.co") ? (
+              {images[currentImageIndex].startsWith("http") &&
+              images[currentImageIndex].includes("supabase.co") ? (
                 <Image
                   src={images[currentImageIndex]}
                   alt={`${user.fname || user.email}`}
@@ -242,4 +234,3 @@ export function SwipeableCard({
     </div>
   );
 }
-

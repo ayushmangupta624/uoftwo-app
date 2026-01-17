@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { MatchingUsers } from "@/components/matching-users";
+import { MatchingUsers } from "@/app/dashboard/MatchingUsers/MatchingUsers";
 import { Suspense, cache } from "react";
 import { InfoIcon } from "lucide-react";
 import Link from "next/link";
