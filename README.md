@@ -16,6 +16,17 @@ An interactive Soul App-inspired 3D sphere where you can explore and connect wit
 
 See [PLANET_FEATURE_GUIDE.md](./PLANET_FEATURE_GUIDE.md) for detailed documentation.
 
+### 🧠 New Feature: Preference Learning System
+
+A two-layer matching system that learns from your viewing behavior to refine matches:
+- **Layer 1**: Initial matching from questionnaire (50%)
+- **Layer 2**: Behavioral refinement from viewing history (25%)
+- **Layer 3**: Schedule compatibility placeholder (25%)
+
+As you view profiles, the system learns your preferences and adjusts matches accordingly. Profiles you spend more time viewing influence which archetypes you're matched with next.
+
+See [PREFERENCE_SYSTEM.md](./PREFERENCE_SYSTEM.md) for full documentation and [PREFERENCE_SETUP.md](./PREFERENCE_SETUP.md) for setup instructions.
+
 ## Getting Started
 
 First, run the development server:

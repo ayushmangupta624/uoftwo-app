@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                    String   @id @default(cuid())
+  email                 String   @unique
+  name                  String
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  
+  profileViews          ProfileView[]
+  preferencesProfile    UserPreferenceProfile?
+}
+
+model ProfileView {
+  id                    String   @id @default(cuid())
+  userId                String
+  viewedProfileId       String
+  
+  viewStartTime         DateTime
+  viewEndTime           DateTime?
+  duration              Int?                  // in seconds
+  scrollDepth           Float?                // 0-1 representing % of profile viewed
+  
+  interacted            Boolean   @default(false)
+  actionType            String?               // 'like', 'pass', 'bookmark'
+  
+  createdAt             DateTime  @default(now())
+  
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([viewedProfileId])
+  @@index([createdAt])
+}
+
+model UserPreferenceProfile {
+  id                    String   @id @default(cuid())
+  userId                String   @unique
+  
+  // Archetype preference scores (0-1)
+  archetypeScores       Json     @default("{}")
+  
+  // Building preference scores (0-1)
+  buildingScores        Json     @default("{}")
+  
+  // How confident we are in these preferences based on viewing sample size
+  confidenceScore       Float    @default(0)
+  
+  // How many profile views went into calculating this
+  viewCount             Int      @default(0)
+  
+  lastUpdated           DateTime @default(now()) @updatedAt
+  
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+}
