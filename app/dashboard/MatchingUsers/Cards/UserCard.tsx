@@ -243,26 +243,13 @@ export function UserCard({
           )}
         </div>
         <CardContent className="p-4">
-          <div className="flex items-start justify-between mb-2">
+          <div className="flex items-start justify-between ">
             <div>
               <h3 className="text-xl font-bold">
                 {user.fname && user.lname
                   ? `${user.fname} ${user.lname}`
                   : user.email}
               </h3>
-              <div className="flex items-center gap-2 mt-1">
-                <Badge variant="outline">{user.gender}</Badge>
-              </div>
-            </div>
-          </div>
-          <div className="mb-4">
-            <p className="text-sm text-muted-foreground mb-2">Interested in:</p>
-            <div className="flex flex-wrap gap-1">
-              {user.gender_preference.map((pref) => (
-                <Badge key={pref} variant="secondary" className="text-xs">
-                  {pref}
-                </Badge>
-              ))}
             </div>
           </div>
         </CardContent>

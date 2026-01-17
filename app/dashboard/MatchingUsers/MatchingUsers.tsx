@@ -202,10 +202,7 @@ export function MatchingUsers() {
     <Card>
       <CardHeader>
         <CardTitle>Discover</CardTitle>
-        <CardDescription>
-          Swipe right to like, left to pass ({currentIndex + 1} of{" "}
-          {matches.length})
-        </CardDescription>
+        <CardDescription>Click on a user to learn more.</CardDescription>
       </CardHeader>
       <CardsDisplay
         visibleCards={visibleCards}
