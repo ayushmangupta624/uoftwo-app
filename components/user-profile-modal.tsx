@@ -143,6 +143,13 @@ export function UserProfileModal({
                 <Badge variant="outline">{user.ethnicity}</Badge>
               </div>
             )}
+
+            {user.aiSummary && (
+              <div>
+                <h3 className="font-semibold mb-2">AI Summary</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{user.aiSummary}</p>
+              </div>
+            )}
           </div>
         </div>
       </DialogContent>

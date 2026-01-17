@@ -74,14 +74,12 @@ export async function POST(req: NextRequest) {
       where: { userId },
       create: {
         userId,
-        archetypeScores: implicitPrefs.archetypeScores,
-        buildingScores: implicitPrefs.buildingScores,
+        featureScores: implicitPrefs.featureScores,
         confidenceScore: implicitPrefs.confidenceScore,
         viewCount: implicitPrefs.viewCount,
       },
       update: {
-        archetypeScores: implicitPrefs.archetypeScores,
-        buildingScores: implicitPrefs.buildingScores,
+        featureScores: implicitPrefs.featureScores,
         confidenceScore: implicitPrefs.confidenceScore,
         viewCount: implicitPrefs.viewCount,
         lastUpdated: new Date(),
