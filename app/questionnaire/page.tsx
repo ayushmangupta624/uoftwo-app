@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowRight, ArrowLeft, Upload, Check } from 'lucide-react';
+import { parseSchedulePdf, exportScheduleToJson } from '@/lib/pdfParser';
+import { ParsedCourse } from '@/types';
 
 // Define all the steps in the questionnaire
 const TOTAL_STEPS = 18; // 0-17: PDF upload + campus + 15 questions + final review
@@ -12,6 +14,8 @@ export default function QuestionnairePage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [pdfPreview, setPdfPreview] = useState<string>('');
+  const [parsedSchedule, setParsedSchedule] = useState<ParsedCourse[]>([]);
+  const [isParsingPdf, setIsParsingPdf] = useState(false);
   
   // Test mode - allows skipping PDF for development
   const [testMode] = useState(typeof window !== 'undefined' && window.location.search.includes('test=true'));
@@ -39,11 +43,24 @@ export default function QuestionnairePage() {
   // Temporary input states for multi-select questions
   const [currentInput, setCurrentInput] = useState('');
 
-  const handlePdfUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePdfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && file.type === 'application/pdf') {
       setPdfFile(file);
       setPdfPreview(file.name);
+      
+      // Parse PDF immediately
+      setIsParsingPdf(true);
+      try {
+        const courses = await parseSchedulePdf(file);
+        setParsedSchedule(courses);
+        console.log('Parsed courses:', courses);
+      } catch (error) {
+        console.error('Failed to parse PDF:', error);
+        alert('Failed to parse PDF. Please make sure it\'s a valid ACORN schedule.');
+      } finally {
+        setIsParsingPdf(false);
+      }
     }
   };
 
@@ -64,12 +81,50 @@ export default function QuestionnairePage() {
   };
 
   const handleSubmit = async () => {
-    // TODO: Submit to API
-    console.log('Form Data:', formData);
-    console.log('PDF File:', pdfFile);
-    
-    // For now, redirect to profile or planet
-    router.push('/planet');
+    try {
+      // Generate user ID (in production, this would come from auth)
+      const userId = `user_${Date.now()}`;
+      
+      // Export schedule to JSON
+      const scheduleJson = exportScheduleToJson(parsedSchedule, userId);
+      
+      // Create complete user data package
+      const completeUserData = {
+        userId,
+        questionnaire: formData,
+        schedule: parsedSchedule,
+        submittedAt: new Date().toISOString(),
+      };
+      
+      // Log to console
+      console.log('Form Data:', formData);
+      console.log('Parsed Schedule:', parsedSchedule);
+      console.log('Schedule JSON:', scheduleJson);
+      
+      // Download JSON file for now (will be replaced with API call)
+      const blob = new Blob([JSON.stringify(completeUserData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `uoftwo-profile-${userId}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      // TODO: Replace with API call
+      // await fetch('/api/questionnaire', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify(completeUserData)
+      // });
+      
+      // Redirect to planet
+      router.push('/planet');
+    } catch (error) {
+      console.error('Error submitting questionnaire:', error);
+      alert('Failed to submit questionnaire. Please try again.');
+    }
   };
 
   const addToArray = (field: keyof typeof formData, value: string) => {
@@ -177,14 +232,28 @@ export default function QuestionnairePage() {
                   accept="application/pdf"
                   className="sr-only"
                   onChange={handlePdfUpload}
+                  disabled={isParsingPdf}
                 />
-                {pdfFile ? (
+                {isParsingPdf ? (
+                  <>
+                    <div className="h-16 w-16 mb-4 border-4 border-[#007FA3]/30 border-t-[#007FA3] rounded-full animate-spin"></div>
+                    <p className="text-xl font-semibold text-[#002A5C]">
+                      Parsing your schedule...
+                    </p>
+                    <p className="mt-2 text-sm text-[#002A5C]/60">
+                      This may take a few seconds
+                    </p>
+                  </>
+                ) : pdfFile ? (
                   <>
                     <Check className="h-16 w-16 text-green-500 mb-4" />
                     <p className="text-xl font-semibold text-[#002A5C]">
                       {pdfPreview}
                     </p>
-                    <p className="mt-2 text-sm text-[#002A5C]/60">
+                    <p className="mt-2 text-sm text-green-600 font-medium">
+                      ✓ {parsedSchedule.length} courses detected
+                    </p>
+                    <p className="mt-1 text-sm text-[#002A5C]/60">
                       Click to change file
                     </p>
                   </>
