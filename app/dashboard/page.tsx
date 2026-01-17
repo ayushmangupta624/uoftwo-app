@@ -50,7 +50,10 @@ async function ProfileInfo({ userId }: { userId: string }) {
 
 async function DashboardContent() {
   const supabase = await createClient();
-  const { data: { user }, error } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
 
   if (error || !user) {
     redirect("/auth/login");
@@ -73,7 +76,8 @@ async function DashboardContent() {
 
   // Check if user has uploaded all 4 images
   const images = ((profile as any).images as string[]) || [];
-  const hasAllImages = images.length === 4 && images.every((img) => img && img.trim() !== "");
+  const hasAllImages =
+    images.length === 4 && images.every((img) => img && img.trim() !== "");
 
   if (!hasAllImages) {
     redirect("/upload-images");
@@ -88,7 +92,9 @@ async function DashboardContent() {
         </p>
         <Suspense
           fallback={
-            <div className="mt-4 text-sm text-muted-foreground">Loading profile...</div>
+            <div className="mt-4 text-sm text-muted-foreground">
+              Loading profile...
+            </div>
           }
         >
           <ProfileInfo userId={user.id} />

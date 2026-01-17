@@ -2,7 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { MatchingUser } from "@/types/profile";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { X, Heart, Info } from "lucide-react";
 import { SwipeableCard } from "@/components/swipeable-card";
@@ -22,7 +28,7 @@ export function MatchingUsers() {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        
+
         // Fetch matches and likes in parallel
         const [matchesResponse, likesResponse] = await Promise.all([
           fetch("/api/matching-users"),
@@ -69,7 +75,7 @@ export function MatchingUsers() {
       }
 
       const data = await response.json();
-      
+
       // Update liked state
       const newLiked = new Set(likedUserIds);
       newLiked.add(userId);
@@ -136,7 +142,9 @@ export function MatchingUsers() {
       <Card>
         <CardHeader>
           <CardTitle>Matching Users</CardTitle>
-          <CardDescription>Finding users that match your preferences...</CardDescription>
+          <CardDescription>
+            Finding users that match your preferences...
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8">Loading...</div>
@@ -166,7 +174,8 @@ export function MatchingUsers() {
         </CardHeader>
         <CardContent>
           <div className="text-center py-8 text-muted-foreground">
-            No matching users found. Make sure your profile and preferences are set up correctly.
+            No matching users found. Make sure your profile and preferences are
+            set up correctly.
           </div>
         </CardContent>
       </Card>
@@ -197,7 +206,8 @@ export function MatchingUsers() {
       <CardHeader>
         <CardTitle>Discover</CardTitle>
         <CardDescription>
-          Swipe right to like, left to pass ({currentIndex + 1} of {matches.length})
+          Swipe right to like, left to pass ({currentIndex + 1} of{" "}
+          {matches.length})
         </CardDescription>
       </CardHeader>
       <CardContent>
