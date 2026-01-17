@@ -55,14 +55,6 @@ export default function CardsDisplay({
         <Button
           variant="outline"
           size="lg"
-          className="rounded-full w-14 h-14 bg-white shadow-lg hover:bg-blue-50 hover:border-blue-500"
-          onClick={handleViewMore}
-        >
-          <Info className="w-6 h-6 text-blue-500" />
-        </Button>
-        <Button
-          variant="outline"
-          size="lg"
           className="rounded-full w-14 h-14 bg-white shadow-lg hover:bg-green-50 hover:border-green-500"
           onClick={handleSwipeRight}
           disabled={likingUserId === currentUser?.user_id}

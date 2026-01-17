@@ -84,6 +84,12 @@ export function UserCard({
     setIsDragging(true);
   };
 
+  const handleClick = (e: React.MouseEvent) => {
+    // Only trigger if we didn't drag (click without moving)
+    if (!isActive || Math.abs(dragOffset.x) > 5 || Math.abs(dragOffset.y) > 5) return;
+    onViewMore();
+  };
+
   useEffect(() => {
     if (!isDragging) return;
 
@@ -150,6 +156,7 @@ export function UserCard({
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       onMouseDown={handleMouseDown}
+      onClick={handleClick}
     >
       <Card className="h-full w-full overflow-hidden relative">
         <div className="relative h-[70vh] w-full bg-muted">
