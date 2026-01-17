@@ -16,6 +16,22 @@ export interface UserProfile {
   description?: string;
   created_at?: string;
   updated_at?: string;
+  // Questionnaire fields
+  campus?: string;
+  hobbies?: string[];
+  favoriteBands?: string[];
+  musicGenres?: string[];
+  sportsTeams?: string[];
+  footballPreference?: string;
+  clubs?: string[];
+  studyPreference?: string;
+  favCampusSpots?: string[];
+  personalityTraits?: string[];
+  values?: string[];
+  goingOutFrequency?: string;
+  idealWeekend?: string;
+  lookingFor?: string;
+  dealBreakers?: string[];
 }
 
 export interface MatchingUser {

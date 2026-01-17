@@ -39,19 +39,15 @@ export function LoginForm({
       });
       if (error) throw error;
 
-      // Check if user has a basic profile and questionnaire completion
+      // Check if user has completed the questionnaire
       const response = await fetch("/api/profile");
       const data = await response.json();
 
+      // If user has a profile, check for questionnaire completion
       if (data.profile) {
-        // User has a basic profile, check if questionnaire is completed
-        const userId = data.profile.user_id;
-        const profileResponse = await fetch(`/api/profile/${userId}`);
-        const profileData = await profileResponse.json();
-
         // Check if questionnaire is completed by checking if hobbies exist
         const hasCompletedQuestionnaire =
-          profileData.user?.hobbies && profileData.user.hobbies.length > 0;
+          data.profile.hobbies && data.profile.hobbies.length > 0;
 
         if (hasCompletedQuestionnaire) {
           router.push("/dashboard");
@@ -59,8 +55,8 @@ export function LoginForm({
           router.push("/questionnaire");
         }
       } else {
-        // No basic profile exists, redirect to profile creation first
-        router.push("/profile");
+        // No profile exists, redirect to questionnaire (which will handle profile creation)
+        router.push("/questionnaire");
       }
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");

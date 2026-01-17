@@ -205,13 +205,13 @@ export default function QuestionnairePage() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        
+
         // If profile doesn't exist, redirect to profile creation
         if (response.status === 404 && errorData.redirect) {
           router.push(errorData.redirect);
           return;
         }
-        
+
         throw new Error(errorData.error || "Failed to submit questionnaire");
       }
 
