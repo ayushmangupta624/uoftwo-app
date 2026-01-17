@@ -7,8 +7,9 @@ import { OrbitControls, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { X } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { getBuildingForArchetype } from '@/lib/aiProfileGenerator';
 
-// Mock user data
+// Mock user data with archetypes
 const mockUsers = [
   {
     id: 1,
@@ -16,10 +17,10 @@ const mockUsers = [
     age: 21,
     program: "Computer Science",
     year: "3rd Year",
-    dormArchetype: "New College",
+    archetype: "STEM Scholar",
     bio: "Love coding and coffee! Looking for study buddies and maybe something more 💻☕",
     interests: ["Coding", "Coffee", "Gaming"],
-    image: "💙"
+    image: "💻"
   },
   {
     id: 2,
@@ -27,10 +28,10 @@ const mockUsers = [
     age: 20,
     program: "Engineering",
     year: "2nd Year",
-    dormArchetype: "Chestnut",
+    archetype: "Outdoorsy Explorer",
     bio: "Engineering student who loves hiking and late-night problem sets",
     interests: ["Hiking", "Photography", "Music"],
-    image: "💜"
+    image: "🌳"
   },
   {
     id: 3,
@@ -38,10 +39,10 @@ const mockUsers = [
     age: 22,
     program: "Psychology & Philosophy",
     year: "4th Year",
-    dormArchetype: "Innis",
+    archetype: "Coffee Shop Philosopher",
     bio: "Deep conversations over tea? Count me in! 🍵",
     interests: ["Reading", "Art", "Yoga"],
-    image: "💚"
+    image: "☕"
   },
   {
     id: 4,
@@ -49,10 +50,10 @@ const mockUsers = [
     age: 19,
     program: "Business",
     year: "1st Year",
-    dormArchetype: "Oak House",
+    archetype: "Social Butterfly",
     bio: "Always down for campus events and making new friends!",
     interests: ["Networking", "Sports", "Travel"],
-    image: "🧡"
+    image: "🦋"
   },
   {
     id: 5,
@@ -60,10 +61,10 @@ const mockUsers = [
     age: 21,
     program: "Biology",
     year: "3rd Year",
-    dormArchetype: "New College",
+    archetype: "Night Owl Grinder",
     bio: "Pre-med student looking for someone to explore the city with",
     interests: ["Medicine", "Cooking", "Dancing"],
-    image: "💙"
+    image: "🦉"
   },
   {
     id: 6,
@@ -71,10 +72,10 @@ const mockUsers = [
     age: 20,
     program: "English Literature",
     year: "2nd Year",
-    dormArchetype: "Innis",
+    archetype: "Dark Academia",
     bio: "Bookworm seeking fellow literature lover for coffee dates",
     interests: ["Writing", "Poetry", "Theatre"],
-    image: "💚"
+    image: "📚"
   },
   {
     id: 7,
@@ -82,10 +83,10 @@ const mockUsers = [
     age: 22,
     program: "Mathematics",
     year: "4th Year",
-    dormArchetype: "New College",
+    archetype: "STEM Scholar",
     bio: "Math nerd by day, indie music enthusiast by night 🎵",
     interests: ["Math", "Music", "Astronomy"],
-    image: "💙"
+    image: "💻"
   },
   {
     id: 8,
@@ -93,10 +94,10 @@ const mockUsers = [
     age: 21,
     program: "Economics",
     year: "3rd Year",
-    dormArchetype: "Chestnut",
+    archetype: "Social Butterfly",
     bio: "Entrepreneur mindset, looking for my co-founder in life",
     interests: ["Startups", "Finance", "Fitness"],
-    image: "💜"
+    image: "🦋"
   },
   {
     id: 9,
@@ -104,10 +105,10 @@ const mockUsers = [
     age: 19,
     program: "Architecture",
     year: "1st Year",
-    dormArchetype: "Oak House",
+    archetype: "Creative Spirit",
     bio: "Building dreams one sketch at a time ✏️",
     interests: ["Design", "Art", "Photography"],
-    image: "🧡"
+    image: "🎨"
   },
   {
     id: 10,
@@ -115,10 +116,10 @@ const mockUsers = [
     age: 20,
     program: "Political Science",
     year: "2nd Year",
-    dormArchetype: "Innis",
+    archetype: "Culture Enthusiast",
     bio: "Debater, thinker, and hopeless romantic",
     interests: ["Politics", "Debate", "History"],
-    image: "💚"
+    image: "🏛️"
   },
   {
     id: 11,
@@ -126,10 +127,10 @@ const mockUsers = [
     age: 22,
     program: "Chemistry",
     year: "4th Year",
-    dormArchetype: "New College",
+    archetype: "STEM Scholar",
     bio: "We have chemistry... literally! Let's find out if we have it figuratively too",
     interests: ["Science", "Wine", "Jazz"],
-    image: "💙"
+    image: "💻"
   },
   {
     id: 12,
@@ -137,10 +138,10 @@ const mockUsers = [
     age: 21,
     program: "Kinesiology",
     year: "3rd Year",
-    dormArchetype: "Oak House",
+    archetype: "Gym Rat / Athlete",
     bio: "Athletic trainer looking for gym partner and life partner!",
     interests: ["Fitness", "Nutrition", "Basketball"],
-    image: "🧡"
+    image: "💪"
   },
   {
     id: 13,
@@ -148,10 +149,10 @@ const mockUsers = [
     age: 20,
     program: "Music Performance",
     year: "2nd Year",
-    dormArchetype: "Innis",
+    archetype: "Creative Spirit",
     bio: "Violinist seeking my perfect harmony 🎻",
     interests: ["Classical Music", "Concert", "Ballet"],
-    image: "💚"
+    image: "🎨"
   },
   {
     id: 14,
@@ -159,10 +160,10 @@ const mockUsers = [
     age: 19,
     program: "Computer Engineering",
     year: "1st Year",
-    dormArchetype: "Chestnut",
+    archetype: "STEM Scholar",
     bio: "Building robots and relationships, one line of code at a time",
     interests: ["Robotics", "AI", "Anime"],
-    image: "💜"
+    image: "💻"
   },
   {
     id: 15,
@@ -170,10 +171,10 @@ const mockUsers = [
     age: 21,
     program: "Environmental Science",
     year: "3rd Year",
-    dormArchetype: "Innis",
+    archetype: "Outdoorsy Explorer",
     bio: "Saving the planet, one date at a time 🌍",
     interests: ["Sustainability", "Hiking", "Photography"],
-    image: "💚"
+    image: "🌳"
   },
   {
     id: 16,
@@ -181,10 +182,10 @@ const mockUsers = [
     age: 22,
     program: "Film Studies",
     year: "4th Year",
-    dormArchetype: "Oak House",
+    archetype: "Creative Spirit",
     bio: "Filmmaker looking for my leading lady/man",
     interests: ["Cinema", "Directing", "Screenwriting"],
-    image: "🧡"
+    image: "🎨"
   },
   {
     id: 17,
@@ -192,10 +193,10 @@ const mockUsers = [
     age: 20,
     program: "Neuroscience",
     year: "2nd Year",
-    dormArchetype: "New College",
+    archetype: "Chill Minimalist",
     bio: "Mind reader (almost). Let me figure you out over coffee",
     interests: ["Brain Science", "Puzzles", "Meditation"],
-    image: "💙"
+    image: "🧘"
   },
   {
     id: 18,
@@ -203,10 +204,10 @@ const mockUsers = [
     age: 21,
     program: "History",
     year: "3rd Year",
-    dormArchetype: "Innis",
+    archetype: "Culture Enthusiast",
     bio: "Living in the past, dreaming of our future",
     interests: ["History", "Museums", "Travel"],
-    image: "💚"
+    image: "🏛️"
   },
   {
     id: 19,
@@ -214,10 +215,10 @@ const mockUsers = [
     age: 19,
     program: "Sociology",
     year: "1st Year",
-    dormArchetype: "Oak House",
+    archetype: "Social Butterfly",
     bio: "Understanding society, but still trying to understand love ❤️",
     interests: ["Social Justice", "Community", "Podcasts"],
-    image: "🧡"
+    image: "🦋"
   },
   {
     id: 20,
@@ -225,10 +226,10 @@ const mockUsers = [
     age: 22,
     program: "Physics",
     year: "4th Year",
-    dormArchetype: "New College",
+    archetype: "Night Owl Grinder",
     bio: "There's a strong gravitational pull between us 🌟",
     interests: ["Space", "Astronomy", "Sci-Fi"],
-    image: "💙"
+    image: "🦉"
   }
 ];
 
@@ -252,14 +253,9 @@ function UserDot({ position, user, onClick, isBoosted = false }: UserDotProps) {
   });
 
   const color = useMemo(() => {
-    const colors: { [key: string]: string } = {
-      "New College": "#3b82f6",
-      "Oak House": "#f97316",
-      "Chestnut": "#a855f7",
-      "Innis": "#10b981",
-    };
-    return colors[user.dormArchetype] || "#6b7280";
-  }, [user.dormArchetype]);
+    const building = getBuildingForArchetype(user.archetype);
+    return building.primaryColor;
+  }, [user.archetype]);
 
   return (
     <mesh
@@ -458,21 +454,13 @@ interface UserProfileModalProps {
 function UserProfileModal({ user, onClose }: UserProfileModalProps) {
   if (!user) return null;
 
-  const getArchetypeColor = (archetype: string) => {
-    const colors: { [key: string]: string } = {
-      "New College": "from-blue-400 to-cyan-500",
-      "Oak House": "from-amber-400 to-orange-500",
-      "Chestnut": "from-purple-400 to-pink-500",
-      "Innis": "from-green-400 to-teal-500",
-    };
-    return colors[archetype] || "from-gray-400 to-gray-500";
-  };
+  const building = getBuildingForArchetype(user.archetype);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
       <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden transform transition-all">
         {/* Header with gradient */}
-        <div className={`relative h-32 bg-gradient-to-br ${getArchetypeColor(user.dormArchetype)} p-6`}>
+        <div className={`relative h-32 bg-gradient-to-br ${building.colorGradient} p-6`}>
           <button
             onClick={onClose}
             className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm hover:bg-white/30 rounded-full p-2 transition-all"
@@ -493,10 +481,17 @@ function UserProfileModal({ user, onClose }: UserProfileModalProps) {
             <p className="text-gray-600">{user.program} • {user.year}</p>
           </div>
 
-          {/* Dorm Archetype Badge */}
+          {/* Archetype Badge */}
           <div className="inline-block mb-4">
-            <div className={`px-4 py-2 rounded-full bg-gradient-to-r ${getArchetypeColor(user.dormArchetype)} text-white font-semibold text-sm shadow-lg`}>
-              {user.dormArchetype}
+            <div className={`px-4 py-2 rounded-full bg-gradient-to-r ${building.colorGradient} text-white font-semibold text-sm shadow-lg`}>
+              {user.archetype}
+            </div>
+          </div>
+          
+          {/* Building Badge */}
+          <div className="inline-block mb-4 ml-2">
+            <div className="px-4 py-2 rounded-full bg-gray-100 text-gray-700 font-medium text-sm">
+              {building.icon} {building.shortName}
             </div>
           </div>
 
@@ -538,14 +533,25 @@ function UserProfileModal({ user, onClose }: UserProfileModalProps) {
   );
 }
 
-const dormArchetypes = ['New College', 'Oak House', 'Chestnut', 'Innis'] as const;
-type DormArchetype = typeof dormArchetypes[number];
+const archetypes = [
+  'STEM Scholar',
+  'Dark Academia',
+  'Outdoorsy Explorer',
+  'Creative Spirit',
+  'Social Butterfly',
+  'Coffee Shop Philosopher',
+  'Gym Rat / Athlete',
+  'Night Owl Grinder',
+  'Culture Enthusiast',
+  'Chill Minimalist'
+] as const;
+type Archetype = typeof archetypes[number];
 
 export default function PlanetPage() {
   const [selectedUser, setSelectedUser] = useState<typeof mockUsers[0] | null>(null);
   const [boostedUserId, setBoostedUserId] = useState<number | null>(null);
-  const [activeDorm, setActiveDorm] = useState<DormArchetype>('New College');
-  const [nextDorm, setNextDorm] = useState<DormArchetype | null>(null);
+  const [activeArchetype, setActiveArchetype] = useState<Archetype>('STEM Scholar');
+  const [nextArchetype, setNextArchetype] = useState<Archetype | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const { isAuthenticated, hasCompletedOnboarding } = useAuth();
   const router = useRouter();
@@ -558,47 +564,48 @@ export default function PlanetPage() {
   }, [isAuthenticated, hasCompletedOnboarding, router]);
 
   const handleBoost = () => {
-    const dormUsers = mockUsers.filter(u => u.dormArchetype === activeDorm);
-    const randomUser = dormUsers[Math.floor(Math.random() * dormUsers.length)];
+    const archetypeUsers = mockUsers.filter(u => u.archetype === activeArchetype);
+    const randomUser = archetypeUsers[Math.floor(Math.random() * archetypeUsers.length)];
     setBoostedUserId(randomUser.id);
     setTimeout(() => setBoostedUserId(null), 3000);
   };
 
-  const cycleToNextDorm = () => {
+  const cycleToNextArchetype = () => {
     if (isTransitioning) return;
     
-    const currentIndex = dormArchetypes.indexOf(activeDorm);
-    const nextIndex = (currentIndex + 1) % dormArchetypes.length;
-    const next = dormArchetypes[nextIndex];
+    const currentIndex = archetypes.indexOf(activeArchetype);
+    const nextIndex = (currentIndex + 1) % archetypes.length;
+    const next = archetypes[nextIndex];
     
-    setNextDorm(next);
+    setNextArchetype(next);
     setIsTransitioning(true);
     
-    // After animation completes, switch to new dorm
+    // After animation completes, switch to new archetype
     setTimeout(() => {
-      setActiveDorm(next);
-      setNextDorm(null);
+      setActiveArchetype(next);
+      setNextArchetype(null);
       setIsTransitioning(false);
     }, 1500); // Match animation duration
   };
 
-  const dormUsers = useMemo(() => {
-    return mockUsers.filter(user => user.dormArchetype === activeDorm);
-  }, [activeDorm]);
+  const archetypeUsers = useMemo(() => {
+    return mockUsers.filter(user => user.archetype === activeArchetype);
+  }, [activeArchetype]);
 
-  const nextDormUsers = useMemo(() => {
-    if (!nextDorm) return [];
-    return mockUsers.filter(user => user.dormArchetype === nextDorm);
-  }, [nextDorm]);
+  const nextArchetypeUsers = useMemo(() => {
+    if (!nextArchetype) return [];
+    return mockUsers.filter(user => user.archetype === nextArchetype);
+  }, [nextArchetype]);
 
-  const getDormInfo = (dorm: DormArchetype) => {
-    const info: { [key in DormArchetype]: { color: string; gradient: string; emoji: string } } = {
-      "New College": { color: "#3b82f6", gradient: "from-blue-400 to-cyan-500", emoji: "💙" },
-      "Oak House": { color: "#f97316", gradient: "from-amber-400 to-orange-500", emoji: "🧡" },
-      "Chestnut": { color: "#a855f7", gradient: "from-purple-400 to-pink-500", emoji: "💜" },
-      "Innis": { color: "#10b981", gradient: "from-green-400 to-teal-500", emoji: "💚" },
+  const getArchetypeInfo = (archetype: Archetype) => {
+    const building = getBuildingForArchetype(archetype);
+    return {
+      color: building.primaryColor,
+      gradient: building.colorGradient,
+      emoji: building.icon,
+      name: archetype,
+      building: building.shortName
     };
-    return info[dorm];
   };
 
   // Don't render if not authorized
@@ -623,13 +630,13 @@ export default function PlanetPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="flex items-center justify-center gap-3 mb-3">
-              <span className="text-5xl">{getDormInfo(activeDorm).emoji}</span>
+              <span className="text-5xl">{getArchetypeInfo(activeArchetype).emoji}</span>
               <h1 className="text-4xl sm:text-5xl font-bold text-white drop-shadow-2xl">
-                {activeDorm}
+                {activeArchetype}
               </h1>
             </div>
             <p className="text-white/80 text-lg drop-shadow-lg">
-              Rotate the sphere and click on profiles to discover your matches
+              {getArchetypeInfo(activeArchetype).building} • Rotate the sphere and click on profiles to discover your matches
             </p>
           </div>
         </div>
@@ -650,22 +657,22 @@ export default function PlanetPage() {
             <Scene 
               onUserClick={setSelectedUser} 
               boostedUserId={boostedUserId} 
-              users={dormUsers}
-              nextUsers={nextDormUsers}
+              users={archetypeUsers}
+              nextUsers={nextArchetypeUsers}
               isTransitioning={isTransitioning}
             />
           </Suspense>
         </Canvas>
       </div>
 
-      {/* Dorm Cycle Button - Bottom Right */}
+      {/* Archetype Cycle Button - Bottom Right */}
       <div className="absolute bottom-8 right-8 z-10">
         <button
-          onClick={cycleToNextDorm}
+          onClick={cycleToNextArchetype}
           disabled={isTransitioning}
           className={`
             group relative overflow-hidden
-            bg-gradient-to-r ${getDormInfo(activeDorm).gradient}
+            bg-gradient-to-r ${getArchetypeInfo(activeArchetype).gradient}
             text-white px-5 py-3 rounded-full font-semibold text-sm
             shadow-2xl hover:shadow-3xl
             transition-all duration-300 hover:scale-105
@@ -678,10 +685,10 @@ export default function PlanetPage() {
           
           {/* Button content */}
           <div className="relative flex items-center gap-2">
-            <span className="text-2xl animate-bounce">{getDormInfo(activeDorm).emoji}</span>
+            <span className="text-2xl animate-bounce">{getArchetypeInfo(activeArchetype).emoji}</span>
             <div className="text-left">
               <div className="text-[10px] uppercase tracking-wider opacity-90">Exploring</div>
-              <div className="font-bold text-sm">{activeDorm}</div>
+              <div className="font-bold text-sm">{activeArchetype}</div>
             </div>
             <div className="flex flex-col gap-0.5 ml-1 group-hover:translate-x-1 transition-transform">
               <svg className="w-4 h-4 transform rotate-90" fill="currentColor" viewBox="0 0 20 20">
@@ -695,7 +702,7 @@ export default function PlanetPage() {
           
           {/* User count badge */}
           <div className="absolute -top-1 -right-1 bg-white text-gray-900 rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shadow-lg animate-pulse">
-            {dormUsers.length}
+            {archetypeUsers.length}
           </div>
         </button>
       </div>
@@ -717,13 +724,14 @@ export default function PlanetPage() {
       <div className="absolute top-24 right-8 z-10 space-y-3">
         <div className="bg-white/10 backdrop-blur-md rounded-2xl px-4 py-3 border border-white/20">
           <p className="text-white/70 text-xs uppercase tracking-wide mb-1">
-            {activeDorm}
+            {activeArchetype}
           </p>
-          <p className="text-white text-2xl font-bold">{dormUsers.length} Online</p>
+          <p className="text-white text-2xl font-bold">{archetypeUsers.length} Online</p>
+          <p className="text-white/60 text-xs mt-1">{getArchetypeInfo(activeArchetype).building}</p>
         </div>
         <button
           onClick={handleBoost}
-          className={`w-full bg-gradient-to-r ${getDormInfo(activeDorm).gradient} hover:opacity-90 text-white px-4 py-3 rounded-2xl font-semibold transition-all shadow-lg hover:shadow-xl`}
+          className={`w-full bg-gradient-to-r ${getArchetypeInfo(activeArchetype).gradient} hover:opacity-90 text-white px-4 py-3 rounded-2xl font-semibold transition-all shadow-lg hover:shadow-xl`}
         >
           ✨ Boost Random
         </button>
