@@ -39,12 +39,12 @@ export function LoginForm({
       });
       if (error) throw error;
 
-      // Check if user has completed the questionnaire
+      // Check if user has a basic profile and questionnaire completion
       const response = await fetch("/api/profile");
       const data = await response.json();
 
       if (data.profile) {
-        // Get the full user profile with questionnaire data
+        // User has a basic profile, check if questionnaire is completed
         const userId = data.profile.user_id;
         const profileResponse = await fetch(`/api/profile/${userId}`);
         const profileData = await profileResponse.json();
@@ -59,8 +59,8 @@ export function LoginForm({
           router.push("/questionnaire");
         }
       } else {
-        // No profile exists, redirect to questionnaire
-        router.push("/questionnaire");
+        // No basic profile exists, redirect to profile creation first
+        router.push("/profile");
       }
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");

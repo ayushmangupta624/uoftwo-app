@@ -116,6 +116,21 @@ export async function POST(request: Request) {
       .map((genre: string) => genreMap[genre] || null)
       .filter((genre: string | null): genre is string => genre !== null);
 
+    // Check if user profile exists first
+    const existingProfile = await prisma.user.findUnique({
+      where: { userId },
+    });
+
+    if (!existingProfile) {
+      return NextResponse.json(
+        { 
+          error: "Profile not found. Please complete your basic profile first.",
+          redirect: "/profile"
+        },
+        { status: 404 }
+      );
+    }
+
     // Update the user's profile with questionnaire data
     const updatedProfile = await prisma.user.update({
       where: { userId },
