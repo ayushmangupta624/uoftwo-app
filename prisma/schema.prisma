@@ -22,21 +22,106 @@ enum Ethnicity {
 }
 
 model User {
-  id               String    @id @default(uuid()) @db.Uuid
-  userId           String    @unique @map("user_id") @db.Uuid
-  email            String?   @db.Text
-  gender           String    @db.Text
-  genderPreference String[]  @default([]) @map("gender_preference") @db.Text
-  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt        DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
-  fname            String    @db.Text
-  lname            String    @db.Text
-  areas_of_study   String[]  
-  ethnicity        Ethnicity  
-  images           String[]  @default([]) @db.Text
+  id               String      @id @default(uuid()) @db.Uuid
+  userId           String      @unique @map("user_id") @db.Uuid
+  email            String?     @db.Text
+  gender           String      @db.Text
+  genderPreference String[]    @default([]) @map("gender_preference") @db.Text
+  fname            String      @db.Text
+  lname            String      @db.Text
+  areas_of_study   String[]
+  ethnicity        Ethnicity
+  images           String[]    @default([]) @db.Text
+  createdAt        DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime    @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // relations to join table
+  likedUsers       UserLike[]  @relation("LikedUsers")   // the rows where this user liked someone
+  likedByUsers     UserLike[]  @relation("LikedByUsers") // the rows where this user was liked
+  
+  // messaging relations
+  conversationsAsUser1  Conversation[] @relation("User1Conversations")
+  conversationsAsUser2  Conversation[] @relation("User2Conversations")
+  sentMessages          Message[]       @relation("MessageSender")
+  messageReactions      MessageReaction[] @relation("UserReactions")
+  sentReplies           MessageReply[]    @relation("MessageReplySender")
 
   @@map("users")
 }
+
+model UserLike {
+  id        String   @id @default(uuid()) @db.Uuid
+  likerId   String   @db.Uuid
+  likedId   String   @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  // relations back to User
+  liker     User @relation("LikedUsers", fields: [likerId], references: [userId], onDelete: Cascade)
+  liked     User @relation("LikedByUsers", fields: [likedId], references: [userId], onDelete: Cascade)
+
+  @@unique([likerId, likedId], name: "likerId_likedId")
+  @@map("user_likes")
+}
+
+model Conversation {
+  id        String    @id @default(uuid()) @db.Uuid
+  user1Id   String    @map("user1_id") @db.Uuid
+  user2Id   String    @map("user2_id") @db.Uuid
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user1     User      @relation("User1Conversations", fields: [user1Id], references: [userId], onDelete: Cascade)
+  user2     User      @relation("User2Conversations", fields: [user2Id], references: [userId], onDelete: Cascade)
+  messages  Message[]
+
+  @@unique([user1Id, user2Id], name: "user1Id_user2Id")
+  @@map("conversations")
+}
+
+model Message {
+  id             String          @id @default(uuid()) @db.Uuid
+  conversationId String          @map("conversation_id") @db.Uuid
+  senderId       String          @map("sender_id") @db.Uuid
+  content        String          @db.Text
+  createdAt      DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime        @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  conversation   Conversation    @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         User            @relation("MessageSender", fields: [senderId], references: [userId], onDelete: Cascade)
+  reactions      MessageReaction[]
+  replies        MessageReply[]
+
+  @@map("messages")
+}
+
+model MessageReaction {
+  id        String   @id @default(uuid()) @db.Uuid
+  messageId String   @map("message_id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  emoji     String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user      User     @relation("UserReactions", fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@unique([messageId, userId, emoji], name: "message_user_emoji")
+  @@map("message_reactions")
+}
+
+model MessageReply {
+  id        String   @id @default(uuid()) @db.Uuid
+  messageId String   @map("message_id") @db.Uuid
+  senderId  String   @map("sender_id") @db.Uuid
+  content   String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  sender    User     @relation("MessageReplySender", fields: [senderId], references: [userId], onDelete: Cascade)
+
+  @@map("message_replies")
+}
+
 
 
 

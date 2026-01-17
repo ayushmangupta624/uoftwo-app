@@ -34,6 +34,7 @@ export async function GET() {
       lname: profile.lname,
       areas_of_study: profile.areasOfStudy || [],
       ethnicity: profile.ethnicity,
+      images: profile.images || [],
       created_at: profile.createdAt.toISOString(),
       updated_at: profile.updatedAt.toISOString(),
     };

@@ -6,7 +6,7 @@ import { hasEnvVars } from "@/lib/utils";
 import Link from "next/link";
 import { Suspense } from "react";
 
-export default function DashboardLayout({
+export default function MessagesLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -30,7 +30,7 @@ export default function DashboardLayout({
             )}
           </div>
         </nav>
-        <div className="flex-1 flex flex-col gap-20 max-w-5xl p-5">
+        <div className="flex-1 flex flex-col gap-20 max-w-5xl p-5 w-full">
           {children}
         </div>
 
