@@ -13,7 +13,6 @@ export default function Navbar() {
   // Show different nav items based on completion status
   const navItems = hasCompletedOnboarding
     ? [
-        { name: "Planet", href: "/planet", icon: Globe },
         { name: "Events", href: "/events", icon: Calendar },
         { name: "Profile", href: "/profile", icon: User },
       ]
