@@ -159,15 +159,25 @@ export function SwipeableCard({
     >
       <Card className="h-full w-full overflow-hidden">
         <div className="relative h-[70vh] w-full bg-muted">
-          {images.length > 0 && images[currentImageIndex] ? (
+          {images.length > 0 && images[currentImageIndex] && images[currentImageIndex].trim() ? (
             <>
-              <Image
-                src={images[currentImageIndex]}
-                alt={`${user.fname || user.email}`}
-                fill
-                className="object-cover"
-                priority
-              />
+              {images[currentImageIndex].startsWith("http") && 
+               images[currentImageIndex].includes("supabase.co") ? (
+                <Image
+                  src={images[currentImageIndex]}
+                  alt={`${user.fname || user.email}`}
+                  fill
+                  className="object-cover"
+                  priority
+                  unoptimized={false}
+                />
+              ) : (
+                <img
+                  src={images[currentImageIndex]}
+                  alt={`${user.fname || user.email}`}
+                  className="w-full h-full object-cover"
+                />
+              )}
               {images.length > 1 && (
                 <>
                   <button

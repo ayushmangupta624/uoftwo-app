@@ -92,13 +92,28 @@ export function MatchingUsers() {
     }
   };
 
-  const handlePass = () => {
-    // Just move to next card without liking
-    setCurrentIndex((prev) => Math.min(prev + 1, matches.length - 1));
+  const handlePass = async (userId: string) => {
+    try {
+      const response = await fetch(`/api/passes/${userId}`, {
+        method: "POST",
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to pass user");
+      }
+      // Move to next card after successful pass
+      setCurrentIndex((prev) => Math.min(prev + 1, matches.length - 1));
+    } catch (error) {
+      console.error("Error passing user:", error);
+      setError(error instanceof Error ? error.message : "Failed to pass user");
+    }
   };
 
   const handleSwipeLeft = () => {
-    handlePass();
+    const currentUser = matches[currentIndex];
+    if (currentUser) {
+      handlePass(currentUser.user_id);
+    }
   };
 
   const handleSwipeRight = () => {
@@ -204,7 +219,11 @@ export function MatchingUsers() {
               variant="outline"
               size="lg"
               className="rounded-full w-14 h-14 bg-white shadow-lg hover:bg-red-50 hover:border-red-500"
-              onClick={handlePass}
+              onClick={() => {
+                if (currentUser) {
+                  handlePass(currentUser.user_id);
+                }
+              }}
             >
               <X className="w-6 h-6 text-red-500" />
             </Button>

@@ -34,10 +34,14 @@ model User {
   images           String[]    @default([]) @db.Text
   createdAt        DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt        DateTime    @updatedAt @map("updated_at") @db.Timestamptz(6)
+  description      String      @default("null") @db.Text
 
-  // relations to join table
+  // relations to join table for likes
   likedUsers       UserLike[]  @relation("LikedUsers")   // the rows where this user liked someone
   likedByUsers     UserLike[]  @relation("LikedByUsers") // the rows where this user was liked
+
+  //relations to join table for 
+  passesMade       UserPass[]  @relation("PassesMade")
   
   // messaging relations
   conversationsAsUser1  Conversation[] @relation("User1Conversations")
@@ -61,6 +65,17 @@ model UserLike {
 
   @@unique([likerId, likedId], name: "likerId_likedId")
   @@map("user_likes")
+}
+
+model UserPass {
+  id        String   @id @default(uuid()) @db.Uuid
+  passerId  String   @db.Uuid
+  passedId  String   @db.Uuid
+  createdAt DateTime @default(now())
+
+  passer    User     @relation("PassesMade", fields: [passerId], references: [userId], onDelete: Cascade)
+  @@unique([passerId, passedId], name: "passerId_passedId")
+  @@map("user_passes")
 }
 
 model Conversation {

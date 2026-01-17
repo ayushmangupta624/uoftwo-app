@@ -169,13 +169,23 @@ export function MessageChat({
       {/* Header */}
       <div className="border-b p-4 flex items-center gap-3">
         <div className="relative w-10 h-10 rounded-full overflow-hidden bg-muted">
-          {otherUser.images && otherUser.images[0] ? (
-            <Image
-              src={otherUser.images[0]}
-              alt={`${otherUser.fname} ${otherUser.lname}`}
-              fill
-              className="object-cover"
-            />
+          {otherUser.images && otherUser.images[0] && otherUser.images[0].trim() ? (
+            otherUser.images[0].startsWith("http") && 
+            otherUser.images[0].includes("supabase.co") ? (
+              <Image
+                src={otherUser.images[0]}
+                alt={`${otherUser.fname} ${otherUser.lname}`}
+                fill
+                className="object-cover"
+                unoptimized={false}
+              />
+            ) : (
+              <img
+                src={otherUser.images[0]}
+                alt={`${otherUser.fname} ${otherUser.lname}`}
+                className="w-full h-full object-cover"
+              />
+            )
           ) : (
             <div className="w-full h-full flex items-center justify-center text-muted-foreground">
               {otherUser.fname[0]}{otherUser.lname[0]}

@@ -57,14 +57,24 @@ export function UserProfileModal({
 
         <div className="space-y-4">
           {/* Images */}
-          {images.length > 0 && (
+          {images.length > 0 && images[currentImageIndex] && images[currentImageIndex].trim() && (
             <div className="relative h-96 w-full bg-muted rounded-lg overflow-hidden">
-              <Image
-                src={images[currentImageIndex]}
-                alt={`${user.fname || user.email}`}
-                fill
-                className="object-cover"
-              />
+              {images[currentImageIndex].startsWith("http") && 
+               images[currentImageIndex].includes("supabase.co") ? (
+                <Image
+                  src={images[currentImageIndex]}
+                  alt={`${user.fname || user.email}`}
+                  fill
+                  className="object-cover"
+                  unoptimized={false}
+                />
+              ) : (
+                <img
+                  src={images[currentImageIndex]}
+                  alt={`${user.fname || user.email}`}
+                  className="w-full h-full object-cover"
+                />
+              )}
               {images.length > 1 && (
                 <>
                   <button
@@ -139,4 +149,5 @@ export function UserProfileModal({
     </Dialog>
   );
 }
+
 

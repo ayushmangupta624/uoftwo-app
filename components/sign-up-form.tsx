@@ -40,11 +40,14 @@ export function SignUpForm({
 
     const normalizedEmail = email.trim().toLowerCase();
 
-    if (!isUofTEmail(normalizedEmail)) {
-      setError("Please use a UofT email address");
-      setIsLoading(false);
-      return;
-    }
+
+    //I'm going to uncomment this later it's easier to test with non-UofT emails
+    
+    // if (!isUofTEmail(normalizedEmail)) {
+    //   setError("Please use a UofT email address");
+    //   setIsLoading(false);
+    //   return;
+    // }
 
     if (password !== repeatPassword) {
       setError("Passwords do not match");

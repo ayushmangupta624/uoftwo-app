@@ -27,5 +27,6 @@ export interface MatchingUser {
   lname?: string;
   areas_of_study?: string[];
   ethnicity?: Ethnicity;
+  images?: string[];
 }
 

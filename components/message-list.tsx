@@ -103,13 +103,23 @@ export function MessageList() {
               >
                 <div className="flex items-center gap-4">
                   <div className="relative w-12 h-12 rounded-full overflow-hidden bg-muted flex-shrink-0">
-                    {conv.otherUser.images && conv.otherUser.images[0] ? (
-                      <Image
-                        src={conv.otherUser.images[0]}
-                        alt={`${conv.otherUser.fname} ${conv.otherUser.lname}`}
-                        fill
-                        className="object-cover"
-                      />
+                    {conv.otherUser.images && conv.otherUser.images[0] && conv.otherUser.images[0].trim() ? (
+                      conv.otherUser.images[0].startsWith("http") && 
+                      conv.otherUser.images[0].includes("supabase.co") ? (
+                        <Image
+                          src={conv.otherUser.images[0]}
+                          alt={`${conv.otherUser.fname} ${conv.otherUser.lname}`}
+                          fill
+                          className="object-cover"
+                          unoptimized={false}
+                        />
+                      ) : (
+                        <img
+                          src={conv.otherUser.images[0]}
+                          alt={`${conv.otherUser.fname} ${conv.otherUser.lname}`}
+                          className="w-full h-full object-cover"
+                        />
+                      )
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-muted-foreground">
                         {conv.otherUser.fname[0]}{conv.otherUser.lname[0]}

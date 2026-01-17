@@ -46,6 +46,32 @@ export async function GET() {
       return NextResponse.json({ matches: [] });
     }
 
+    // Get users that have been passed or liked by current user
+    const prismaAny = prisma as any;
+    
+    // Check if userPass model exists (may need dev server restart after schema changes)
+    if (!prismaAny.userPass) {
+      console.error("Prisma client missing userPass model. Please restart the dev server.");
+      return NextResponse.json(
+        { error: "Server configuration error. Please restart the server." },
+        { status: 500 }
+      );
+    }
+
+    const [passedUsers, likedUsers] = await Promise.all([
+      prismaAny.userPass.findMany({
+        where: { passerId: userId },
+        select: { passedId: true },
+      }),
+      prismaAny.userLike.findMany({
+        where: { likerId: userId },
+        select: { likedId: true },
+      }),
+    ]);
+
+    const passedUserIds = new Set(passedUsers.map((p: any) => p.passedId));
+    const likedUserIds = new Set(likedUsers.map((l: any) => l.likedId));
+
     // Find all users except current user
     const allUsers = await prisma.user.findMany({
       where: {
@@ -58,8 +84,20 @@ export async function GET() {
     // Filter users based on mutual matching:
     // 1. Their gender must be in current user's preferences
     // 2. Current user's gender must be in their preferences
+    // 3. Exclude users that have been passed
+    // 4. Exclude users that have been liked (they should show in matches instead)
     const matchingUsers: MatchingUser[] = allUsers
       .filter((user) => {
+        // Skip if already passed
+        if (passedUserIds.has(user.userId)) {
+          return false;
+        }
+
+        // Skip if already liked
+        if (likedUserIds.has(user.userId)) {
+          return false;
+        }
+
         const profileGender = user.gender as Gender;
         const profilePreferences = user.genderPreference as Gender[];
 
@@ -83,6 +121,7 @@ export async function GET() {
         lname: (user as any).lname,
         areas_of_study: ((user as any).areas_of_study || []) as string[],
         ethnicity: (user as any).ethnicity as "ASIAN" | "BLACK" | "HISPANIC" | "WHITE" | "NATIVE" | "MIDDLE_EASTERN" | "OTHER",
+        images: ((user as any).images || []) as string[],
       }));
 
     return NextResponse.json({ matches: matchingUsers });

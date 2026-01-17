@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
+import { Ethnicity, Gender } from "@/types/profile";
 
 export async function POST(request: Request) {
   try {
@@ -90,9 +91,19 @@ export async function POST(request: Request) {
     updatedImages[imageIndex] = publicUrl;
 
     // Update user record with new image URL
-    await prisma.user.update({
+
+    
+    await prisma.user.upsert({
       where: { userId: user.id },
-      data: {
+      create: {
+        userId: user.id, 
+        images: updatedImages as any, 
+        gender: "other" as Gender,
+        fname: "",
+        lname: "",
+        ethnicity: "OTHER" as Ethnicity,
+      }, 
+      update: {
         images: updatedImages as any,
       },
     });
@@ -160,10 +171,18 @@ export async function DELETE(request: Request) {
     }
 
     // Update user record
-    await prisma.user.update({
+    await prisma.user.upsert({
       where: { userId: user.id },
-      data: {
+      update: {
         images: updatedImages as any,
+      }, 
+      create: {
+        userId: user.id,
+        images: updatedImages as any,
+        gender: "other" as Gender,
+        fname: "",
+        lname: "",
+        ethnicity: "OTHER" as Ethnicity,
       },
     });
 
