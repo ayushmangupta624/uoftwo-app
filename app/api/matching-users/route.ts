@@ -121,6 +121,7 @@ export async function GET() {
         lname: (user as any).lname,
         areas_of_study: ((user as any).areas_of_study || []) as string[],
         ethnicity: (user as any).ethnicity as "ASIAN" | "BLACK" | "HISPANIC" | "WHITE" | "NATIVE" | "MIDDLE_EASTERN" | "OTHER",
+        aiSummary: (user as any).aiSummary || undefined,
         images: ((user as any).images || []) as string[],
         dateOfBirth: (user as any).dateOfBirth,
         yearOfStudy: (user as any).yearOfStudy,
