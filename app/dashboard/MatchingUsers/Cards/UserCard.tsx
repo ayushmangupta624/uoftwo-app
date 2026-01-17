@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { MatchingUser } from "@/types/profile";
 import { Card, CardContent } from "@/components/ui/card";
-import { ChevronLeft, ChevronRight, Heart, X } from "lucide-react";
+import { Heart, X } from "lucide-react";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 
@@ -86,7 +86,8 @@ export function UserCard({
 
   const handleClick = (e: React.MouseEvent) => {
     // Only trigger if we didn't drag (click without moving)
-    if (!isActive || Math.abs(dragOffset.x) > 5 || Math.abs(dragOffset.y) > 5) return;
+    if (!isActive || Math.abs(dragOffset.x) > 5 || Math.abs(dragOffset.y) > 5)
+      return;
     onViewMore();
   };
 
@@ -122,21 +123,22 @@ export function UserCard({
   const likeOpacity = Math.min(Math.max(dragOffset.x / SWIPE_THRESHOLD, 0), 1);
   const nopeOpacity = Math.min(Math.max(-dragOffset.x / SWIPE_THRESHOLD, 0), 1);
 
-  const nextImage = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (images.length > 0) {
-      setCurrentImageIndex((prev) => (prev + 1) % images.length);
+  // Calculate age from date of birth
+  const calculateAge = (
+    dateOfBirth: string | Date | undefined,
+  ): number | null => {
+    if (!dateOfBirth) return null;
+    const dob = new Date(dateOfBirth);
+    const today = new Date();
+    let age = today.getFullYear() - dob.getFullYear();
+    const monthDiff = today.getMonth() - dob.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+      age--;
     }
+    return age;
   };
 
-  const prevImage = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (images.length > 0) {
-      setCurrentImageIndex(
-        (prev) => (prev - 1 + images.length) % images.length,
-      );
-    }
-  };
+  const age = calculateAge(user.dateOfBirth);
 
   return (
     <div
@@ -215,18 +217,7 @@ export function UserCard({
               )}
               {images.length > 1 && (
                 <>
-                  <button
-                    onClick={prevImage}
-                    className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 z-20"
-                  >
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
-                  <button
-                    onClick={nextImage}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 z-20"
-                  >
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
+
                   <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1 z-20">
                     {images.map((_, idx) => (
                       <div
@@ -257,6 +248,11 @@ export function UserCard({
                   ? `${user.fname} ${user.lname}`
                   : user.email}
               </h3>
+              <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
+                {age && <span>{age} years old</span>}
+                {age && user.yearOfStudy && <span>•</span>}
+                {user.yearOfStudy && <span>Year {user.yearOfStudy}</span>}
+              </div>
             </div>
           </div>
         </CardContent>

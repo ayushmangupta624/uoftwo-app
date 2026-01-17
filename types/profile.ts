@@ -28,5 +28,7 @@ export interface MatchingUser {
   areas_of_study?: string[];
   ethnicity?: Ethnicity;
   images?: string[];
+  dateOfBirth?: string | Date;
+  yearOfStudy?: number;
 }
 

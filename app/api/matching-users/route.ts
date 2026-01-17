@@ -122,6 +122,8 @@ export async function GET() {
         areas_of_study: ((user as any).areas_of_study || []) as string[],
         ethnicity: (user as any).ethnicity as "ASIAN" | "BLACK" | "HISPANIC" | "WHITE" | "NATIVE" | "MIDDLE_EASTERN" | "OTHER",
         images: ((user as any).images || []) as string[],
+        dateOfBirth: (user as any).dateOfBirth,
+        yearOfStudy: (user as any).yearOfStudy,
       }));
 
     return NextResponse.json({ matches: matchingUsers });
