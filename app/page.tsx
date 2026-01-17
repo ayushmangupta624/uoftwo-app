@@ -1,36 +1,14 @@
 import Link from "next/link";
 import { Heart, Upload, Users } from "lucide-react";
 import AuthRedirect from "./components/AuthRedirect";
+import HeroSection from "./components/hero-page/hero-section/HeroSection";
 
 export default function Home() {
   return (
-    <AuthRedirect>
+    // <AuthRedirect>
     <div className="min-h-screen relative overflow-hidden">
       {/* Hero Section */}
-      <section className="relative overflow-visible z-30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-32">
-          <div className="text-center relative z-10">
-            <h1>Find Your UofT Match</h1>
-            <p className="mt-6 text-xl text-[#002A5C]/80 max-w-2xl mx-auto drop-shadow-md font-medium leading-relaxed">
-              Connect with fellow University of Toronto students based on your
-              schedule, personality, and campus life. Discover your dorm
-              archetype and find your perfect match.
-            </p>
-            <div className="mt-10 flex justify-center">
-              <Link
-                href="/onboarding"
-                className="group relative inline-flex items-center justify-center px-10 py-4 text-lg font-semibold text-white bg-gradient-to-r from-[#002A5C] to-[#007FA3] rounded-full hover:from-[#003d7a] hover:to-[#0099cc] transition-all shadow-2xl hover:shadow-[0_20px_60px_rgba(0,42,92,0.4)] hover:scale-105 border border-[#002A5C]/20"
-              >
-                <span className="relative z-10">Get Started</span>
-                <Heart
-                  className="ml-2 h-5 w-5 relative z-10 group-hover:scale-110 transition-transform"
-                  fill="currentColor"
-                />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+        <HeroSection />
 
       {/* How It Works Section */}
       <section className="py-20 bg-gradient-to-b from-white to-gray-50 relative overflow-hidden z-30">
@@ -199,6 +177,6 @@ export default function Home() {
         </div>
       </section>
     </div>
-    </AuthRedirect>
+    // </AuthRedirect>
   );
 }
