@@ -456,7 +456,14 @@ interface UserProfileModalProps {
 }
 
 function UserProfileModal({ user, onClose }: UserProfileModalProps) {
+  const router = useRouter();
+  
   if (!user) return null;
+
+  const handleConnect = () => {
+    // Navigate to the user's full profile page
+    router.push(`/profile/${user.id}`);
+  };
 
   const getArchetypeColor = (archetype: string) => {
     const colors: { [key: string]: string } = {
@@ -522,8 +529,11 @@ function UserProfileModal({ user, onClose }: UserProfileModalProps) {
 
           {/* Action Buttons */}
           <div className="flex gap-3">
-            <button className="flex-1 bg-gradient-to-r from-[#002A5C] to-[#007FA3] text-white py-3 rounded-full font-semibold hover:from-[#003d7a] hover:to-[#0099cc] transition-all shadow-lg">
-              Connect
+            <button 
+              onClick={handleConnect}
+              className="flex-1 bg-gradient-to-r from-[#002A5C] to-[#007FA3] text-white py-3 rounded-full font-semibold hover:from-[#003d7a] hover:to-[#0099cc] transition-all shadow-lg"
+            >
+              View Full Profile
             </button>
             <button
               onClick={onClose}
