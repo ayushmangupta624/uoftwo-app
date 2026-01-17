@@ -368,6 +368,7 @@ export function ProfileForm({ initialProfile, className }: ProfileFormProps) {
   const [areasOfStudy, setAreasOfStudy] = useState<string[]>([]);
   const [currentArea, setCurrentArea] = useState("");
   const [ethnicity, setEthnicity] = useState<Ethnicity>("OTHER");
+  const [description, setDescription] = useState("");
   const [images, setImages] = useState<string[]>(["", "", "", ""]);
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -384,6 +385,7 @@ export function ProfileForm({ initialProfile, className }: ProfileFormProps) {
       setLname(initialProfile.lname || "");
       setAreasOfStudy(initialProfile.areas_of_study || []);
       setEthnicity(initialProfile.ethnicity || "OTHER");
+      setDescription(initialProfile.description || "");
       
       // Load images
       const profileImages = initialProfile.images || [];
@@ -537,6 +539,7 @@ export function ProfileForm({ initialProfile, className }: ProfileFormProps) {
           lname: lname.trim(),
           areas_of_study: areasOfStudy,
           ethnicity,
+          description: description.trim() || null,
         }),
       });
 
@@ -791,6 +794,22 @@ export function ProfileForm({ initialProfile, className }: ProfileFormProps) {
                 )}
                 <p className="text-sm text-muted-foreground">
                   Add areas of study you're interested in (e.g., your major, fields of interest)
+                </p>
+              </div>
+
+              {/* Description */}
+              <div className="grid gap-2">
+                <Label htmlFor="description">About Me</Label>
+                <textarea
+                  id="description"
+                  rows={5}
+                  placeholder="Tell us about yourself... (e.g., your interests, hobbies, what you're looking for, etc.)"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                />
+                <p className="text-sm text-muted-foreground">
+                  An AI summary will be generated from your description when you save your profile.
                 </p>
               </div>
 
