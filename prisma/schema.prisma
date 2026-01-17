@@ -31,6 +31,141 @@ enum Genres {
   bollywood
 }
 
+enum Hobbies {
+  // Music & Performance
+  playing_music
+  singing
+  djing
+  music_production
+  dancing
+  ballet
+  theater
+  stand_up_comedy
+  
+  // Sports & Fitness
+  running
+  basketball
+  baseball
+  soccer
+  football
+  tennis
+  volleyball
+  swimming
+  surfing
+  skiing
+  snowboarding
+  skateboarding
+  rock_climbing
+  bouldering
+  cycling
+  yoga
+  pilates
+  martial_arts
+  boxing
+  weightlifting
+  crossfit
+  hiking
+  camping
+  
+  // Games & Strategy
+  chess
+  board_games
+  card_games
+  video_games
+  esports
+  poker
+  puzzles
+  escape_rooms
+  
+  // Creative Arts
+  painting
+  drawing
+  sculpting
+  pottery
+  photography
+  videography
+  graphic_design
+  fashion_design
+  interior_design
+  writing
+  poetry
+  calligraphy
+  knitting
+  crocheting
+  sewing
+  woodworking
+  metalworking
+  jewelry_making
+  
+  // Technology
+  coding
+  web_development
+  app_development
+  game_development
+  robotics
+  threed_printing
+  electronics
+  hacking
+  
+  // Food & Drink
+  cooking
+  baking
+  mixology
+  wine_tasting
+  coffee_roasting
+  
+  // Nature & Animals
+  gardening
+  birdwatching
+  fishing
+  hunting
+  horseback_riding
+  pet_care
+  
+  // Learning & Culture
+  reading
+  book_clubs
+  learning_languages
+  traveling
+  museums
+  astronomy
+  history
+  philosophy
+  meditation
+  
+  // Social & Community
+  volunteering
+  activism
+  debating
+  public_speaking
+  networking
+  mentoring
+  
+  // Collection & Hobbies
+  collecting
+  thrifting
+  vintage_shopping
+  antiques
+  coin_collecting
+  stamp_collecting
+  
+  // Other
+  magic_tricks
+  juggling
+  origami
+  model_building
+  drones
+  podcasting
+  blogging
+  vlogging
+  streaming
+  cosplay
+  anime
+  comics
+  cars
+  motorcycles
+}
+
 model User {
   id               String      @id @default(uuid()) @db.Uuid
   userId           String      @unique @map("user_id") @db.Uuid
@@ -49,9 +184,24 @@ model User {
   description      String      @default("null") @db.Text
   campus           String      @default("null") @db.Text
   aiSummary        String?     @map("ai_summary") @db.Text
-  musicGenres      Genres[]    
+  musicGenres      Genres[]    @default([])
   lookingFor       String      @default("null") @db.Text
-  
+    
+  // Questionnaire fields
+  hobbies          Hobbies[]
+  favoriteBands    String[]    @default([]) @map("favorite_bands") @db.Text
+  sportsTeams      String[]    @default([]) @map("sports_teams") @db.Text
+  footballPreference String?   @map("football_preference") @db.Text
+  clubs            String[]    @default([]) @db.Text
+  studyPreference  String?     @map("study_preference") @db.Text
+  favCampusSpots   String[]    @default([]) @map("fav_campus_spots") @db.Text
+  personalityTraits String[]   @default([]) @map("personality_traits") @db.Text
+  values           String[]    @default([]) @db.Text
+  goingOutFrequency String?    @map("going_out_frequency") @db.Text
+  idealWeekend     String?     @map("ideal_weekend") @db.Text
+  aboutMe          String?     @map("about_me") @db.Text
+  dealBreakers     String[]    @default([]) @map("deal_breakers") @db.Text
+
   // AI-generated personality features (10 features extracted from questionnaire)
   features         Json        @default("[]") // Array of {name: string, score: number}
   featureEmbedding String[]    @default([]) @map("feature_embedding") @db.Text // 768-dim semantic embedding

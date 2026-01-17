@@ -328,6 +328,9 @@
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { LogOut, Upload, X, ImageIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 import {
   Card,
   CardContent,
@@ -340,8 +343,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Gender, UserProfile, Ethnicity } from "@/types/profile";
 import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
-import { Upload, X, ImageIcon } from "lucide-react";
 
 const GENDERS: Gender[] = ["male", "female", "other", "non-binary"];
 
@@ -354,6 +355,47 @@ const ETHNICITIES: { value: Ethnicity; label: string }[] = [
   { value: "MIDDLE_EASTERN", label: "Middle Eastern" },
   { value: "OTHER", label: "Other" },
 ];
+
+// Genre mapping between display names and database enum values
+const GENRE_MAPPING: { [key: string]: string } = {
+  'Pop': 'pop',
+  'Hip-Hop': 'hiphop',
+  'R&B': 'pop', // Map to pop as R&B is not in enum
+  'Rock': 'rock',
+  'Indie': 'rock', // Map to rock as indie is not in enum
+  'Electronic': 'pop', // Map to pop as electronic is not in enum
+  'Jazz': 'blues', // Map to blues as jazz is not in enum
+  'Classical': 'pop', // Map to pop as classical is not in enum
+  'K-Pop': 'pop',
+  'Metal': 'metal',
+  'Blues': 'blues',
+  'Latin': 'latin',
+  'Bollywood': 'bollywood',
+};
+
+// Reverse mapping from database values to display names
+const GENRE_DISPLAY_MAPPING: { [key: string]: string } = {
+  'pop': 'Pop',
+  'hiphop': 'Hip-Hop',
+  'rock': 'Rock',
+  'metal': 'Metal',
+  'blues': 'Blues',
+  'latin': 'Latin',
+  'bollywood': 'Bollywood',
+};
+
+// Helper to convert database hobby format to display format
+const formatHobbyForDisplay = (hobby: string): string => {
+  return hobby
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
+
+// Helper to convert display format to database format
+const formatHobbyForDatabase = (hobby: string): string => {
+  return hobby.toLowerCase().replace(/\s+/g, '_');
+};
 
 interface ProfileFormProps {
   initialProfile?: UserProfile | null;
@@ -373,12 +415,42 @@ export function ProfileForm({ initialProfile, className }: ProfileFormProps) {
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const router = useRouter();
   const fileInputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/auth/login");
+    router.refresh();
+  };
+  
+  // Questionnaire fields
+  const [campus, setCampus] = useState("");
+  const [hobbies, setHobbies] = useState<string[]>([]);
+  const [favoriteBands, setFavoriteBands] = useState<string[]>([]);
+  const [musicGenres, setMusicGenres] = useState<string[]>([]);
+  const [sportsTeams, setSportsTeams] = useState<string[]>([]);
+  const [footballPreference, setFootballPreference] = useState("");
+  const [clubs, setClubs] = useState<string[]>([]);
+  const [studyPreference, setStudyPreference] = useState("");
+  const [favCampusSpots, setFavCampusSpots] = useState<string[]>([]);
+  const [personalityTraits, setPersonalityTraits] = useState<string[]>([]);
+  const [values, setValues] = useState<string[]>([]);
+  const [goingOutFrequency, setGoingOutFrequency] = useState("");
+  const [idealWeekend, setIdealWeekend] = useState("");
+  const [lookingFor, setLookingFor] = useState("");
+  const [dealBreakers, setDealBreakers] = useState<string[]>([]);
+  const [currentInput, setCurrentInput] = useState("");
+  const [showQuestionnaireSection, setShowQuestionnaireSection] = useState(false);
 
   // Load initial profile data if available
   useEffect(() => {
     if (initialProfile) {
+      console.log("Loading profile data:", initialProfile);
+      
       setGender(initialProfile.gender);
       setGenderPreferences(initialProfile.gender_preference || []);
       setFname(initialProfile.fname || "");
@@ -394,6 +466,72 @@ export function ProfileForm({ initialProfile, className }: ProfileFormProps) {
         paddedImages.push("");
       }
       setImages(paddedImages.slice(0, 4));
+      
+      // Load questionnaire data directly from initialProfile
+      if (initialProfile.campus) {
+        console.log("Loading campus:", initialProfile.campus);
+        setCampus(initialProfile.campus);
+      }
+      if (initialProfile.hobbies) {
+        console.log("Loading hobbies from DB:", initialProfile.hobbies);
+        // Convert database format (e.g., 'playing_music') to display format (e.g., 'Playing Music')
+        const displayHobbies = initialProfile.hobbies.map(h => formatHobbyForDisplay(h));
+        console.log("Converted to display format:", displayHobbies);
+        setHobbies(displayHobbies);
+      }
+      if (initialProfile.favoriteBands) {
+        console.log("Loading favorite bands:", initialProfile.favoriteBands);
+        setFavoriteBands(initialProfile.favoriteBands);
+      }
+      if (initialProfile.musicGenres) {
+        console.log("Loading music genres from DB:", initialProfile.musicGenres);
+        // Convert database enum values to display format
+        const displayGenres = initialProfile.musicGenres
+          .map(g => GENRE_DISPLAY_MAPPING[g.toLowerCase()] || g)
+          .filter(Boolean);
+        console.log("Converted to display format:", displayGenres);
+        setMusicGenres(displayGenres);
+      }
+      if (initialProfile.sportsTeams) {
+        setSportsTeams(initialProfile.sportsTeams);
+      }
+      if (initialProfile.footballPreference) {
+        setFootballPreference(initialProfile.footballPreference);
+      }
+      if (initialProfile.clubs) {
+        setClubs(initialProfile.clubs);
+      }
+      if (initialProfile.studyPreference) {
+        console.log("Loading study preference:", initialProfile.studyPreference);
+        setStudyPreference(initialProfile.studyPreference);
+      }
+      if (initialProfile.favCampusSpots) {
+        setFavCampusSpots(initialProfile.favCampusSpots);
+      }
+      if (initialProfile.personalityTraits) {
+        console.log("Loading personality traits:", initialProfile.personalityTraits);
+        setPersonalityTraits(initialProfile.personalityTraits);
+      }
+      if (initialProfile.values) {
+        setValues(initialProfile.values);
+      }
+      if (initialProfile.goingOutFrequency) {
+        setGoingOutFrequency(initialProfile.goingOutFrequency);
+      }
+      if (initialProfile.idealWeekend) {
+        setIdealWeekend(initialProfile.idealWeekend);
+      }
+      if (initialProfile.lookingFor) {
+        setLookingFor(initialProfile.lookingFor);
+      }
+      if (initialProfile.dealBreakers) {
+        setDealBreakers(initialProfile.dealBreakers);
+      }
+      
+      // Show questionnaire section if any data exists
+      if (initialProfile.hobbies && initialProfile.hobbies.length > 0) {
+        setShowQuestionnaireSection(true);
+      }
     }
   }, [initialProfile]);
 
@@ -527,6 +665,7 @@ export function ProfileForm({ initialProfile, className }: ProfileFormProps) {
     }
 
     try {
+      // Save basic profile
       const response = await fetch("/api/profile", {
         method: "POST",
         headers: {
@@ -547,7 +686,60 @@ export function ProfileForm({ initialProfile, className }: ProfileFormProps) {
         const errorData = await response.json();
         throw new Error(errorData.error || "Failed to save profile");
       }
+      
+      // Save questionnaire data if any exists (regardless of whether section is expanded)
+      const hasQuestionnaireData = hobbies.length > 0 || 
+        musicGenres.length > 0 || 
+        favoriteBands.length > 0 || 
+        sportsTeams.length > 0 || 
+        clubs.length > 0 || 
+        favCampusSpots.length > 0 || 
+        personalityTraits.length > 0 || 
+        values.length > 0 || 
+        dealBreakers.length > 0 ||
+        campus || 
+        footballPreference || 
+        studyPreference || 
+        goingOutFrequency || 
+        idealWeekend;
+      
+      if (hasQuestionnaireData) {
+        // Convert display formats back to database formats
+        const dbHobbies = hobbies.map(h => formatHobbyForDatabase(h));
+        const dbMusicGenres = musicGenres.map(g => GENRE_MAPPING[g] || g.toLowerCase());
+        
+        const questionnaireResponse = await fetch("/api/questionnaire", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            campus: campus || "",
+            hobbies: dbHobbies,
+            favoriteBands,
+            musicGenres: dbMusicGenres,
+            sportsTeams,
+            footballPreference,
+            clubs,
+            studyPreference,
+            favCampusSpots,
+            personalityTraits,
+            values,
+            goingOutFrequency,
+            idealWeekend,
+            aboutMe: description.trim(),
+            lookingFor,
+            dealBreakers,
+          }),
+        });
 
+        if (!questionnaireResponse.ok) {
+          console.error("Failed to save questionnaire data");
+          // Don't fail the whole submission if questionnaire fails
+        }
+      }
+
+      // Always redirect to dashboard after saving profile
       router.push("/dashboard");
       router.refresh();
     } catch (error: unknown) {
@@ -556,9 +748,53 @@ export function ProfileForm({ initialProfile, className }: ProfileFormProps) {
       setIsLoading(false);
     }
   };
+  
+  // Helper functions for array fields
+  const addToArray = (
+    setter: React.Dispatch<React.SetStateAction<string[]>>,
+    value: string
+  ) => {
+    if (value.trim()) {
+      setter((prev) => [...prev, value.trim()]);
+      setCurrentInput("");
+    }
+  };
+
+  const removeFromArray = (
+    setter: React.Dispatch<React.SetStateAction<string[]>>,
+    index: number
+  ) => {
+    setter((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const toggleInArray = (
+    setter: React.Dispatch<React.SetStateAction<string[]>>,
+    currentArray: string[],
+    value: string
+  ) => {
+    if (currentArray.includes(value)) {
+      setter(currentArray.filter((item) => item !== value));
+    } else {
+      setter([...currentArray, value]);
+    }
+  };
 
   return (
     <div className={cn("flex flex-col gap-6", className)}>
+      {/* Logout Button */}
+      <div className="flex justify-end">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={handleLogout}
+          disabled={isLoggingOut}
+          className="flex items-center gap-2"
+        >
+          <LogOut className="h-4 w-4" />
+          {isLoggingOut ? "Logging out..." : "Logout"}
+        </Button>
+      </div>
+      
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">
@@ -812,6 +1048,240 @@ export function ProfileForm({ initialProfile, className }: ProfileFormProps) {
                   An AI summary will be generated from your description when you save your profile.
                 </p>
               </div>
+
+              {/* Questionnaire Section Toggle */}
+              {initialProfile && (
+                <div className="border-t pt-6">
+                  <button
+                    type="button"
+                    onClick={() => setShowQuestionnaireSection(!showQuestionnaireSection)}
+                    className="flex items-center justify-between w-full text-left"
+                  >
+                    <div>
+                      <h3 className="text-lg font-semibold">Questionnaire Details</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Edit your matching preferences and interests
+                      </p>
+                    </div>
+                    <span className="text-2xl">{showQuestionnaireSection ? "−" : "+"}</span>
+                  </button>
+                </div>
+              )}
+
+              {/* Questionnaire Fields */}
+              {showQuestionnaireSection && (
+                <div className="space-y-6 border-t pt-6">
+                  {/* Campus */}
+                  <div className="grid gap-3">
+                    <Label>Campus</Label>
+                    <div className="grid grid-cols-3 gap-3">
+                      {["St. George", "Mississauga", "Scarborough"].map((campusOption) => (
+                        <button
+                          key={campusOption}
+                          type="button"
+                          onClick={() => setCampus(campusOption)}
+                          className={cn(
+                            "px-4 py-3 rounded-lg font-medium transition",
+                            campus === campusOption
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-muted hover:bg-muted/80"
+                          )}
+                        >
+                          {campusOption}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Hobbies */}
+                  <div className="grid gap-3">
+                    <Label>Hobbies</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        type="text"
+                        value={currentInput}
+                        onChange={(e) => setCurrentInput(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            addToArray(setHobbies, currentInput);
+                          }
+                        }}
+                        placeholder="Add hobbies..."
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => addToArray(setHobbies, currentInput)}
+                        disabled={!currentInput.trim()}
+                      >
+                        Add
+                      </Button>
+                    </div>
+                    {hobbies.length > 0 && (
+                      <div className="flex flex-wrap gap-2">
+                        {hobbies.map((hobby, idx) => (
+                          <div
+                            key={idx}
+                            className="flex items-center gap-2 px-3 py-1 bg-accent rounded-md text-sm"
+                          >
+                            <span>{hobby}</span>
+                            <button
+                              type="button"
+                              onClick={() => removeFromArray(setHobbies, idx)}
+                              className="hover:text-destructive"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Music Genres */}
+                  <div className="grid gap-3">
+                    <Label>Music Genres</Label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {["Pop", "Hip-Hop", "R&B", "Rock", "Indie", "Electronic", "Jazz", "Classical", "K-Pop"].map(
+                        (genre) => (
+                          <button
+                            key={genre}
+                            type="button"
+                            onClick={() => toggleInArray(setMusicGenres, musicGenres, genre)}
+                            className={cn(
+                              "px-3 py-2 rounded-lg text-sm font-medium transition",
+                              musicGenres.includes(genre)
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-muted hover:bg-muted/80"
+                            )}
+                          >
+                            {genre}
+                          </button>
+                        )
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Favorite Bands */}
+                  <div className="grid gap-3">
+                    <Label>Favorite Bands/Artists</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        type="text"
+                        value={currentInput}
+                        onChange={(e) => setCurrentInput(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            addToArray(setFavoriteBands, currentInput);
+                          }
+                        }}
+                        placeholder="Add favorite bands or artists..."
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => addToArray(setFavoriteBands, currentInput)}
+                        disabled={!currentInput.trim()}
+                      >
+                        Add
+                      </Button>
+                    </div>
+                    {favoriteBands.length > 0 && (
+                      <div className="flex flex-wrap gap-2">
+                        {favoriteBands.map((band, idx) => (
+                          <div
+                            key={idx}
+                            className="flex items-center gap-2 px-3 py-1 bg-accent rounded-md text-sm"
+                          >
+                            <span>{band}</span>
+                            <button
+                              type="button"
+                              onClick={() => removeFromArray(setFavoriteBands, idx)}
+                              className="hover:text-destructive"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Personality Traits */}
+                  <div className="grid gap-3">
+                    <Label>Personality Traits</Label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {["Outgoing", "Introverted", "Adventurous", "Homebody", "Spontaneous", "Planner", "Creative", "Analytical"].map(
+                        (trait) => (
+                          <button
+                            key={trait}
+                            type="button"
+                            onClick={() => toggleInArray(setPersonalityTraits, personalityTraits, trait)}
+                            className={cn(
+                              "px-3 py-2 rounded-lg text-sm font-medium transition",
+                              personalityTraits.includes(trait)
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-muted hover:bg-muted/80"
+                            )}
+                          >
+                            {trait}
+                          </button>
+                        )
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Study Preference */}
+                  <div className="grid gap-3">
+                    <Label>Study Preference</Label>
+                    <div className="grid grid-cols-2 gap-3">
+                      {["Solo in the library", "Study groups", "Coffee shops", "Flexible"].map((pref) => (
+                        <button
+                          key={pref}
+                          type="button"
+                          onClick={() => setStudyPreference(pref)}
+                          className={cn(
+                            "px-4 py-3 rounded-lg font-medium transition",
+                            studyPreference === pref
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-muted hover:bg-muted/80"
+                          )}
+                        >
+                          {pref}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Ideal Weekend */}
+                  <div className="grid gap-2">
+                    <Label htmlFor="idealWeekend">Ideal Weekend</Label>
+                    <textarea
+                      id="idealWeekend"
+                      rows={3}
+                      placeholder="Describe your ideal weekend..."
+                      value={idealWeekend}
+                      onChange={(e) => setIdealWeekend(e.target.value)}
+                      className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    />
+                  </div>
+
+                  {/* Looking For */}
+                  <div className="grid gap-2">
+                    <Label htmlFor="lookingFor">Looking For</Label>
+                    <textarea
+                      id="lookingFor"
+                      rows={3}
+                      placeholder="What are you looking for? (e.g., friends, study partners, dating...)"
+                      value={lookingFor}
+                      onChange={(e) => setLookingFor(e.target.value)}
+                      className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    />
+                  </div>
+                </div>
+              )}
 
               {error && <p className="text-sm text-red-500">{error}</p>}
 

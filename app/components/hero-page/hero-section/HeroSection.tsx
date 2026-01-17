@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 export default function HeroSection() {
   return (
     <div className="h-screen relative overflow-hidden flex items-center justify-center">
@@ -9,6 +11,18 @@ export default function HeroSection() {
         }}
       />
       <div className="text-center relative z-10">
+        {/* Logo */}
+        <div className="flex justify-center mb-8">
+          <div className="relative h-40 w-40">
+            <Image
+              src="/uoftwo-logo.png"
+              alt="U of Two Logo"
+              fill
+              className="object-contain drop-shadow-2xl"
+              priority
+            />
+          </div>
+        </div>
         <h1>Meet the people you keep seeing in Robarts</h1>
         <h2>Your GPA isn't the only thing worth investing in.</h2>
       </div>

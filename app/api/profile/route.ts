@@ -37,6 +37,22 @@ export async function GET() {
       images: profile.images || [],
       created_at: profile.createdAt.toISOString(),
       updated_at: profile.updatedAt.toISOString(),
+      description: profile.description,
+      campus: profile.campus,
+      hobbies: (profile as any).hobbies || [],
+      favoriteBands: profile.favoriteBands || [],
+      musicGenres: (profile as any).musicGenres || [],
+      sportsTeams: profile.sportsTeams || [],
+      footballPreference: profile.footballPreference,
+      clubs: profile.clubs || [],
+      studyPreference: profile.studyPreference,
+      favCampusSpots: profile.favCampusSpots || [],
+      personalityTraits: profile.personalityTraits || [],
+      values: profile.values || [],
+      goingOutFrequency: profile.goingOutFrequency,
+      idealWeekend: profile.idealWeekend,
+      lookingFor: profile.lookingFor,
+      dealBreakers: profile.dealBreakers || [],
     };
 
     return NextResponse.json({ profile: profileData });
