@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { Heart, Upload, Users } from "lucide-react";
+import AuthRedirect from "./components/AuthRedirect";
 
 export default function Home() {
   return (
+    <AuthRedirect>
     <div className="min-h-screen relative overflow-hidden">
       {/* Hero Section */}
       <section className="relative overflow-visible z-30">
@@ -197,5 +199,6 @@ export default function Home() {
         </div>
       </section>
     </div>
+    </AuthRedirect>
   );
 }
