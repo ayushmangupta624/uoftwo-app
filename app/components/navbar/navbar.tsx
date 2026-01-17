@@ -1,25 +1,25 @@
 "use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Home, Calendar, User, Heart, Globe } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Home, Calendar, User, Heart, Globe } from "lucide-react";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function Navbar() {
   const pathname = usePathname();
   const { hasCompletedOnboarding } = useAuth();
 
   // Show different nav items based on completion status
-  const navItems = hasCompletedOnboarding 
+  const navItems = hasCompletedOnboarding
     ? [
-        { name: 'Planet', href: '/planet', icon: Globe },
-        { name: 'Events', href: '/events', icon: Calendar },
-        { name: 'Profile', href: '/profile', icon: User },
+        { name: "Planet", href: "/planet", icon: Globe },
+        { name: "Events", href: "/events", icon: Calendar },
+        { name: "Profile", href: "/profile", icon: User },
       ]
     : [
-        { name: 'Home', href: '/', icon: Home },
-        { name: 'Events', href: '/events', icon: Calendar },
-        { name: 'Profile', href: '/profile', icon: User },
+        { name: "Home", href: "/", icon: Home },
+        { name: "Events", href: "/events", icon: Calendar },
+        { name: "Profile", href: "/profile", icon: User },
       ];
 
   return (
