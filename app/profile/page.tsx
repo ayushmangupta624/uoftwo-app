@@ -17,7 +17,7 @@ async function ProfileFormWrapper({ userId }: { userId: string }) {
   const profile = await getProfile(userId);
 
   // Map Prisma schema to UserProfile format
-  const existingProfile: UserProfile | null = profile
+      const existingProfile: UserProfile | null = profile
     ? {
         id: profile.id,
         user_id: profile.userId,
@@ -28,7 +28,8 @@ async function ProfileFormWrapper({ userId }: { userId: string }) {
         lname: (profile as any).lname,
         areas_of_study: ((profile as any).areas_of_study || []) as string[],
         ethnicity: (profile as any).ethnicity as "ASIAN" | "BLACK" | "HISPANIC" | "WHITE" | "NATIVE" | "MIDDLE_EASTERN" | "OTHER",
-        images: profile.images || [], 
+        images: profile.images || [],
+        description: (profile as any).description && (profile as any).description !== "null" ? (profile as any).description : undefined,
         created_at: profile.createdAt.toISOString(),
         updated_at: profile.updatedAt.toISOString(),
       }

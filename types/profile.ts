@@ -13,6 +13,7 @@ export interface UserProfile {
   areas_of_study?: string[];
   ethnicity?: Ethnicity;
   images?: string[];
+  description?: string;
   created_at?: string;
   updated_at?: string;
 }
@@ -27,6 +28,7 @@ export interface MatchingUser {
   lname?: string;
   areas_of_study?: string[];
   ethnicity?: Ethnicity;
+  aiSummary?: string;
   images?: string[];
   dateOfBirth?: string | Date;
   yearOfStudy?: number;

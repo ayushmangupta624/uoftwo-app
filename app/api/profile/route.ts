@@ -32,7 +32,7 @@ export async function GET() {
       gender_preference: profile.genderPreference as Gender[],
       fname: profile.fname,
       lname: profile.lname,
-      areas_of_study: profile.areasOfStudy || [],
+      areas_of_study: profile.areas_of_study || [],
       ethnicity: profile.ethnicity,
       images: profile.images || [],
       created_at: profile.createdAt.toISOString(),
@@ -69,6 +69,7 @@ export async function POST(request: Request) {
       lname,
       areas_of_study,
       ethnicity,
+      description,
     } = body;
 
     // Validate input
@@ -130,8 +131,39 @@ export async function POST(request: Request) {
       );
     }
 
+    // Generate AI summary if description is provided
+    let aiSummary: string | null = null;
+    if (description && description.trim()) {
+      try {
+        // Import and use OpenAI
+        const OpenAI = (await import("openai")).default;
+        const openai = new OpenAI({
+          apiKey: process.env.OPENAI_API_KEY || "",
+        });
+
+        const prompt = `Create a concise, engaging summary (2-3 sentences) of this person based on their description. Focus on their personality, interests, and what makes them unique. Description: ${description.trim()}`;
+        
+        const completion = await openai.chat.completions.create({
+          model: "gpt-4o-mini",
+          messages: [
+            {
+              role: "user",
+              content: prompt,
+            },
+          ],
+          max_tokens: 150,
+          temperature: 0.7,
+        });
+
+        aiSummary = completion.choices[0]?.message?.content || null;
+      } catch (error) {
+        console.error("Error generating AI summary:", error);
+        // Continue without AI summary if LLM fails
+      }
+    }
+
     // Upsert user (create or update)
-    const profileResult = await prisma.user.upsert({
+    const profileResult = await (prisma as any).user.upsert({
       where: { userId },
       update: {
         email: userEmail,
@@ -141,6 +173,8 @@ export async function POST(request: Request) {
         lname: lname.trim(),
         areas_of_study: areas_of_study || [],
         ethnicity: ethnicity,
+        description: description && description.trim() ? description.trim() : "null",
+        aiSummary: aiSummary ?? null,
         updatedAt: new Date(),
       },
       create: {
@@ -152,6 +186,8 @@ export async function POST(request: Request) {
         lname: lname.trim(),
         areas_of_study: areas_of_study || [],
         ethnicity: ethnicity,
+        description: description && description.trim() ? description.trim() : "null",
+        aiSummary: aiSummary ?? null,
       },
     });
 
