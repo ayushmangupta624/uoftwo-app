@@ -1,9 +1,7 @@
-import "./HeroSection.css";
-
 export default function HeroSection() {
   return (
-    <div className="hero-section-container">
-      <video className="hero-video" autoPlay loop muted playsInline>
+    <div className="h-screen relative overflow-hidden flex items-center justify-center">
+      <video className="absolute top-0 left-0 w-full h-full object-cover z-0" autoPlay loop muted playsInline>
         <source src="/hero-page/toronto-pano.mp4" type="video/mp4" />
       </video>
       <div className="text-center relative z-10">
