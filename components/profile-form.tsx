@@ -548,7 +548,11 @@ export function ProfileForm({ initialProfile, className }: ProfileFormProps) {
         throw new Error(errorData.error || "Failed to save profile");
       }
 
-      router.push("/dashboard");
+      if (initialProfile) {
+        router.push("/dashboard");
+      } else {
+        router.push("/questionnaire");
+      }
       router.refresh();
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
