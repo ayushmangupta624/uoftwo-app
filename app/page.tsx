@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { Heart, Upload, Users } from "lucide-react";
+import AuthRedirect from "./components/AuthRedirect";
 
 export default function Home() {
   return (
+    <AuthRedirect>
     <div className="min-h-screen relative overflow-hidden">
       {/* Cartoon Winter Sky Background - FIXED */}
       <div className="fixed inset-0 bg-gradient-to-b from-[#cfe9ff] via-[#e6f4ff] to-[#f5fbff]">
@@ -287,5 +289,6 @@ export default function Home() {
         </div>
       </section>
     </div>
+    </AuthRedirect>
   );
 }

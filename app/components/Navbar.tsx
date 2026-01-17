@@ -2,16 +2,25 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Calendar, User, Heart } from 'lucide-react';
+import { Home, Calendar, User, Heart, Globe } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Navbar() {
   const pathname = usePathname();
+  const { hasCompletedOnboarding } = useAuth();
 
-  const navItems = [
-    { name: 'Home', href: '/', icon: Home },
-    { name: 'Events', href: '/events', icon: Calendar },
-    { name: 'Profile', href: '/profile', icon: User },
-  ];
+  // Show different nav items based on completion status
+  const navItems = hasCompletedOnboarding 
+    ? [
+        { name: 'Planet', href: '/planet', icon: Globe },
+        { name: 'Events', href: '/events', icon: Calendar },
+        { name: 'Profile', href: '/profile', icon: User },
+      ]
+    : [
+        { name: 'Home', href: '/', icon: Home },
+        { name: 'Events', href: '/events', icon: Calendar },
+        { name: 'Profile', href: '/profile', icon: User },
+      ];
 
   return (
     <nav className="sticky top-0 z-50 bg-[#002A5C] border-b-4 border-[#007FA3] shadow-lg">

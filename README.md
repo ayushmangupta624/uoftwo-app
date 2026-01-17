@@ -1,5 +1,21 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## UofTwo - University of Toronto Dating App
+
+A dating app exclusively for University of Toronto students. Upload your schedule, discover your dorm archetype, and connect with fellow UofT students through an interactive 3D Planet experience!
+
+### ✨ New Feature: Planet View
+
+An interactive Soul App-inspired 3D sphere where you can explore and connect with other UofT students. Each glowing dot represents a user profile!
+
+**Features:**
+- 🌍 Interactive 3D sphere with drag-to-rotate
+- 🎨 Color-coded profiles by dorm archetype
+- 👤 Click dots to view profile previews
+- 🔒 Protected route for authenticated users only
+
+See [PLANET_FEATURE_GUIDE.md](./PLANET_FEATURE_GUIDE.md) for detailed documentation.
+
 ## Getting Started
 
 First, run the development server:
