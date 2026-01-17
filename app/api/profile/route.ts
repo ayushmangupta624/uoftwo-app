@@ -37,6 +37,7 @@ export async function GET() {
       images: profile.images || [],
       created_at: profile.createdAt.toISOString(),
       updated_at: profile.updatedAt.toISOString(),
+      hobbies: (profile as any).hobbies || [],
     };
 
     return NextResponse.json({ profile: profileData });

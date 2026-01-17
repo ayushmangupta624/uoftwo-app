@@ -32,6 +32,22 @@ async function ProfileFormWrapper({ userId }: { userId: string }) {
         description: (profile as any).description && (profile as any).description !== "null" ? (profile as any).description : undefined,
         created_at: profile.createdAt.toISOString(),
         updated_at: profile.updatedAt.toISOString(),
+        // Questionnaire fields
+        campus: (profile as any).campus !== "null" ? (profile as any).campus : undefined,
+        hobbies: (profile as any).hobbies || [],
+        favoriteBands: (profile as any).favoriteBands || [],
+        musicGenres: (profile as any).musicGenres || [],
+        sportsTeams: (profile as any).sportsTeams || [],
+        footballPreference: (profile as any).footballPreference || undefined,
+        clubs: (profile as any).clubs || [],
+        studyPreference: (profile as any).studyPreference || undefined,
+        favCampusSpots: (profile as any).favCampusSpots || [],
+        personalityTraits: (profile as any).personalityTraits || [],
+        values: (profile as any).values || [],
+        goingOutFrequency: (profile as any).goingOutFrequency || undefined,
+        idealWeekend: (profile as any).idealWeekend || undefined,
+        lookingFor: (profile as any).lookingFor !== "null" ? (profile as any).lookingFor : undefined,
+        dealBreakers: (profile as any).dealBreakers || [],
       }
     : null;
 
