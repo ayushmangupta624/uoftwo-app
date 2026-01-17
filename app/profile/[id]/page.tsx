@@ -321,10 +321,10 @@ export default function UserProfilePage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-[#002A5C] mb-4">User Not Found</h1>
+          <h1 className="text-2xl font-bold text-[#6B4646] mb-4">User Not Found</h1>
           <button
             onClick={() => router.push('/planet')}
-            className="px-6 py-3 bg-gradient-to-r from-[#002A5C] to-[#007FA3] text-white rounded-full font-semibold hover:from-[#003d7a] hover:to-[#0099cc] transition-all"
+            className="px-6 py-3 bg-gradient-to-r from-[#6B4646] to-[#8B5F5F] text-white rounded-full font-semibold hover:from-[#003d7a] hover:to-[#0099cc] transition-all"
           >
             Back to Planet
           </button>
@@ -361,7 +361,7 @@ export default function UserProfilePage() {
           <div className="pt-20 pb-6 px-8">
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
               <div>
-                <h1 className="text-4xl font-bold text-[#002A5C] mb-2">
+                <h1 className="text-4xl font-bold text-[#6B4646] mb-2">
                   {user.name}, {user.age}
                 </h1>
                 <p className="text-xl text-gray-600 mb-3">
@@ -376,11 +376,11 @@ export default function UserProfilePage() {
 
               {/* Action buttons */}
               <div className="flex gap-3">
-                <button className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#002A5C] to-[#007FA3] text-white rounded-full font-semibold hover:from-[#003d7a] hover:to-[#0099cc] transition-all shadow-lg">
+                <button className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#6B4646] to-[#8B5F5F] text-white rounded-full font-semibold hover:from-[#003d7a] hover:to-[#0099cc] transition-all shadow-lg">
                   <MessageCircle className="h-5 w-5" />
                   Message
                 </button>
-                <button className="flex items-center gap-2 px-6 py-3 border-2 border-[#007FA3] text-[#007FA3] rounded-full font-semibold hover:bg-[#007FA3] hover:text-white transition-all">
+                <button className="flex items-center gap-2 px-6 py-3 border-2 border-[#8B5F5F] text-[#8B5F5F] rounded-full font-semibold hover:bg-[#8B5F5F] hover:text-white transition-all">
                   <UserPlus className="h-5 w-5" />
                   Connect
                 </button>
@@ -395,18 +395,18 @@ export default function UserProfilePage() {
           <div className="lg:col-span-2 space-y-8">
             {/* About */}
             <div className="bg-white rounded-2xl shadow-lg p-6">
-              <h2 className="text-2xl font-bold text-[#002A5C] mb-4">About</h2>
+              <h2 className="text-2xl font-bold text-[#6B4646] mb-4">About</h2>
               <p className="text-gray-700 leading-relaxed text-lg">{user.bio}</p>
             </div>
 
             {/* Interests */}
             <div className="bg-white rounded-2xl shadow-lg p-6">
-              <h2 className="text-2xl font-bold text-[#002A5C] mb-4">Interests</h2>
+              <h2 className="text-2xl font-bold text-[#6B4646] mb-4">Interests</h2>
               <div className="flex flex-wrap gap-3">
                 {user.interests.map((interest, index) => (
                   <span
                     key={index}
-                    className="px-4 py-2 bg-gradient-to-r from-[#007FA3]/10 to-[#002A5C]/10 text-[#002A5C] rounded-full font-medium border border-[#007FA3]/20"
+                    className="px-4 py-2 bg-gradient-to-r from-[#8B5F5F]/10 to-[#6B4646]/10 text-[#6B4646] rounded-full font-medium border border-[#8B5F5F]/20"
                   >
                     {interest}
                   </span>
@@ -416,7 +416,7 @@ export default function UserProfilePage() {
 
             {/* Schedule */}
             <div className="bg-white rounded-2xl shadow-lg p-6">
-              <h2 className="text-2xl font-bold text-[#002A5C] mb-4 flex items-center">
+              <h2 className="text-2xl font-bold text-[#6B4646] mb-4 flex items-center">
                 <Calendar className="h-6 w-6 mr-2" />
                 Class Schedule
               </h2>
@@ -427,11 +427,11 @@ export default function UserProfilePage() {
                     className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-white rounded-xl border border-blue-100 hover:shadow-md transition-shadow"
                   >
                     <div>
-                      <div className="font-semibold text-[#002A5C] text-lg">{course.course}</div>
+                      <div className="font-semibold text-[#6B4646] text-lg">{course.course}</div>
                       <div className="text-sm text-gray-600">{course.time}</div>
                     </div>
                     <div className="flex items-center text-sm text-gray-600">
-                      <MapPin className="h-4 w-4 mr-1 text-[#007FA3]" />
+                      <MapPin className="h-4 w-4 mr-1 text-[#8B5F5F]" />
                       {course.building}
                     </div>
                   </div>
@@ -442,35 +442,35 @@ export default function UserProfilePage() {
 
           {/* Right Column - Quick Info */}
           <div className="space-y-6">
-            <div className="bg-white rounded-2xl shadow-lg p-6 border-2 border-[#007FA3]/20">
-              <h3 className="text-lg font-bold text-[#002A5C] mb-4">Quick Info</h3>
+            <div className="bg-white rounded-2xl shadow-lg p-6 border-2 border-[#8B5F5F]/20">
+              <h3 className="text-lg font-bold text-[#6B4646] mb-4">Quick Info</h3>
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
-                  <Heart className="h-5 w-5 text-[#007FA3] mt-1" fill="currentColor" />
+                  <Heart className="h-5 w-5 text-[#8B5F5F] mt-1" fill="currentColor" />
                   <div>
                     <div className="text-sm text-gray-500">Dorm Archetype</div>
-                    <div className="font-semibold text-[#002A5C]">{user.dormArchetype}</div>
+                    <div className="font-semibold text-[#6B4646]">{user.dormArchetype}</div>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <Calendar className="h-5 w-5 text-[#007FA3] mt-1" />
+                  <Calendar className="h-5 w-5 text-[#8B5F5F] mt-1" />
                   <div>
                     <div className="text-sm text-gray-500">Year</div>
-                    <div className="font-semibold text-[#002A5C]">{user.year}</div>
+                    <div className="font-semibold text-[#6B4646]">{user.year}</div>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <MapPin className="h-5 w-5 text-[#007FA3] mt-1" />
+                  <MapPin className="h-5 w-5 text-[#8B5F5F] mt-1" />
                   <div>
                     <div className="text-sm text-gray-500">Program</div>
-                    <div className="font-semibold text-[#002A5C]">{user.program}</div>
+                    <div className="font-semibold text-[#6B4646]">{user.program}</div>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Compatibility placeholder */}
-            <div className="bg-gradient-to-br from-[#002A5C] to-[#007FA3] rounded-2xl shadow-lg p-6 text-white">
+            <div className="bg-gradient-to-br from-[#6B4646] to-[#8B5F5F] rounded-2xl shadow-lg p-6 text-white">
               <h3 className="text-lg font-bold mb-2">Match Score</h3>
               <div className="text-5xl font-bold mb-2">87%</div>
               <p className="text-sm text-white/80">Based on your schedules and interests</p>

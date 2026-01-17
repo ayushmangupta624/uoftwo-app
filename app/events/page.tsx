@@ -73,27 +73,27 @@ export default function Events() {
   const getCategoryColor = (category: string) => {
     switch (category) {
       case "Social":
-        return "bg-purple-100 text-purple-700 border-purple-200";
+        return "bg-[#B08989] text-[#4a2e2e] border-[#8B5F5F]";
       case "Dating":
-        return "bg-pink-100 text-pink-700 border-pink-200";
+        return "bg-[#C9A3A3] text-[#5a3939] border-[#A67C7C]";
       case "Academic":
-        return "bg-blue-100 text-blue-700 border-blue-200";
+        return "bg-[#8B5F5F] text-[#F5E6E6] border-[#6B4646]";
       case "Outdoors":
-        return "bg-green-100 text-green-700 border-green-200";
+        return "bg-[#9d7070] text-[#E6D4D4] border-[#8B5F5F]";
       default:
-        return "bg-gray-100 text-gray-700 border-gray-200";
+        return "bg-[#A67C7C] text-[#4a2e2e] border-[#8B5F5F]";
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-[#C9A3A3] to-[#B08989]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-[#002A5C] mb-4">
+          <h1 className="text-5xl font-bold text-[#4a2e2e] mb-4">
             Campus Events
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-xl text-[#5a3939] max-w-2xl mx-auto">
             Meet fellow UofT students at exciting events across campus. 
             RSVP now and make meaningful connections!
           </p>
@@ -106,7 +106,7 @@ export default function Events() {
               key={filter}
               className={`px-6 py-2 rounded-full font-medium transition-all ${
                 filter === "All"
-                  ? "bg-[#002A5C] text-white shadow-lg"
+                  ? "bg-[#6B4646] text-white shadow-lg"
                   : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
               }`}
             >
@@ -135,7 +135,7 @@ export default function Events() {
 
               {/* Event Details */}
               <div className="px-6 pb-6">
-                <h3 className="text-2xl font-bold text-[#002A5C] mb-3">
+                <h3 className="text-2xl font-bold text-[#6B4646] mb-3">
                   {event.title}
                 </h3>
                 <p className="text-gray-600 mb-4 text-sm leading-relaxed">
@@ -144,19 +144,19 @@ export default function Events() {
 
                 <div className="space-y-2 mb-4">
                   <div className="flex items-start text-sm text-gray-700">
-                    <Calendar className="h-4 w-4 mt-0.5 mr-2 text-[#007FA3] flex-shrink-0" />
+                    <Calendar className="h-4 w-4 mt-0.5 mr-2 text-[#8B5F5F] flex-shrink-0" />
                     <span>{event.date}</span>
                   </div>
                   <div className="flex items-start text-sm text-gray-700">
-                    <Clock className="h-4 w-4 mt-0.5 mr-2 text-[#007FA3] flex-shrink-0" />
+                    <Clock className="h-4 w-4 mt-0.5 mr-2 text-[#8B5F5F] flex-shrink-0" />
                     <span>{event.time}</span>
                   </div>
                   <div className="flex items-start text-sm text-gray-700">
-                    <MapPin className="h-4 w-4 mt-0.5 mr-2 text-[#007FA3] flex-shrink-0" />
+                    <MapPin className="h-4 w-4 mt-0.5 mr-2 text-[#8B5F5F] flex-shrink-0" />
                     <span>{event.location}</span>
                   </div>
                   <div className="flex items-center text-sm text-gray-700">
-                    <Users className="h-4 w-4 mr-2 text-[#007FA3]" />
+                    <Users className="h-4 w-4 mr-2 text-[#8B5F5F]" />
                     <span>
                       {event.attendees} / {event.spots} attending
                     </span>
@@ -167,7 +167,7 @@ export default function Events() {
                 <div className="mb-4">
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
-                      className="bg-[#007FA3] h-2 rounded-full transition-all"
+                      className="bg-[#8B5F5F] h-2 rounded-full transition-all"
                       style={{
                         width: `${(event.attendees / event.spots) * 100}%`,
                       }}
@@ -176,7 +176,7 @@ export default function Events() {
                 </div>
 
                 {/* RSVP Button */}
-                <button className="w-full bg-[#002A5C] text-white py-3 rounded-full font-semibold hover:bg-[#003d7a] transition-colors flex items-center justify-center space-x-2 shadow-md hover:shadow-lg">
+                <button className="w-full bg-[#6B4646] text-white py-3 rounded-full font-semibold hover:bg-[#003d7a] transition-colors flex items-center justify-center space-x-2 shadow-md hover:shadow-lg">
                   <span>RSVP Now</span>
                   <Heart className="h-4 w-4" />
                 </button>
@@ -187,13 +187,13 @@ export default function Events() {
 
         {/* Create Event CTA */}
         <div className="mt-16 text-center bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
-          <h2 className="text-2xl font-bold text-[#002A5C] mb-4">
+          <h2 className="text-2xl font-bold text-[#6B4646] mb-4">
             Want to Host an Event?
           </h2>
           <p className="text-gray-600 mb-6">
             Create your own campus event and bring the UofT community together!
           </p>
-          <button className="px-8 py-3 bg-[#007FA3] text-white rounded-full font-semibold hover:bg-[#006a8a] transition-colors shadow-md hover:shadow-lg">
+          <button className="px-8 py-3 bg-[#8B5F5F] text-white rounded-full font-semibold hover:bg-[#006a8a] transition-colors shadow-md hover:shadow-lg">
             Create Event
           </button>
         </div>

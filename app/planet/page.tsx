@@ -276,7 +276,7 @@ function UserDot({ position, user, onClick, isBoosted = false }: UserDotProps) {
       {(hovered || isBoosted) && (
         <Html distanceFactor={10}>
           <div className="bg-white/95 backdrop-blur-sm px-3 py-2 rounded-lg shadow-xl border border-gray-200 whitespace-nowrap pointer-events-none">
-            <p className="font-semibold text-[#002A5C] text-sm">{user.name}</p>
+            <p className="font-semibold text-[#6B4646] text-sm">{user.name}</p>
             <p className="text-xs text-gray-600">{user.program}</p>
           </div>
         </Html>
@@ -494,7 +494,7 @@ function UserProfileModal({ user, onClose }: UserProfileModalProps) {
         {/* Content */}
         <div className="pt-16 pb-6 px-6">
           <div className="mb-4">
-            <h2 className="text-2xl font-bold text-[#002A5C]">{user.name}, {user.age}</h2>
+            <h2 className="text-2xl font-bold text-[#6B4646]">{user.name}, {user.age}</h2>
             <p className="text-gray-600">{user.program} • {user.year}</p>
           </div>
 
@@ -519,12 +519,12 @@ function UserProfileModal({ user, onClose }: UserProfileModalProps) {
 
           {/* Interests */}
           <div className="mb-6">
-            <h3 className="text-sm font-semibold text-[#002A5C] mb-2">Interests</h3>
+            <h3 className="text-sm font-semibold text-[#6B4646] mb-2">Interests</h3>
             <div className="flex flex-wrap gap-2">
               {user.interests.map((interest, index) => (
                 <span
                   key={index}
-                  className="px-3 py-1 bg-[#007FA3]/10 text-[#007FA3] rounded-full text-sm font-medium"
+                  className="px-3 py-1 bg-[#8B5F5F]/10 text-[#8B5F5F] rounded-full text-sm font-medium"
                 >
                   {interest}
                 </span>
@@ -536,7 +536,7 @@ function UserProfileModal({ user, onClose }: UserProfileModalProps) {
           <div className="flex gap-3">
             <button 
               onClick={handleConnect}
-              className="flex-1 bg-gradient-to-r from-[#002A5C] to-[#007FA3] text-white py-3 rounded-full font-semibold hover:from-[#003d7a] hover:to-[#0099cc] transition-all shadow-lg"
+              className="flex-1 bg-gradient-to-r from-[#6B4646] to-[#8B5F5F] text-white py-3 rounded-full font-semibold hover:from-[#003d7a] hover:to-[#0099cc] transition-all shadow-lg"
             >
               View Full Profile
             </button>
@@ -631,7 +631,7 @@ export default function PlanetPage() {
   // Don't render if not authorized
   if (!isAuthenticated || !hasCompletedOnboarding) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#001a3d] via-[#002A5C] to-[#003d7a] flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#4a2e2e] via-[#6B4646] to-[#5a3939] flex items-center justify-center">
         <div className="text-white text-xl">Checking authorization...</div>
       </div>
     );
@@ -654,7 +654,7 @@ export default function PlanetPage() {
   };
 
   return (
-    <div className="h-[calc(100vh-4rem)] bg-gradient-to-br from-[#0f172a] via-[#1a2a3a] to-[#2d3a47] relative overflow-hidden">
+    <div className="h-[calc(100vh-4rem)] bg-gradient-to-br from-[#4a2e2e] via-[#5a3939] to-[#6B4646] relative overflow-hidden">
       {/* Archetype Background Image - Light/Watercolored */}
       <div 
         className="absolute inset-0 opacity-70 bg-cover bg-center bg-no-repeat transition-all duration-1000"
@@ -665,7 +665,7 @@ export default function PlanetPage() {
 
       {/* Background effects */}
       <div className="absolute inset-0">
-        <div className="absolute top-20 left-20 w-[400px] h-[400px] bg-[#007FA3]/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-20 left-20 w-[400px] h-[400px] bg-[#8B5F5F]/20 rounded-full blur-3xl"></div>
         <div className="absolute bottom-20 right-20 w-[500px] h-[500px] bg-[#0099cc]/20 rounded-full blur-3xl"></div>
       </div>
 

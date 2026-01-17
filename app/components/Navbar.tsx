@@ -45,7 +45,7 @@ export default function Navbar() {
           {/* Subtle grid overlay */}
           <div className="absolute inset-0 opacity-[0.03]"
             style={{
-              backgroundImage: 'linear-gradient(#002A5C 1px, transparent 1px), linear-gradient(90deg, #002A5C 1px, transparent 1px)',
+              backgroundImage: 'linear-gradient(#6B4646 1px, transparent 1px), linear-gradient(90deg, #6B4646 1px, transparent 1px)',
               backgroundSize: '50px 50px'
             }}
           ></div>
@@ -152,8 +152,8 @@ export default function Navbar() {
                   
                   <defs>
                     <linearGradient id="carGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stopColor="#002A5C" />
-                      <stop offset="100%" stopColor="#007FA3" />
+                      <stop offset="0%" stopColor="#6B4646" />
+                      <stop offset="100%" stopColor="#8B5F5F" />
                     </linearGradient>
                   </defs>
                 </svg>
@@ -165,25 +165,25 @@ export default function Navbar() {
           <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
             <div className="relative">
               {/* Subtle glow behind text */}
-              <div className="absolute inset-0 blur-3xl bg-[#007FA3]/10"></div>
+              <div className="absolute inset-0 blur-3xl bg-[#8B5F5F]/10"></div>
               
-              <h2 className="relative text-6xl font-light text-[#002A5C] mb-4 tracking-wide">
+              <h2 className="relative text-6xl font-light text-[#4a2e2e] mb-4 tracking-wide">
                 Finding Your Match
               </h2>
               <div className="relative flex items-center justify-center gap-3">
-                <div className="h-px w-12 bg-gradient-to-r from-transparent to-[#007FA3]"></div>
-                <p className="text-lg text-slate-600 font-light tracking-wider uppercase">
+                <div className="h-px w-12 bg-gradient-to-r from-transparent to-[#8B5F5F]"></div>
+                <p className="text-lg text-[#5a3939] font-light tracking-wider uppercase">
                   Exploring Campus
                 </p>
-                <div className="h-px w-12 bg-gradient-to-l from-transparent to-[#007FA3]"></div>
+                <div className="h-px w-12 bg-gradient-to-l from-transparent to-[#8B5F5F]"></div>
               </div>
             </div>
 
             {/* Minimal loading indicator */}
             <div className="flex justify-center gap-2 mt-8">
-              <div className="w-2 h-2 bg-[#002A5C] rounded-full animate-elegant-bounce" style={{ animationDelay: '0s' }}></div>
-              <div className="w-2 h-2 bg-[#007FA3] rounded-full animate-elegant-bounce" style={{ animationDelay: '0.2s' }}></div>
-              <div className="w-2 h-2 bg-slate-400 rounded-full animate-elegant-bounce" style={{ animationDelay: '0.4s' }}></div>
+              <div className="w-2 h-2 bg-[#6B4646] rounded-full animate-elegant-bounce" style={{ animationDelay: '0s' }}></div>
+              <div className="w-2 h-2 bg-[#8B5F5F] rounded-full animate-elegant-bounce" style={{ animationDelay: '0.2s' }}></div>
+              <div className="w-2 h-2 bg-[#A67C7C] rounded-full animate-elegant-bounce" style={{ animationDelay: '0.4s' }}></div>
             </div>
           </div>
 
@@ -192,17 +192,17 @@ export default function Navbar() {
         </div>
       )}
 
-      <nav className="sticky top-0 z-50 bg-[#002A5C] border-b-4 border-[#007FA3] shadow-lg">
+      <nav className="sticky top-0 z-50 bg-[#6B4646] border-b-4 border-[#8B5F5F] shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo/Brand */}
           <Link href="/" className="flex items-center space-x-2 group">
             <div className="relative">
-              <Heart className="h-8 w-8 text-white group-hover:text-[#007FA3] transition-colors" fill="currentColor" />
-              <div className="absolute -top-1 -right-1 h-3 w-3 bg-[#007FA3] rounded-full animate-pulse"></div>
+              <Heart className="h-8 w-8 text-white group-hover:text-[#D9C4C4] transition-colors" fill="currentColor" />
+              <div className="absolute -top-1 -right-1 h-3 w-3 bg-[#D9C4C4] rounded-full animate-pulse"></div>
             </div>
             <span className="text-white font-bold text-xl tracking-tight">
-              UofT<span className="text-[#007FA3]">wo</span>
+              UofT<span className="text-[#D9C4C4]">wo</span>
             </span>
           </Link>
 
@@ -219,7 +219,7 @@ export default function Navbar() {
                   className={`
                     flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-200
                     ${isActive 
-                      ? 'bg-[#007FA3] text-white shadow-md' 
+                      ? 'bg-[#8B5F5F] text-white shadow-md' 
                       : 'text-white/90 hover:bg-white/10 hover:text-white'
                     }
                   `}
@@ -243,7 +243,7 @@ export default function Navbar() {
                 
                 {/* Button */}
                 <div className="relative bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 p-[2px] rounded-full">
-                  <div className="bg-[#002A5C] rounded-full px-5 py-2.5 flex items-center gap-2 group-hover:bg-[#003d7a] transition-colors">
+                  <div className="bg-[#6B4646] rounded-full px-5 py-2.5 flex items-center gap-2 group-hover:bg-[#5a3939] transition-colors">
                     <Shuffle className="h-5 w-5 text-white group-hover:rotate-180 transition-transform duration-500" />
                     <span className="text-white font-bold text-sm whitespace-nowrap">
                       Random Match
@@ -269,7 +269,7 @@ export default function Navbar() {
                   className={`
                     flex flex-col items-center justify-center px-3 py-2 rounded-lg transition-all duration-200
                     ${isActive 
-                      ? 'bg-[#007FA3] text-white' 
+                      ? 'bg-[#8B5F5F] text-white' 
                       : 'text-white/90 hover:bg-white/10'
                     }
                   `}
@@ -284,7 +284,7 @@ export default function Navbar() {
       </div>
 
       {/* UofT themed accent line */}
-      <div className="h-1 bg-gradient-to-r from-[#002A5C] via-[#007FA3] to-[#002A5C]"></div>
+      <div className="h-1 bg-gradient-to-r from-[#6B4646] via-[#8B5F5F] to-[#6B4646]"></div>
     </nav>
 
     {/* Elegant animations */}

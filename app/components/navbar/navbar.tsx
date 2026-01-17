@@ -31,13 +31,13 @@ export default function Navbar() {
           <Link href="/" className="flex items-center space-x-2 group">
             <div className="relative">
               <Heart
-                className="h-8 w-8 text-white group-hover:text-[#007FA3] transition-colors"
+                className="h-8 w-8 text-white group-hover:text-[#D9C4C4] transition-colors"
                 fill="currentColor"
               />
-              <div className="absolute -top-1 -right-1 h-3 w-3 bg-[#007FA3] rounded-full animate-pulse"></div>
+              <div className="absolute -top-1 -right-1 h-3 w-3 bg-[#D9C4C4] rounded-full animate-pulse"></div>
             </div>
             <span className="text-white font-bold text-xl tracking-tight">
-              UofT<span className="text-[#007FA3]">wo</span>
+              UofT<span className="text-[#D9C4C4]">wo</span>
             </span>
           </Link>
 
@@ -55,7 +55,7 @@ export default function Navbar() {
                   flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-200
                   ${
                     isActive
-                      ? "bg-[#007FA3] text-white shadow-md"
+                      ? "bg-[#8B5F5F] text-white shadow-md"
                       : "text-white/90 hover:bg-white/10 hover:text-white"
                   }
                   `}
@@ -81,7 +81,7 @@ export default function Navbar() {
                   flex flex-col items-center justify-center px-3 py-2 rounded-lg transition-all duration-200
                   ${
                     isActive
-                      ? "bg-[#007FA3] text-white"
+                      ? "bg-[#8B5F5F] text-white"
                       : "text-white/90 hover:bg-white/10"
                   }
                   `}
@@ -96,7 +96,7 @@ export default function Navbar() {
       </div>
 
       {/* UofT themed accent line */}
-      <div className="h-1 bg-gradient-to-r from-[#002A5C] via-[#007FA3] to-[#002A5C]"></div>
+      <div className="h-1 bg-gradient-to-r from-[#6B4646] via-[#8B5F5F] to-[#6B4646]"></div>
     </nav>
   );
 }

@@ -40,10 +40,10 @@ export default function Profile() {
           <div className={`h-32 bg-gradient-to-r ${getArchetypeColor(user.dormArchetype)} relative`}>
             <div className="absolute top-4 right-4 flex gap-2">
               <button className="p-2 bg-white/90 rounded-full hover:bg-white transition-colors shadow-md">
-                <Edit className="h-5 w-5 text-[#002A5C]" />
+                <Edit className="h-5 w-5 text-[#6B4646]" />
               </button>
               <button className="p-2 bg-white/90 rounded-full hover:bg-white transition-colors shadow-md">
-                <Settings className="h-5 w-5 text-[#002A5C]" />
+                <Settings className="h-5 w-5 text-[#6B4646]" />
               </button>
             </div>
           </div>
@@ -51,7 +51,7 @@ export default function Profile() {
           <div className="px-8 pb-8">
             {/* Profile Picture */}
             <div className="flex flex-col sm:flex-row sm:items-end sm:space-x-6 -mt-16">
-              <div className="w-32 h-32 bg-gradient-to-br from-[#002A5C] to-[#007FA3] rounded-full border-4 border-white shadow-xl flex items-center justify-center">
+              <div className="w-32 h-32 bg-gradient-to-br from-[#6B4646] to-[#8B5F5F] rounded-full border-4 border-white shadow-xl flex items-center justify-center">
                 <span className="text-4xl font-bold text-white">
                   {user.name.split(" ").map(n => n[0]).join("")}
                 </span>
@@ -60,7 +60,7 @@ export default function Profile() {
               <div className="mt-4 sm:mt-0 sm:flex-1 sm:pb-4">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                   <div>
-                    <h1 className="text-3xl font-bold text-[#002A5C]">
+                    <h1 className="text-3xl font-bold text-[#6B4646]">
                       {user.name}, {user.age}
                     </h1>
                     <p className="text-gray-600 text-lg">
@@ -68,7 +68,7 @@ export default function Profile() {
                     </p>
                   </div>
                   <div className="mt-4 sm:mt-0 flex gap-3">
-                    <button className="px-6 py-2 bg-[#002A5C] text-white rounded-full font-semibold hover:bg-[#003d7a] transition-colors shadow-md">
+                    <button className="px-6 py-2 bg-[#6B4646] text-white rounded-full font-semibold hover:bg-[#003d7a] transition-colors shadow-md">
                       Edit Profile
                     </button>
                   </div>
@@ -79,15 +79,15 @@ export default function Profile() {
             {/* Stats */}
             <div className="grid grid-cols-3 gap-4 mt-8">
               <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-white rounded-xl border border-blue-100">
-                <div className="text-3xl font-bold text-[#002A5C]">{user.matches}</div>
+                <div className="text-3xl font-bold text-[#6B4646]">{user.matches}</div>
                 <div className="text-sm text-gray-600 mt-1">Matches</div>
               </div>
               <div className="text-center p-4 bg-gradient-to-br from-cyan-50 to-white rounded-xl border border-cyan-100">
-                <div className="text-3xl font-bold text-[#007FA3]">{user.events}</div>
+                <div className="text-3xl font-bold text-[#8B5F5F]">{user.events}</div>
                 <div className="text-sm text-gray-600 mt-1">Events</div>
               </div>
               <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-white rounded-xl border border-blue-100">
-                <div className="text-3xl font-bold text-[#002A5C]">{user.schedule.length}</div>
+                <div className="text-3xl font-bold text-[#6B4646]">{user.schedule.length}</div>
                 <div className="text-sm text-gray-600 mt-1">Courses</div>
               </div>
             </div>
@@ -99,7 +99,7 @@ export default function Profile() {
           <div className="lg:col-span-2 space-y-8">
             {/* About Section */}
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-              <h2 className="text-2xl font-bold text-[#002A5C] mb-4 flex items-center">
+              <h2 className="text-2xl font-bold text-[#6B4646] mb-4 flex items-center">
                 <Users className="h-6 w-6 mr-2" />
                 About Me
               </h2>
@@ -108,7 +108,7 @@ export default function Profile() {
 
             {/* Interests */}
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-              <h2 className="text-2xl font-bold text-[#002A5C] mb-4 flex items-center">
+              <h2 className="text-2xl font-bold text-[#6B4646] mb-4 flex items-center">
                 <Heart className="h-6 w-6 mr-2" />
                 Interests
               </h2>
@@ -116,7 +116,7 @@ export default function Profile() {
                 {user.interests.map((interest, index) => (
                   <span
                     key={index}
-                    className="px-4 py-2 bg-gradient-to-r from-[#002A5C] to-[#007FA3] text-white rounded-full text-sm font-medium shadow-md"
+                    className="px-4 py-2 bg-gradient-to-r from-[#6B4646] to-[#8B5F5F] text-white rounded-full text-sm font-medium shadow-md"
                   >
                     {interest}
                   </span>
@@ -126,7 +126,7 @@ export default function Profile() {
 
             {/* Schedule */}
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-              <h2 className="text-2xl font-bold text-[#002A5C] mb-4 flex items-center">
+              <h2 className="text-2xl font-bold text-[#6B4646] mb-4 flex items-center">
                 <Calendar className="h-6 w-6 mr-2" />
                 My Schedule
               </h2>
@@ -137,17 +137,17 @@ export default function Profile() {
                     className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-white rounded-xl border border-blue-100 hover:shadow-md transition-shadow"
                   >
                     <div>
-                      <div className="font-semibold text-[#002A5C]">{course.course}</div>
+                      <div className="font-semibold text-[#6B4646]">{course.course}</div>
                       <div className="text-sm text-gray-600">{course.time}</div>
                     </div>
                     <div className="flex items-center text-sm text-gray-600">
-                      <MapPin className="h-4 w-4 mr-1 text-[#007FA3]" />
+                      <MapPin className="h-4 w-4 mr-1 text-[#8B5F5F]" />
                       {course.building}
                     </div>
                   </div>
                 ))}
               </div>
-              <button className="mt-4 w-full py-3 border-2 border-dashed border-gray-300 text-gray-600 rounded-xl hover:border-[#007FA3] hover:text-[#007FA3] transition-colors font-medium">
+              <button className="mt-4 w-full py-3 border-2 border-dashed border-gray-300 text-gray-600 rounded-xl hover:border-[#8B5F5F] hover:text-[#8B5F5F] transition-colors font-medium">
                 + Update Schedule
               </button>
             </div>
@@ -160,8 +160,8 @@ export default function Profile() {
               <div className={`absolute inset-0 bg-gradient-to-br ${getArchetypeColor(user.dormArchetype)} opacity-10`}></div>
               <div className="relative">
                 <div className="flex items-center mb-4">
-                  <Award className="h-6 w-6 mr-2 text-[#007FA3]" />
-                  <h2 className="text-2xl font-bold text-[#002A5C]">Dorm Archetype</h2>
+                  <Award className="h-6 w-6 mr-2 text-[#8B5F5F]" />
+                  <h2 className="text-2xl font-bold text-[#6B4646]">Dorm Archetype</h2>
                 </div>
                 <div className={`bg-gradient-to-br ${getArchetypeColor(user.dormArchetype)} text-white p-6 rounded-xl shadow-lg mb-4`}>
                   <h3 className="text-2xl font-bold text-center">{user.dormArchetype}</h3>
@@ -170,14 +170,14 @@ export default function Profile() {
                   {user.archetypeTraits.map((trait, index) => (
                     <div
                       key={index}
-                      className="flex items-center p-3 bg-blue-50 rounded-lg border border-blue-100"
+                      className="flex items-center p-3 bg-[#E6D4D4] rounded-lg border border-[#C9A3A3]"
                     >
-                      <div className="w-2 h-2 bg-[#007FA3] rounded-full mr-3"></div>
-                      <span className="text-sm font-medium text-gray-700">{trait}</span>
+                      <div className="w-2 h-2 bg-[#8B5F5F] rounded-full mr-3"></div>
+                      <span className="text-sm font-medium text-[#4a2e2e]">{trait}</span>
                     </div>
                   ))}
                 </div>
-                <button className="mt-4 w-full py-2 text-[#007FA3] border-2 border-[#007FA3] rounded-full font-semibold hover:bg-[#007FA3] hover:text-white transition-colors">
+                <button className="mt-4 w-full py-2 text-[#6B4646] border-2 border-[#8B5F5F] rounded-full font-semibold hover:bg-[#8B5F5F] hover:text-white transition-colors">
                   Retake Quiz
                 </button>
               </div>
@@ -185,7 +185,7 @@ export default function Profile() {
 
             {/* Location */}
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-              <h2 className="text-xl font-bold text-[#002A5C] mb-4 flex items-center">
+              <h2 className="text-xl font-bold text-[#6B4646] mb-4 flex items-center">
                 <MapPin className="h-5 w-5 mr-2" />
                 Campus
               </h2>
@@ -194,7 +194,7 @@ export default function Profile() {
 
             {/* Academic Info */}
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-              <h2 className="text-xl font-bold text-[#002A5C] mb-4 flex items-center">
+              <h2 className="text-xl font-bold text-[#6B4646] mb-4 flex items-center">
                 <BookOpen className="h-5 w-5 mr-2" />
                 Academic Info
               </h2>

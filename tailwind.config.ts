@@ -51,6 +51,16 @@ export default {
           "4": "hsl(var(--chart-4))",
           "5": "hsl(var(--chart-5))",
         },
+        burgundy: {
+          dark: "#4a2e2e",
+          DEFAULT: "#6B4646",
+          light: "#8B5F5F",
+          lighter: "#A67C7C",
+          pale: "#C9A3A3",
+          cream: "#D9C4C4",
+          soft: "#E6D4D4",
+          whisper: "#F5E6E6",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
