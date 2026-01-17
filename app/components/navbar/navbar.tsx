@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Calendar, User, Heart, Globe } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
+import "./navbar.css";
 
 export default function Navbar() {
   const pathname = usePathname();
