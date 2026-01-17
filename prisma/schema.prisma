@@ -34,6 +34,7 @@ model User {
   images           String[]    @default([]) @db.Text
   createdAt        DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt        DateTime    @updatedAt @map("updated_at") @db.Timestamptz(6)
+  description      String?     @default("null") @db.Text
 
   // relations to join table
   likedUsers       UserLike[]  @relation("LikedUsers")   // the rows where this user liked someone
