@@ -24,6 +24,10 @@ export const metadata: Metadata = {
   title: "UofTwo - Find Your Perfect Match at UofT",
   description:
     "A dating app exclusively for University of Toronto students. Upload your schedule, discover your dorm archetype, and connect with fellow UofT students.",
+  icons: {
+    icon: "/uoftwo-logo.png",
+    apple: "/uoftwo-logo.png",
+  },
 };
 
 export default function RootLayout({
