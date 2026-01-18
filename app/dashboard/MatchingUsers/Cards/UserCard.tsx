@@ -26,6 +26,8 @@ export function UserCard({
   const [isDragging, setIsDragging] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [pendingSwipe, setPendingSwipe] = useState<"left" | "right" | null>(null);
+  const [hasEntered, setHasEntered] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   const dragStartRef = useRef({ x: 0, y: 0 });
 
@@ -35,22 +37,20 @@ export function UserCard({
   const completeSwipe = useCallback(
     (deltaX: number) => {
       if (Math.abs(deltaX) > SWIPE_THRESHOLD) {
+        const dir = deltaX > 0 ? "right" : "left";
+        setPendingSwipe(dir);
         setIsTransitioning(true);
-        // Animate the card off screen
-        setDragOffset({ x: deltaX > 0 ? 1000 : -1000, y: 0 });
 
-        setTimeout(() => {
-          if (deltaX > 0) {
-            onSwipeRight();
-          } else {
-            onSwipeLeft();
-          }
-          setDragOffset({ x: 0, y: 0 });
-          setIsTransitioning(false);
-        }, 300);
+        // Important: wait one frame so the transition class is applied before changing transform
+        requestAnimationFrame(() => {
+          const vw = typeof window !== "undefined" ? window.innerWidth : 1000;
+          const offX = vw + 500; // ensure fully off-screen on any device
+          setDragOffset({ x: dir === "right" ? offX : -offX, y: 0 });
+        });
       } else {
         // Snap back to original position
         setDragOffset({ x: 0, y: 0 });
+        setHasEntered(true);
       }
     },
     [onSwipeLeft, onSwipeRight],
@@ -91,6 +91,20 @@ export function UserCard({
     onViewMore();
   };
 
+  const handleTransitionEnd = () => {
+    if (!pendingSwipe) return;
+
+    if (pendingSwipe === "right") {
+      onSwipeRight();
+    } else {
+      onSwipeLeft();
+    }
+
+    // Keep the card off-screen until parent removes it from the DOM
+    setPendingSwipe(null);
+    setIsTransitioning(false);
+  };
+
   useEffect(() => {
     if (!isDragging) return;
 
@@ -115,6 +129,14 @@ export function UserCard({
       window.removeEventListener("mouseup", handleMouseUp);
     };
   }, [isDragging, isActive, dragOffset.x, completeSwipe, isTransitioning]);
+
+  useEffect(() => {
+    if (!isActive) return;
+
+    // Start invisible, then fade in next frame so CSS transitions apply
+    setHasEntered(false);
+    requestAnimationFrame(() => setHasEntered(true));
+  }, [isActive]);
 
   const rotation = dragOffset.x * 0.15;
   const opacity = Math.max(0.5, 1 - Math.abs(dragOffset.x) / 400);
@@ -144,16 +166,26 @@ export function UserCard({
     <div
       ref={cardRef}
       className={`absolute inset-0 ${
-        isDragging || isTransitioning
+        isDragging
           ? ""
-          : "transition-all duration-300 ease-out"
+          : isTransitioning
+            ? "transition-[transform,opacity] duration-300 ease-out"
+            : "transition-[transform,opacity] duration-450 ease-out"
       } ${isActive ? "z-10" : "z-0"}`}
       style={{
         transform: `translateX(${dragOffset.x}px) translateY(${dragOffset.y}px) rotate(${rotation}deg)`,
-        opacity: isActive ? opacity : 0.5,
+        opacity: pendingSwipe
+          ? 0
+          : isActive
+            ? hasEntered
+              ? opacity
+              : 0
+            : 0.5,
         cursor: isDragging ? "grabbing" : "grab",
         userSelect: "none",
+        pointerEvents: isTransitioning ? "none" : "auto",
       }}
+      onTransitionEnd={handleTransitionEnd}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}

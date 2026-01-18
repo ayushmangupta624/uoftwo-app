@@ -10,9 +10,9 @@ export default function HeroSection() {
           // filter: "brightness(1.5)",
         }}
       />
-      <div className="text-center relative z-10">
+      <div className="text-center relative z-10 px-4 max-w-6xl mx-auto">
         {/* Logo */}
-        <div className="flex justify-center mb-8">
+        <div className="flex justify-center mb-12">
           <div className="relative h-40 w-40">
             <Image
               src="/uoftwo-logo.png"
@@ -23,8 +23,26 @@ export default function HeroSection() {
             />
           </div>
         </div>
-        <h1>Meet the people you keep seeing in Robarts</h1>
-        <h2>Your GPA isn't the only thing worth investing in.</h2>
+        
+        {/* Main Headline */}
+        <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold mb-8 leading-tight">
+          <span className="font-[family-name:var(--font-geist-sans)] bg-clip-text text-transparent bg-gradient-to-r from-[#F5E6E6] via-[#D9C4C4] to-[#F5E6E6] drop-shadow-[0_4px_20px_rgba(217,196,196,0.9)] animate-pulse">
+            Meet the people
+          </span>
+          <br />
+          <span className="font-[family-name:var(--font-manrope)] text-[#FFFFFF] drop-shadow-[0_4px_25px_rgba(0,0,0,0.8)]">
+            you keep seeing
+          </span>
+          <br />
+          <span className="font-[family-name:var(--font-geist-mono)] italic text-[#F5E6E6] drop-shadow-[0_4px_30px_rgba(139,95,95,0.9)]">
+            in Robarts
+          </span>
+        </h1>
+        
+        {/* Subheadline */}
+        <h2 className="text-2xl md:text-3xl lg:text-4xl font-light font-[family-name:var(--font-manrope)] text-[#E6D4D4] drop-shadow-[0_2px_15px_rgba(0,0,0,0.7)] max-w-4xl mx-auto leading-relaxed">
+          Your <span className="font-bold italic text-[#D9C4C4]">GPA</span> isn't the only thing worth investing in.
+        </h2>
       </div>
     </div>
   );

@@ -32,7 +32,7 @@ export default function CardsDisplay({
       <div className="relative h-[80vh] w-full max-w-md mx-auto">
         {visibleCards.map((user, idx) => (
           <UserCard
-            key={user.id}
+            key={user.user_id ?? user.id}
             user={user}
             onSwipeLeft={handleSwipeLeft}
             onSwipeRight={handleSwipeRight}

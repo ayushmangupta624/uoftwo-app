@@ -51,12 +51,23 @@ export async function POST(
     }
 
     // Create the pass
-    await (prisma as any).userPass.create({
-      data: {
-        passerId: currentUserId,
-        passedId: userId,
-      },
-    });
+    try {
+      await (prisma as any).userPass.create({
+        data: {
+          passerId: currentUserId,
+          passedId: userId,
+        },
+      });
+    } catch (createError: any) {
+      // Handle unique constraint violation gracefully (P2002 is Prisma's unique constraint error code)
+      if (createError.code === 'P2002') {
+        return NextResponse.json(
+          { success: true, alreadyPassed: true },
+          { status: 200 }
+        );
+      }
+      throw createError;
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {

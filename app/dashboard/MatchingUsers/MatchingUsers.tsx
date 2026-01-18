@@ -57,10 +57,16 @@ export function MatchingUsers() {
     fetchData();
   }, []);
 
+  const advanceCard = () => {
+    setCurrentIndex((prev) => Math.min(prev + 1, matches.length));
+  };
+
   const handleLike = async (userId: string) => {
     if (likingUserId === userId) return;
 
     setLikingUserId(userId);
+    // Optimistic UI: move to the next card immediately for a seamless swipe experience
+    advanceCard();
     try {
       const response = await fetch(`/api/like/${userId}`, {
         method: "POST",
@@ -78,9 +84,6 @@ export function MatchingUsers() {
       newLiked.add(userId);
       setLikedUserIds(newLiked);
 
-      // Move to next card
-      setCurrentIndex((prev) => Math.min(prev + 1, matches.length - 1));
-
       // If it's a match, show notification
       if (data.isMatch && data.conversationId) {
         if (confirm("It's a match! Would you like to start messaging?")) {
@@ -96,6 +99,8 @@ export function MatchingUsers() {
   };
 
   const handlePass = async (userId: string) => {
+    // Optimistic UI: move to the next card immediately for a seamless swipe experience
+    advanceCard();
     try {
       const response = await fetch(`/api/passes/${userId}`, {
         method: "POST",
@@ -104,8 +109,13 @@ export function MatchingUsers() {
         const errorData = await response.json();
         throw new Error(errorData.error || "Failed to pass user");
       }
-      // Move to next card after successful pass
-      setCurrentIndex((prev) => Math.min(prev + 1, matches.length - 1));
+      
+      const data = await response.json();
+      // If it's a duplicate pass, just silently continue (user already passed this person)
+      if (data.alreadyPassed) {
+        console.log("User already passed");
+        return;
+      }
     } catch (error) {
       console.error("Error passing user:", error);
       setError(error instanceof Error ? error.message : "Failed to pass user");

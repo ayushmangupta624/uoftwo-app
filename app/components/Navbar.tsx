@@ -21,6 +21,23 @@ export default function Navbar() {
   const router = useRouter();
   const { hasCompletedOnboarding, isAuthenticated, user } = useAuth();
   const [userName, setUserName] = useState<string>("");
+  const [actuallyAuthenticated, setActuallyAuthenticated] = useState<boolean>(false);
+
+  // Check actual Supabase authentication state
+  useEffect(() => {
+    async function checkAuth() {
+      try {
+        const supabase = createClient();
+        const { data: { user: authUser } } = await supabase.auth.getUser();
+        setActuallyAuthenticated(!!authUser);
+      } catch (error) {
+        console.error('Error checking auth:', error);
+        setActuallyAuthenticated(false);
+      }
+    }
+    
+    checkAuth();
+  }, []);
 
   // Fetch actual user name from database
   useEffect(() => {
@@ -48,8 +65,8 @@ export default function Navbar() {
     fetchUserName();
   }, [isAuthenticated]);
 
-  // Determine logo destination
-  const logoHref = isAuthenticated ? "/dashboard" : "/";
+  // Determine logo destination based on actual Supabase auth state
+  const logoHref = actuallyAuthenticated ? "/dashboard" : "/";
 
   return (
     <>
