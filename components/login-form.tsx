@@ -39,16 +39,12 @@ export function LoginForm({
       });
       if (error) throw error;
 
-      // Check if user has completed the questionnaire
       const response = await fetch("/api/profile");
       const data = await response.json();
 
-      // Determine redirect URL
       let redirectUrl = "/questionnaire";
-      
-      // If user has a profile, check for questionnaire completion
+
       if (data.profile) {
-        // Check if questionnaire is completed by checking if hobbies exist
         const hasCompletedQuestionnaire =
           data.profile.hobbies && data.profile.hobbies.length > 0;
 
@@ -56,8 +52,7 @@ export function LoginForm({
           redirectUrl = "/dashboard";
         }
       }
-      
-      // Force a full page reload to ensure session is properly loaded
+
       window.location.href = redirectUrl;
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");

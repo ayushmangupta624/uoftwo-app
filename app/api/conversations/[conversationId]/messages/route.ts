@@ -1,13 +1,15 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getAuthenticatedUserId } from "@/lib/db-helpers";
 
+type Params = { conversationId: string };
+
 export async function GET(
-  request: Request,
-  { params }: { params: { conversationId: string } }
+  request: NextRequest,
+  { params }: { params: Params | Promise<Params> }
 ) {
   try {
-    const { conversationId } = await params;
+    const { conversationId } = await Promise.resolve(params);
     const currentUserId = await getAuthenticatedUserId();
 
     if (!currentUserId) {
@@ -77,19 +79,19 @@ export async function GET(
       orderBy: { createdAt: "asc" },
     });
 
-    const formattedMessages = messages.map((msg) => ({
+    const formattedMessages = messages.map((msg: any) => ({
       id: msg.id,
       content: msg.content,
       senderId: msg.senderId,
       senderName: `${msg.sender.fname} ${msg.sender.lname}`,
       createdAt: msg.createdAt.toISOString(),
-      reactions: msg.reactions.map((r) => ({
+      reactions: msg.reactions.map((r: any) => ({
         id: r.id,
         emoji: r.emoji,
         userId: r.userId,
         userName: `${r.user.fname} ${r.user.lname}`,
       })),
-      replies: msg.replies.map((reply) => ({
+      replies: msg.replies.map((reply: any) => ({
         id: reply.id,
         content: reply.content,
         senderId: reply.senderId,
@@ -109,11 +111,11 @@ export async function GET(
 }
 
 export async function POST(
-  request: Request,
-  { params }: { params: { conversationId: string } }
+  request: NextRequest,
+  { params }: { params: Params | Promise<Params> }
 ) {
   try {
-    const { conversationId } = await params;
+    const { conversationId } = await Promise.resolve(params);
     const currentUserId = await getAuthenticatedUserId();
 
     if (!currentUserId) {
