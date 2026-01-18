@@ -38,7 +38,7 @@ export interface TimeSlot {
 
 /**
  * Calculate compatibility score between two users
- * Formula: 35% Feature Similarity + 20% AI Summary + 15% Schedule + 30% Direct Matches (hobbies, music, major, classes)
+ * Dynamic weighting based on available data to prevent low scores from missing optional fields
  */
 export function calculateCompatibilityScore(
   userA: UserPreferences,
@@ -57,30 +57,65 @@ export function calculateCompatibilityScore(
     userB.implicitConfidenceScore,
   );
 
-  // 2. Feature similarity using cosine similarity (35% weight)
+  // 2. Feature similarity using cosine similarity
   const featureSimilarity = calculateFeatureSimilarity(
     blendedAResult.blendedFeatures,
     blendedBResult.blendedFeatures
   );
 
-  // 3. AI Summary Compatibility using word overlap (20% weight)
-  const summaryCompatibility = userA.aiSummary && userB.aiSummary
+  // 3. AI Summary Compatibility using word overlap
+  const hasSummary = !!(userA.aiSummary && userB.aiSummary);
+  const summaryCompatibility = hasSummary
     ? calculateSummaryOverlap(userA.aiSummary, userB.aiSummary)
     : 0;
 
-  // 4. Schedule overlap (15% weight)
+  // 4. Schedule overlap
+  const hasSchedule = !!(userA.scheduleData && userB.scheduleData);
   const scheduleScore = calculateScheduleCompatibility(userA.scheduleData, userB.scheduleData);
 
-  // 5. Direct matches - hobbies, music, majors, classes (30% weight)
+  // 5. Direct matches - hobbies, music, majors, classes
   const directMatchScore = calculateDirectMatches(userA, userB);
 
-  // Weighted combination: 35% + 20% + 15% + 30% = 100%
-  const finalScore = (
-    featureSimilarity * 0.35 +
-    summaryCompatibility * 0.20 +
-    scheduleScore * 0.15 +
-    directMatchScore * 0.30
+  // Dynamic weighting: redistribute weight from missing components to available ones
+  let weights = {
+    features: 0.35,
+    summary: 0.20,
+    schedule: 0.15,
+    direct: 0.30
+  };
+
+  // Redistribute missing component weights proportionally
+  if (!hasSummary) {
+    const redistribution = weights.summary / 3;
+    weights.features += redistribution;
+    weights.direct += redistribution;
+    weights.schedule += redistribution;
+    weights.summary = 0;
+  }
+
+  if (!hasSchedule) {
+    const redistribution = weights.schedule / 2;
+    weights.features += redistribution;
+    weights.direct += redistribution;
+    weights.schedule = 0;
+  }
+
+  // Calculate final score with dynamic weights
+  let finalScore = (
+    featureSimilarity * weights.features +
+    summaryCompatibility * weights.summary +
+    scheduleScore * weights.schedule +
+    directMatchScore * weights.direct
   );
+
+  // Apply inflation curve to make scores more generous
+  // This ensures better distribution across 40-95% range
+  // Formula: score^0.75 gives a boost to mid-range scores
+  finalScore = Math.pow(finalScore, 0.75);
+  
+  // Add small baseline boost (5-10%) to all matches
+  const baselineBoost = 0.08;
+  finalScore = Math.min(1.0, finalScore + baselineBoost);
 
   // Return as percentage (0-100)
   return Math.round(finalScore * 100);
@@ -88,23 +123,29 @@ export function calculateCompatibilityScore(
 
 /**
  * Calculate direct match score based on shared hobbies, music, majors, and classes
- * Returns a score from 0 to 1
+ * Returns a score from 0 to 1 with generous scoring
  */
 function calculateDirectMatches(userA: UserPreferences, userB: UserPreferences): number {
   let totalPoints = 0;
   let maxPossiblePoints = 0;
 
-  // 1. Shared Hobbies (40% of direct match score)
+  // 1. Shared Hobbies (40% of direct match score) - More generous
   const hobbiesA = userA.hobbies || [];
   const hobbiesB = userB.hobbies || [];
   if (hobbiesA.length > 0 && hobbiesB.length > 0) {
     const sharedHobbies = hobbiesA.filter(h => hobbiesB.includes(h)).length;
     const maxHobbies = Math.min(hobbiesA.length, hobbiesB.length);
-    totalPoints += (sharedHobbies / maxHobbies) * 40;
+    // Give partial credit for having hobbies even if not shared
+    const baseCredit = 15; // 15 points just for having hobbies
+    const matchBonus = (sharedHobbies / maxHobbies) * 25; // 25 points for matches
+    totalPoints += baseCredit + matchBonus;
+  } else if (hobbiesA.length > 0 || hobbiesB.length > 0) {
+    // At least one has hobbies - give 10 points
+    totalPoints += 10;
   }
   maxPossiblePoints += 40;
 
-  // 2. Shared Music (25% of direct match score)
+  // 2. Shared Music (25% of direct match score) - More generous
   const musicGenresA = userA.musicGenres || [];
   const musicGenresB = userB.musicGenres || [];
   const bandsA = userA.favoriteBands || [];
@@ -113,16 +154,22 @@ function calculateDirectMatches(userA: UserPreferences, userB: UserPreferences):
   let musicScore = 0;
   if (musicGenresA.length > 0 && musicGenresB.length > 0) {
     const sharedGenres = musicGenresA.filter(g => musicGenresB.includes(g)).length;
-    musicScore += (sharedGenres / Math.max(musicGenresA.length, musicGenresB.length)) * 15;
+    // Boost: any shared genre gives good points
+    const genreRatio = sharedGenres / Math.max(musicGenresA.length, musicGenresB.length);
+    musicScore += (genreRatio * 12) + (sharedGenres > 0 ? 5 : 0); // Bonus for any match
+  } else if (musicGenresA.length > 0 || musicGenresB.length > 0) {
+    musicScore += 3; // Base credit for having music taste
   }
+  
   if (bandsA.length > 0 && bandsB.length > 0) {
     const sharedBands = bandsA.filter(b => bandsB.includes(b)).length;
-    musicScore += (sharedBands / Math.max(bandsA.length, bandsB.length)) * 10;
+    // Shared bands are strong signals - boost heavily
+    musicScore += (sharedBands > 0 ? 10 : 3); // Big bonus for any shared band
   }
-  totalPoints += musicScore;
+  totalPoints += Math.min(musicScore, 25); // Cap at 25
   maxPossiblePoints += 25;
 
-  // 3. Shared Major/Areas of Study (20% of direct match score)
+  // 3. Shared Major/Areas of Study (20% of direct match score) - More generous
   const majorsA = userA.areasOfStudy || [];
   const majorsB = userB.areasOfStudy || [];
   if (majorsA.length > 0 && majorsB.length > 0) {
@@ -130,11 +177,16 @@ function calculateDirectMatches(userA: UserPreferences, userB: UserPreferences):
     if (sharedMajors > 0) {
       // Full points if they share any major
       totalPoints += 20;
+    } else {
+      // Give partial credit for being students with declared interests
+      totalPoints += 8;
     }
+  } else if (majorsA.length > 0 || majorsB.length > 0) {
+    totalPoints += 5; // At least one has academic interests
   }
   maxPossiblePoints += 20;
 
-  // 4. Same Classes (15% of direct match score)
+  // 4. Same Classes (15% of direct match score) - More generous
   const coursesA = userA.scheduleData?.courses || [];
   const coursesB = userB.scheduleData?.courses || [];
   if (coursesA.length > 0 && coursesB.length > 0) {
@@ -142,18 +194,28 @@ function calculateDirectMatches(userA: UserPreferences, userB: UserPreferences):
     const courseCodesB = coursesB.map((c: any) => c.courseCode).filter(Boolean);
     const sharedCourses = courseCodesA.filter((code: string) => courseCodesB.includes(code)).length;
     if (sharedCourses > 0) {
-      // Award points based on number of shared courses (capped at 3)
-      totalPoints += Math.min(sharedCourses * 5, 15);
+      // Shared courses are huge - give big boost
+      totalPoints += Math.min(sharedCourses * 8, 15); // Increased from 5 to 8 per course
+    } else {
+      // Both have schedules - give base credit
+      totalPoints += 3;
     }
+  } else if (coursesA.length > 0 || coursesB.length > 0) {
+    totalPoints += 2; // One has a schedule
   }
   maxPossiblePoints += 15;
 
-  // Return normalized score (0-1)
-  return maxPossiblePoints > 0 ? totalPoints / maxPossiblePoints : 0;
+  // Return normalized score with boost (0-1)
+  const rawScore = maxPossiblePoints > 0 ? totalPoints / maxPossiblePoints : 0;
+  
+  // Apply gentle boost to lift scores: x^0.85 makes 0.6→0.65, 0.8→0.84
+  return Math.pow(rawScore, 0.85);
 }
 
 /**
  * Calculate feature similarity using cosine similarity
+ * Returns a baseline of 0.5 if both users have no features (neutral compatibility)
+ * Applies generous scoring to boost compatibility
  */
 function calculateFeatureSimilarity(
   featuresA: Record<string, number>,
@@ -166,6 +228,11 @@ function calculateFeatureSimilarity(
   ]);
   const allFeatures = Array.from(allFeaturesSet);
 
+  // If both users have no features, return good neutral compatibility
+  if (allFeatures.length === 0) {
+    return 0.65; // Boosted from 0.5 to be more generous
+  }
+
   // Build vectors
   const vectorA: number[] = [];
   const vectorB: number[] = [];
@@ -176,7 +243,13 @@ function calculateFeatureSimilarity(
   }
 
   // Calculate cosine similarity
-  return cosineSimilarity(vectorA, vectorB);
+  let similarity = cosineSimilarity(vectorA, vectorB);
+  
+  // Apply generous boost: sqrt transformation to lift mid-range scores
+  // This makes 0.5 → 0.71, 0.7 → 0.84, 0.9 → 0.95
+  similarity = Math.sqrt(similarity);
+  
+  return similarity;
 }
 
 /**

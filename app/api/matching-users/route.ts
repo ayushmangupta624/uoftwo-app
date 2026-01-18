@@ -98,9 +98,18 @@ export async function GET() {
     // Calculate implicit preferences from viewing behavior
     const implicitPrefs = calculateImplicitPreferences(currentProfileViews || []);
 
-    // Extract explicit preferences from questionnaire (would come from user's questionnaire data)
-    // For now, using placeholder - this should pull from actual questionnaire data
-    const questionnaireFeatures = {}; // extractQuestionnairePreferences(questionnaireData);
+    // Extract explicit preferences from questionnaire data
+    const questionnaireData = {
+      hobbies: currentProfile.hobbies || [],
+      musicGenres: currentProfile.musicGenres || [],
+      favoriteBands: currentProfile.favoriteBands || [],
+      sportsTeams: currentProfile.sportsTeams || [],
+      personalityTraits: currentProfile.personalityTraits || [],
+      goingOutFrequency: currentProfile.goingOutFrequency || '',
+      studyPreference: currentProfile.studyPreference || '',
+      aboutMe: currentProfile.description || '',
+    };
+    const questionnaireFeatures = extractQuestionnairePreferences(questionnaireData);
 
     // Build current user preferences using schedule from currentProfile
     const currentUserScheduleData: ScheduleData | undefined = currentProfile.schedule ? {
@@ -129,6 +138,32 @@ export async function GET() {
         },
       },
       include: {
+        schedule: true,
+      },
+      select: {
+        id: true,
+        userId: true,
+        email: true,
+        gender: true,
+        genderPreference: true,
+        fname: true,
+        lname: true,
+        areas_of_study: true,
+        ethnicity: true,
+        images: true,
+        dateOfBirth: true,
+        yearOfStudy: true,
+        campus: true,
+        description: true,
+        aiSummary: true,
+        hobbies: true,
+        musicGenres: true,
+        favoriteBands: true,
+        sportsTeams: true,
+        personalityTraits: true,
+        goingOutFrequency: true,
+        studyPreference: true,
+        features: true,
         schedule: true,
       },
     });
@@ -187,18 +222,21 @@ export async function GET() {
     const rankedMatches = matchingUsers.map((user, idx) => {
       const userScheduleData = userSchedules.find(s => s.userId === user.user_id)?.scheduleData;
       
-      // Build candidate preferences
-      // In production, you'd fetch their features from the database
-      const userFeatures = (user as any).features || [];
-      const featureScores: Record<string, number> = {};
-      if (Array.isArray(userFeatures)) {
-        userFeatures.forEach((f: any) => {
-          featureScores[f.name] = f.score;
-        });
-      }
+      // Build candidate preferences from their questionnaire data
+      const candidateQuestionnaireData = {
+        hobbies: (user as any).hobbies || [],
+        musicGenres: (user as any).musicGenres || [],
+        favoriteBands: (user as any).favoriteBands || [],
+        sportsTeams: (user as any).sportsTeams || [],
+        personalityTraits: (user as any).personalityTraits || [],
+        goingOutFrequency: (user as any).goingOutFrequency || '',
+        studyPreference: (user as any).studyPreference || '',
+        aboutMe: (user as any).description || '',
+      };
+      const candidateFeatureScores = extractQuestionnairePreferences(candidateQuestionnaireData);
 
       const candidatePrefs: UserPreferences = {
-        questionnaireFeatureScores: featureScores,
+        questionnaireFeatureScores: candidateFeatureScores,
         implicitFeatureScores: {},
         implicitConfidenceScore: 0,
         scheduleData: userScheduleData,
