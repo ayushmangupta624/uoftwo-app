@@ -21,40 +21,18 @@ export default function Navbar() {
   const router = useRouter();
   const { hasCompletedOnboarding, isAuthenticated, user } = useAuth();
   const [userName, setUserName] = useState<string>("");
-  const [actuallyAuthenticated, setActuallyAuthenticated] = useState<boolean>(false);
 
-  // Check actual Supabase authentication state
-  useEffect(() => {
-    async function checkAuth() {
-      try {
-        const supabase = createClient();
-        const { data: { user: authUser } } = await supabase.auth.getUser();
-        setActuallyAuthenticated(!!authUser);
-      } catch (error) {
-        console.error('Error checking auth:', error);
-        setActuallyAuthenticated(false);
-      }
-    }
-    
-    checkAuth();
-  }, []);
-
-  // Fetch actual user name from database
+  // Fetch actual user name from database when authenticated
   useEffect(() => {
     async function fetchUserName() {
       if (!isAuthenticated) return;
       
       try {
-        const supabase = createClient();
-        const { data: { user: authUser } } = await supabase.auth.getUser();
-        
-        if (authUser) {
-          const response = await fetch('/api/profile');
-          if (response.ok) {
-            const data = await response.json();
-            if (data.profile?.fname) {
-              setUserName(data.profile.fname);
-            }
+        const response = await fetch('/api/profile');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.profile?.fname) {
+            setUserName(data.profile.fname);
           }
         }
       } catch (error) {
@@ -65,8 +43,8 @@ export default function Navbar() {
     fetchUserName();
   }, [isAuthenticated]);
 
-  // Determine logo destination based on actual Supabase auth state
-  const logoHref = actuallyAuthenticated ? "/dashboard" : "/";
+  // Determine logo destination based on auth state
+  const logoHref = isAuthenticated ? "/dashboard" : "/";
 
   return (
     <>

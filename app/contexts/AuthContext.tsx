@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createClient } from '@/lib/supabase/client';
 
 interface User {
   id: string;
@@ -22,44 +23,115 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  // For demo purposes, we'll use a mock user that's logged in and completed everything
-  // In production, this would check actual authentication state
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check localStorage for authenticated user
-    const storedUser = localStorage.getItem('uoftwo_user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    // Check actual Supabase authentication state
+    async function checkAuth() {
+      try {
+        const supabase = createClient();
+        const { data: { user: authUser } } = await supabase.auth.getUser();
+        
+        if (authUser) {
+          // Fetch user profile to get additional data
+          const response = await fetch('/api/profile');
+          if (response.ok) {
+            const data = await response.json();
+            const profile = data.profile;
+            
+            if (profile) {
+              setUser({
+                id: authUser.id,
+                name: profile.fname || '',
+                email: authUser.email || '',
+                scheduleSubmitted: !!profile.schedule,
+                questionnaireCompleted: !!(profile.hobbies && profile.hobbies.length > 0),
+              });
+            } else {
+              setUser({
+                id: authUser.id,
+                name: '',
+                email: authUser.email || '',
+                scheduleSubmitted: false,
+                questionnaireCompleted: false,
+              });
+            }
+          } else {
+            setUser({
+              id: authUser.id,
+              name: '',
+              email: authUser.email || '',
+              scheduleSubmitted: false,
+              questionnaireCompleted: false,
+            });
+          }
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
+        console.error('Error checking auth:', error);
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+      }
     }
-    setIsLoading(false);
+    
+    checkAuth();
+    
+    // Listen for auth state changes
+    const supabase = createClient();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user) {
+        // User logged in, fetch profile
+        try {
+          const response = await fetch('/api/profile');
+          if (response.ok) {
+            const data = await response.json();
+            const profile = data.profile;
+            
+            if (profile) {
+              setUser({
+                id: session.user.id,
+                name: profile.fname || '',
+                email: session.user.email || '',
+                scheduleSubmitted: !!profile.schedule,
+                questionnaireCompleted: !!(profile.hobbies && profile.hobbies.length > 0),
+              });
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching profile:', error);
+        }
+      } else {
+        setUser(null);
+      }
+    });
+    
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const login = async (email: string, password: string) => {
-    // Mock login - in production, this would call your API
-    // User name will be fetched from the profile after login
-    const mockUser: User = {
-      id: '1',
-      name: '',
-      email,
-      scheduleSubmitted: true,
-      questionnaireCompleted: true,
-    };
-    setUser(mockUser);
-    localStorage.setItem('uoftwo_user', JSON.stringify(mockUser));
+    // This is handled by Supabase auth directly in the login form
+    // The auth state listener will update the user state automatically
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('uoftwo_user');
+  const logout = async () => {
+    try {
+      const supabase = createClient();
+      await supabase.auth.signOut();
+      setUser(null);
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
   };
 
   const updateUser = (updates: Partial<User>) => {
     if (user) {
       const updatedUser = { ...user, ...updates };
       setUser(updatedUser);
-      localStorage.setItem('uoftwo_user', JSON.stringify(updatedUser));
     }
   };
 
