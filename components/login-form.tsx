@@ -43,6 +43,9 @@ export function LoginForm({
       const response = await fetch("/api/profile");
       const data = await response.json();
 
+      // Determine redirect URL
+      let redirectUrl = "/questionnaire";
+      
       // If user has a profile, check for questionnaire completion
       if (data.profile) {
         // Check if questionnaire is completed by checking if hobbies exist
@@ -50,14 +53,12 @@ export function LoginForm({
           data.profile.hobbies && data.profile.hobbies.length > 0;
 
         if (hasCompletedQuestionnaire) {
-          router.push("/dashboard");
-        } else {
-          router.push("/questionnaire");
+          redirectUrl = "/dashboard";
         }
-      } else {
-        // No profile exists, redirect to questionnaire (which will handle profile creation)
-        router.push("/questionnaire");
       }
+      
+      // Force a full page reload to ensure session is properly loaded
+      window.location.href = redirectUrl;
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred");
     } finally {
