@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * GET /api/preferences?userId=...
  * Returns the user's blended preferences (questionnaire + viewing behavior)

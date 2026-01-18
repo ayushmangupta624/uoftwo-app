@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getAuthenticatedUserId } from "@/lib/db-helpers";
 
+export const dynamic = 'force-dynamic';
+
 /**
  * POST /api/questionnaire
  * Saves the user's complete questionnaire responses to the database

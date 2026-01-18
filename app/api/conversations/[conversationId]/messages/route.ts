@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getAuthenticatedUserId } from "@/lib/db-helpers";
 
+export const dynamic = 'force-dynamic';
+
 type Params = { conversationId: string };
 
 export async function GET(

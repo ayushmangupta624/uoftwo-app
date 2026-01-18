@@ -3,6 +3,8 @@ import { Gender } from "@/types/profile";
 import { prisma } from "@/lib/prisma";
 import { getAuthenticatedUserId, getAuthenticatedUserEmail } from "@/lib/db-helpers";
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     const userId = await getAuthenticatedUserId();

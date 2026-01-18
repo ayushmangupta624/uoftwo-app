@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { generateCompatibilitySummary } from "@/lib/compatibilityGenerator";
 
+export const dynamic = 'force-dynamic';
+
 /**
  * POST /api/compatibility-summary
  * Generate a compatibility summary between two users using OpenAI

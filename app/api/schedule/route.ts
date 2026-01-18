@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { getAuthenticatedUserId } from "@/lib/db-helpers";
 import { parseSchedulePdf } from "@/lib/pdfParser";
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
   try {
     const userId = await getAuthenticatedUserId();

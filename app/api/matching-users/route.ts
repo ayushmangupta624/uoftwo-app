@@ -6,6 +6,8 @@ import { calculateCompatibilityScore, UserPreferences, ScheduleData } from "@/li
 import { calculateImplicitPreferences, extractQuestionnairePreferences } from "@/lib/preferenceCalculator";
 import { generateCompatibilitySummary } from "@/lib/compatibilityGenerator";
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     const userId = await getAuthenticatedUserId();
