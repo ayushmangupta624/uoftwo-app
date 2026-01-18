@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getAuthenticatedUserId } from "@/lib/db-helpers";
 import { calculateCompatibilityScore, UserPreferences, ScheduleData } from "@/lib/matchingAlgorithm";
 import { calculateImplicitPreferences, extractQuestionnairePreferences } from "@/lib/preferenceCalculator";
+import { generateCompatibilitySummary } from "@/lib/compatibilityGenerator";
 
 export async function GET() {
   try {
@@ -16,9 +17,12 @@ export async function GET() {
       );
     }
 
-    // Get the current user's profile
-    const currentProfile = await prisma.user.findUnique({
+    // Get the current user's profile with questionnaire data
+    const currentProfile = await (prisma as any).user.findUnique({
       where: { userId },
+      include: {
+        schedule: true,
+      },
     });
 
     if (!currentProfile) {
@@ -74,25 +78,20 @@ export async function GET() {
     const passedUserIds = new Set(passedUsers.map((p: any) => p.passedId));
     const likedUserIds = new Set(likedUsers.map((l: any) => l.likedId));
 
-    // Get current user's schedule and profile views for smart matching
-    const [currentSchedule, currentProfileViews] = await Promise.all([
-      prismaAny.schedule?.findUnique({
-        where: { userId },
-      }).catch(() => null),
-      prismaAny.profileView?.findMany({
-        where: { viewerId: userId },
-        include: {
-          viewedProfile: {
-            select: {
-              userId: true,
-              features: true,
-              aiSummary: true,
-            },
+    // Get current user's profile views for smart matching
+    const currentProfileViews = await prismaAny.profileView?.findMany({
+      where: { viewerId: userId },
+      include: {
+        viewedProfile: {
+          select: {
+            userId: true,
+            features: true,
+            aiSummary: true,
           },
         },
-        take: 100,
-      }).catch(() => []),
-    ]);
+      },
+      take: 100,
+    }).catch(() => []);
 
     // Calculate implicit preferences from viewing behavior
     const implicitPrefs = calculateImplicitPreferences(currentProfileViews || []);
@@ -101,11 +100,11 @@ export async function GET() {
     // For now, using placeholder - this should pull from actual questionnaire data
     const questionnaireFeatures = {}; // extractQuestionnairePreferences(questionnaireData);
 
-    // Build current user preferences
-    const currentUserScheduleData: ScheduleData | undefined = currentSchedule ? {
-      buildings: currentSchedule.buildings || [],
-      timeSlots: currentSchedule.timeSlots || [],
-      courses: currentSchedule.courses || [],
+    // Build current user preferences using schedule from currentProfile
+    const currentUserScheduleData: ScheduleData | undefined = currentProfile.schedule ? {
+      buildings: currentProfile.schedule.buildings || [],
+      timeSlots: currentProfile.schedule.timeSlots || [],
+      courses: currentProfile.schedule.courses || [],
     } : undefined;
 
     const currentUserPrefs: UserPreferences = {
@@ -114,14 +113,21 @@ export async function GET() {
       implicitConfidenceScore: implicitPrefs.confidenceScore,
       scheduleData: currentUserScheduleData,
       aiSummary: currentProfile.aiSummary || undefined,
+      hobbies: (currentProfile.hobbies || []).map((h: any) => String(h)),
+      musicGenres: (currentProfile.musicGenres || []).map((g: any) => String(g)),
+      favoriteBands: currentProfile.favoriteBands || [],
+      areasOfStudy: currentProfile.areas_of_study || [],
     };
 
-    // Find all users except current user
-    const allUsers = await prisma.user.findMany({
+    // Find all users except current user with all relevant data
+    const allUsers = await (prisma as any).user.findMany({
       where: {
         userId: {
           not: userId,
         },
+      },
+      include: {
+        schedule: true,
       },
     });
 
@@ -149,33 +155,31 @@ export async function GET() {
         email: user.email || `user_${user.userId.slice(0, 8)}`,
         gender: user.gender as Gender,
         gender_preference: user.genderPreference as Gender[],
-        fname: (user as any).fname,
-        lname: (user as any).lname,
-        areas_of_study: ((user as any).areas_of_study || []) as string[],
-        ethnicity: (user as any).ethnicity as "ASIAN" | "BLACK" | "HISPANIC" | "WHITE" | "NATIVE" | "MIDDLE_EASTERN" | "OTHER",
-        aiSummary: (user as any).aiSummary || undefined,
-        images: ((user as any).images || []) as string[],
-        dateOfBirth: (user as any).dateOfBirth,
-        yearOfStudy: (user as any).yearOfStudy,
+        fname: user.fname,
+        lname: user.lname,
+        areas_of_study: (user.areas_of_study || []) as string[],
+        ethnicity: user.ethnicity as "ASIAN" | "BLACK" | "HISPANIC" | "WHITE" | "NATIVE" | "MIDDLE_EASTERN" | "OTHER",
+        aiSummary: user.aiSummary || undefined,
+        images: (user.images || []) as string[],
+        dateOfBirth: user.dateOfBirth,
+        yearOfStudy: user.yearOfStudy,
+        campus: user.campus || undefined,
+        hobbies: (user.hobbies || []).map((h: any) => String(h)),
+        musicGenres: (user.musicGenres || []).map((g: any) => String(g)),
+        favoriteBands: user.favoriteBands || [],
+        schedule: user.schedule,
+        features: user.features,
       }));
 
-    // Get schedules for all matching users
-    const userSchedules = await Promise.all(
-      matchingUsers.map(async (user) => {
-        const schedule = await prismaAny.schedule?.findUnique({
-          where: { userId: user.user_id },
-        }).catch(() => null);
-        
-        return {
-          userId: user.user_id,
-          scheduleData: schedule ? {
-            buildings: schedule.buildings || [],
-            timeSlots: schedule.timeSlots || [],
-            courses: schedule.courses || [],
-          } as ScheduleData : undefined,
-        };
-      })
-    );
+    // Prepare schedule data for each user (already included)
+    const userSchedules = matchingUsers.map((user: any) => ({
+      userId: user.user_id,
+      scheduleData: user.schedule ? {
+        buildings: user.schedule.buildings || [],
+        timeSlots: user.schedule.timeSlots || [],
+        courses: user.schedule.courses || [],
+      } as ScheduleData : undefined,
+    }));
 
     // Calculate compatibility scores and rank matches
     const rankedMatches = matchingUsers.map((user, idx) => {
@@ -197,6 +201,10 @@ export async function GET() {
         implicitConfidenceScore: 0,
         scheduleData: userScheduleData,
         aiSummary: user.aiSummary,
+        hobbies: (user as any).hobbies || [],
+        musicGenres: (user as any).musicGenres || [],
+        favoriteBands: (user as any).favoriteBands || [],
+        areasOfStudy: user.areas_of_study || [],
       };
 
       const compatibilityScore = calculateCompatibilityScore(currentUserPrefs, candidatePrefs);
@@ -207,7 +215,35 @@ export async function GET() {
       };
     }).sort((a, b) => b.compatibilityScore - a.compatibilityScore);
 
-    return NextResponse.json({ matches: rankedMatches });
+    // Generate compatibility summaries for each match
+    const matchesWithCompatibility = await Promise.all(
+      rankedMatches.slice(0, 20).map(async (match) => {
+        try {
+          // Generate compatibility summary directly
+          const compatibilityData = await generateCompatibilitySummary(
+            userId,
+            match.user_id
+          );
+          
+          return {
+            ...match,
+            aiSummary: match.aiSummary, // Explicitly preserve aiSummary
+            compatibilitySummary: compatibilityData.summary,
+            commonHobbies: compatibilityData.commonHobbies,
+            commonInterests: compatibilityData.commonInterests,
+            commonMusicGenres: compatibilityData.commonMusicGenres,
+            commonBands: compatibilityData.commonBands,
+            sameClasses: compatibilityData.sameClasses,
+            conversationStarters: compatibilityData.conversationStarters,
+          };
+        } catch (error) {
+          console.error(`Failed to generate compatibility summary for user ${match.user_id}:`, error);
+          return match;
+        }
+      })
+    );
+
+    return NextResponse.json({ matches: matchesWithCompatibility });
   } catch (error) {
     console.error("Error fetching matching users:", error);
     return NextResponse.json(

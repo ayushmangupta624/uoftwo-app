@@ -12,6 +12,11 @@ export interface UserPreferences {
   implicitConfidenceScore: number;
   scheduleData?: ScheduleData;
   aiSummary?: string;
+  // Questionnaire data for direct matching
+  hobbies?: string[];
+  musicGenres?: string[];
+  favoriteBands?: string[];
+  areasOfStudy?: string[];
 }
 
 /**
@@ -33,7 +38,7 @@ export interface TimeSlot {
 
 /**
  * Calculate compatibility score between two users
- * Formula: 50% Feature Similarity + 30% AI Summary Compatibility + 20% Schedule Overlap
+ * Formula: 35% Feature Similarity + 20% AI Summary + 15% Schedule + 30% Direct Matches (hobbies, music, major, classes)
  */
 export function calculateCompatibilityScore(
   userA: UserPreferences,
@@ -52,29 +57,99 @@ export function calculateCompatibilityScore(
     userB.implicitConfidenceScore,
   );
 
-  // 2. Feature similarity using cosine similarity (50% weight)
+  // 2. Feature similarity using cosine similarity (35% weight)
   const featureSimilarity = calculateFeatureSimilarity(
     blendedAResult.blendedFeatures,
     blendedBResult.blendedFeatures
   );
 
-  // 3. AI Summary Compatibility using word overlap (30% weight)
+  // 3. AI Summary Compatibility using word overlap (20% weight)
   const summaryCompatibility = userA.aiSummary && userB.aiSummary
     ? calculateSummaryOverlap(userA.aiSummary, userB.aiSummary)
     : 0;
 
-  // 4. Schedule overlap (20% weight)
+  // 4. Schedule overlap (15% weight)
   const scheduleScore = calculateScheduleCompatibility(userA.scheduleData, userB.scheduleData);
 
-  // Weighted combination: 50% + 30% + 20% = 100%
+  // 5. Direct matches - hobbies, music, majors, classes (30% weight)
+  const directMatchScore = calculateDirectMatches(userA, userB);
+
+  // Weighted combination: 35% + 20% + 15% + 30% = 100%
   const finalScore = (
-    featureSimilarity * 0.5 +
-    summaryCompatibility * 0.3 +
-    scheduleScore * 0.2
+    featureSimilarity * 0.35 +
+    summaryCompatibility * 0.20 +
+    scheduleScore * 0.15 +
+    directMatchScore * 0.30
   );
 
   // Return as percentage (0-100)
   return Math.round(finalScore * 100);
+}
+
+/**
+ * Calculate direct match score based on shared hobbies, music, majors, and classes
+ * Returns a score from 0 to 1
+ */
+function calculateDirectMatches(userA: UserPreferences, userB: UserPreferences): number {
+  let totalPoints = 0;
+  let maxPossiblePoints = 0;
+
+  // 1. Shared Hobbies (40% of direct match score)
+  const hobbiesA = userA.hobbies || [];
+  const hobbiesB = userB.hobbies || [];
+  if (hobbiesA.length > 0 && hobbiesB.length > 0) {
+    const sharedHobbies = hobbiesA.filter(h => hobbiesB.includes(h)).length;
+    const maxHobbies = Math.min(hobbiesA.length, hobbiesB.length);
+    totalPoints += (sharedHobbies / maxHobbies) * 40;
+  }
+  maxPossiblePoints += 40;
+
+  // 2. Shared Music (25% of direct match score)
+  const musicGenresA = userA.musicGenres || [];
+  const musicGenresB = userB.musicGenres || [];
+  const bandsA = userA.favoriteBands || [];
+  const bandsB = userB.favoriteBands || [];
+  
+  let musicScore = 0;
+  if (musicGenresA.length > 0 && musicGenresB.length > 0) {
+    const sharedGenres = musicGenresA.filter(g => musicGenresB.includes(g)).length;
+    musicScore += (sharedGenres / Math.max(musicGenresA.length, musicGenresB.length)) * 15;
+  }
+  if (bandsA.length > 0 && bandsB.length > 0) {
+    const sharedBands = bandsA.filter(b => bandsB.includes(b)).length;
+    musicScore += (sharedBands / Math.max(bandsA.length, bandsB.length)) * 10;
+  }
+  totalPoints += musicScore;
+  maxPossiblePoints += 25;
+
+  // 3. Shared Major/Areas of Study (20% of direct match score)
+  const majorsA = userA.areasOfStudy || [];
+  const majorsB = userB.areasOfStudy || [];
+  if (majorsA.length > 0 && majorsB.length > 0) {
+    const sharedMajors = majorsA.filter(m => majorsB.includes(m)).length;
+    if (sharedMajors > 0) {
+      // Full points if they share any major
+      totalPoints += 20;
+    }
+  }
+  maxPossiblePoints += 20;
+
+  // 4. Same Classes (15% of direct match score)
+  const coursesA = userA.scheduleData?.courses || [];
+  const coursesB = userB.scheduleData?.courses || [];
+  if (coursesA.length > 0 && coursesB.length > 0) {
+    const courseCodesA = coursesA.map((c: any) => c.courseCode).filter(Boolean);
+    const courseCodesB = coursesB.map((c: any) => c.courseCode).filter(Boolean);
+    const sharedCourses = courseCodesA.filter((code: string) => courseCodesB.includes(code)).length;
+    if (sharedCourses > 0) {
+      // Award points based on number of shared courses (capped at 3)
+      totalPoints += Math.min(sharedCourses * 5, 15);
+    }
+  }
+  maxPossiblePoints += 15;
+
+  // Return normalized score (0-1)
+  return maxPossiblePoints > 0 ? totalPoints / maxPossiblePoints : 0;
 }
 
 /**
@@ -84,11 +159,12 @@ function calculateFeatureSimilarity(
   featuresA: Record<string, number>,
   featuresB: Record<string, number>
 ): number {
-  // Get all unique features
-  const allFeatures = new Set([
+  // Get all unique features (convert Set to Array for compatibility)
+  const allFeaturesSet = new Set([
     ...Object.keys(featuresA),
     ...Object.keys(featuresB)
   ]);
+  const allFeatures = Array.from(allFeaturesSet);
 
   // Build vectors
   const vectorA: number[] = [];

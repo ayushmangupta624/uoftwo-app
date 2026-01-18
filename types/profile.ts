@@ -48,5 +48,15 @@ export interface MatchingUser {
   images?: string[];
   dateOfBirth?: string | Date;
   yearOfStudy?: number;
+  campus?: string;
+  // Compatibility data
+  compatibilityScore?: number;
+  compatibilitySummary?: string;
+  commonHobbies?: string[];
+  commonInterests?: string[];
+  commonMusicGenres?: string[];
+  commonBands?: string[];
+  sameClasses?: string[];
+  conversationStarters?: string[];
 }
 

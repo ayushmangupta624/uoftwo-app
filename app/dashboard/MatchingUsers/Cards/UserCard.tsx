@@ -242,7 +242,7 @@ export function UserCard({
         </div>
         <CardContent className="p-4">
           <div className="flex items-start justify-between ">
-            <div>
+            <div className="flex-1">
               <h3 className="text-xl font-bold">
                 {user.fname && user.lname
                   ? `${user.fname} ${user.lname}`
@@ -252,8 +252,18 @@ export function UserCard({
                 {age && <span>{age} years old</span>}
                 {age && user.yearOfStudy && <span>•</span>}
                 {user.yearOfStudy && <span>Year {user.yearOfStudy}</span>}
+                {user.yearOfStudy && user.campus && user.campus !== "null" && <span>•</span>}
+                {user.campus && user.campus !== "null" && <span>{user.campus}</span>}
               </div>
             </div>
+            {user.compatibilityScore !== undefined && (
+              <div className="flex flex-col items-center">
+                <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                  {user.compatibilityScore}%
+                </div>
+                <div className="text-xs text-muted-foreground">Match</div>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
