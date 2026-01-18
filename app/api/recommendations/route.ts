@@ -46,10 +46,10 @@ export async function GET() {
     });
 
     // Find mutual likes (matches)
-    const likedUserIds = new Set(likedUsers.map((lu) => lu.likedId));
+    const likedUserIds = new Set(likedUsers.map((lu: any) => lu.likedId));
     const matches = likedByUsers
-      .filter((lbu) => likedUserIds.has(lbu.likerId))
-      .map((lbu) => ({
+      .filter((lbu: any) => likedUserIds.has(lbu.likerId))
+      .map((lbu: any) => ({
         userId: lbu.liker.userId,
         email: lbu.liker.email,
         fname: lbu.liker.fname,

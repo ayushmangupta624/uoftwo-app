@@ -55,7 +55,7 @@ export async function GET() {
     });
 
     // Format conversations with the other user's info
-    const formattedConversations = conversations.map((conv) => {
+    const formattedConversations = conversations.map((conv: any) => {
       const otherUser =
         conv.user1Id === currentUserId ? conv.user2 : conv.user1;
       const lastMessage = conv.messages[0];

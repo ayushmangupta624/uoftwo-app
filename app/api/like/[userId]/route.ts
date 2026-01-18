@@ -4,7 +4,7 @@ import { getAuthenticatedUserId } from "@/lib/db-helpers";
 
 export async function POST(
   request: Request,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   const { userId } = await params;
 

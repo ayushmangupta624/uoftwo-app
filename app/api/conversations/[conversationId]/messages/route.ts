@@ -6,17 +6,14 @@ type Params = { conversationId: string };
 
 export async function GET(
   request: NextRequest,
-  context: { params: Promise<Params> }
+  context: { params: Promise<Params> },
 ) {
   try {
     const { conversationId } = await context.params;
     const currentUserId = await getAuthenticatedUserId();
 
     if (!currentUserId) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Verify user is part of the conversation
@@ -27,7 +24,7 @@ export async function GET(
     if (!conversation) {
       return NextResponse.json(
         { error: "Conversation not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -35,10 +32,7 @@ export async function GET(
       conversation.user1Id !== currentUserId &&
       conversation.user2Id !== currentUserId
     ) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
     // Get all messages in the conversation
@@ -105,24 +99,21 @@ export async function GET(
     console.error("Error fetching messages:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function POST(
   request: NextRequest,
-  context: { params: Promise<Params> }
+  context: { params: Promise<Params> },
 ) {
   try {
     const { conversationId } = await context.params;
     const currentUserId = await getAuthenticatedUserId();
 
     if (!currentUserId) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await request.json();
@@ -131,7 +122,7 @@ export async function POST(
     if (!content || !content.trim()) {
       return NextResponse.json(
         { error: "Message content is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -143,7 +134,7 @@ export async function POST(
     if (!conversation) {
       return NextResponse.json(
         { error: "Conversation not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -151,10 +142,7 @@ export async function POST(
       conversation.user1Id !== currentUserId &&
       conversation.user2Id !== currentUserId
     ) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
     // Create message and update conversation timestamp
@@ -197,7 +185,7 @@ export async function POST(
     console.error("Error sending message:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

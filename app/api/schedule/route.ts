@@ -25,7 +25,7 @@ export async function POST(request: Request) {
       );
     }
 
-    let courses = [];
+    let courses: any[] = [];
     let buildings: string[] = [];
 
     // Parse PDF if file is provided

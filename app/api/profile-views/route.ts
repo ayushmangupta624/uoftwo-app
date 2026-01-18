@@ -44,65 +44,58 @@ export async function POST(req: NextRequest) {
     // Calculate duration in seconds
     const duration = viewEndTime
       ? Math.floor((new Date(viewEndTime).getTime() - new Date(viewStartTime).getTime()) / 1000)
-      : null;
+      : undefined;
 
     // Save profile view to database
     const profileView = await prisma.profileView.create({
       data: {
-        userId,
+        viewerId: userId,
         viewedProfileId,
-        viewStartTime: new Date(viewStartTime),
-        viewEndTime: viewEndTime ? new Date(viewEndTime) : null,
-        duration,
+        duration: duration ?? 0,
         scrollDepth: scrollDepth ?? 0.5,
         interacted: !!actionType,
-        actionType,
+        interactionType: actionType,
       },
     });
 
     // Fetch all views for this user to recalculate implicit preferences
     const allViews = await prisma.profileView.findMany({
-      where: { userId },
-      orderBy: { createdAt: 'asc' },
+      where: { viewerId: userId },
+      orderBy: { viewedAt: 'asc' },
     });
 
     // Calculate implicit preferences from all viewing behavior
-    const implicitPrefs = calculateImplicitPreferences(allViews);
+    // const implicitPrefs = calculateImplicitPreferences(allViews);
 
-    // Update or create user preference profile
-    const updatedPreferences = await prisma.userPreferenceProfile.upsert({
-      where: { userId },
-      create: {
-        userId,
-        featureScores: implicitPrefs.featureScores,
-        confidenceScore: implicitPrefs.confidenceScore,
-        viewCount: implicitPrefs.viewCount,
-      },
-      update: {
-        featureScores: implicitPrefs.featureScores,
-        confidenceScore: implicitPrefs.confidenceScore,
-        viewCount: implicitPrefs.viewCount,
-        lastUpdated: new Date(),
-      },
-    });
+    // TODO: Update or create user preference profile when schema is ready
+    // const updatedPreferences = await prisma.userPreferenceProfile.upsert({
+    //   where: { userId },
+    //   create: {
+    //     userId,
+    //     featureScores: implicitPrefs.featureScores,
+    //     confidenceScore: implicitPrefs.confidenceScore,
+    //     viewCount: implicitPrefs.viewCount,
+    //   },
+    //   update: {
+    //     featureScores: implicitPrefs.featureScores,
+    //     confidenceScore: implicitPrefs.confidenceScore,
+    //     viewCount: implicitPrefs.viewCount,
+    //     lastUpdated: new Date(),
+    //   },
+    // });
 
     return NextResponse.json({
       success: true,
       data: {
         profileView: {
           id: profileView.id,
-          userId,
+          viewerId: userId,
           viewedProfileId,
-          duration,
-          actionType,
+          duration: duration ?? 0,
+          interactionType: actionType,
           interacted: profileView.interacted,
         },
-        preferences: {
-          archetypeScores: updatedPreferences.archetypeScores,
-          buildingScores: updatedPreferences.buildingScores,
-          confidenceScore: updatedPreferences.confidenceScore,
-          viewCount: updatedPreferences.viewCount,
-        },
+        viewCount: allViews.length,
       },
     });
   } catch (error) {
