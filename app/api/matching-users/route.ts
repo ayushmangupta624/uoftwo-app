@@ -108,6 +108,13 @@ export async function GET() {
       goingOutFrequency: currentProfile.goingOutFrequency || '',
       studyPreference: currentProfile.studyPreference || '',
       aboutMe: currentProfile.description || '',
+      clubs: currentProfile.clubs || [],
+      favCampusSpots: currentProfile.favCampusSpots || [],
+      values: currentProfile.values || [],
+      dealBreakers: currentProfile.dealBreakers || [],
+      footballPreference: currentProfile.footballPreference || '',
+      idealWeekend: currentProfile.idealWeekend || '',
+      lookingFor: currentProfile.lookingFor || '',
     };
     const questionnaireFeatures = extractQuestionnairePreferences(questionnaireData);
 
@@ -232,6 +239,13 @@ export async function GET() {
         goingOutFrequency: (user as any).goingOutFrequency || '',
         studyPreference: (user as any).studyPreference || '',
         aboutMe: (user as any).description || '',
+        clubs: (user as any).clubs || [],
+        favCampusSpots: (user as any).favCampusSpots || [],
+        values: (user as any).values || [],
+        dealBreakers: (user as any).dealBreakers || [],
+        footballPreference: (user as any).footballPreference || '',
+        idealWeekend: (user as any).idealWeekend || '',
+        lookingFor: (user as any).lookingFor || '',
       };
       const candidateFeatureScores = extractQuestionnairePreferences(candidateQuestionnaireData);
 

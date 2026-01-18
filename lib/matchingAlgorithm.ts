@@ -66,7 +66,7 @@ export function calculateCompatibilityScore(
   // 3. AI Summary Compatibility using word overlap
   const hasSummary = !!(userA.aiSummary && userB.aiSummary);
   const summaryCompatibility = hasSummary
-    ? calculateSummaryOverlap(userA.aiSummary, userB.aiSummary)
+    ? calculateSummaryOverlap(userA.aiSummary!, userB.aiSummary!)
     : 0;
 
   // 4. Schedule overlap
