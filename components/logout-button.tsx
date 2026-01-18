@@ -10,7 +10,8 @@ export function LogoutButton() {
   const logout = async () => {
     const supabase = createClient();
     await supabase.auth.signOut();
-    router.push("/auth/login");
+    // Force a full page reload to clear all state and cached data
+    window.location.href = "/auth/login";
   };
 
   return <Button onClick={logout}>Logout</Button>;

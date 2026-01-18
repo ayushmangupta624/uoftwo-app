@@ -20,7 +20,8 @@ export default function Home() {
               Welcome to UofTwo
             </h1>
             <p className="text-xl text-[#E6D4D4]/90 mb-8 drop-shadow-lg font-light">
-              Meet the people you keep seeing in Robarts. Your GPA isn't the only thing worth investing in.
+              Meet the people you keep seeing in Robarts. Your GPA isn't the
+              only thing worth investing in.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/auth/sign-up">
@@ -29,7 +30,10 @@ export default function Home() {
                 </Button>
               </Link>
               <Link href="/auth/login">
-                <Button variant="outline" className="w-full sm:w-auto border-2 border-[#D9C4C4] text-[#F5E6E6] hover:bg-[#D9C4C4]/10 font-semibold px-8 py-6 text-lg rounded-full shadow-xl transition-all">
+                <Button
+                  variant="outline"
+                  className="w-full sm:w-auto border-2 border-[#D9C4C4] text-[#F5E6E6] hover:bg-[#D9C4C4]/10 font-semibold px-8 py-6 text-lg rounded-full shadow-xl transition-all"
+                >
                   Sign In
                 </Button>
               </Link>

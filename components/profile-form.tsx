@@ -423,8 +423,8 @@ export function ProfileForm({ initialProfile, className }: ProfileFormProps) {
     setIsLoggingOut(true);
     const supabase = createClient();
     await supabase.auth.signOut();
-    router.push("/auth/login");
-    router.refresh();
+    // Force a full page reload to clear all state and cached data
+    window.location.href = "/auth/login";
   };
   
   // Questionnaire fields
