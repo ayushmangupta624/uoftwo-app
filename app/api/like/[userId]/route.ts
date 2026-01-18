@@ -26,30 +26,21 @@ export async function POST(
       );
     }
 
-    // Check if already liked
-    const existingLike = await (prisma as any).userLike.findUnique({
-      where: {
-        likerId_likedId: {
+    // Try to create the like, handle duplicate gracefully
+    try {
+      await (prisma as any).userLike.create({
+        data: {
           likerId: thisUserId,
           likedId: userId,
         },
-      },
-    });
-
-    if (existingLike) {
-      return NextResponse.json(
-        { success: true, alreadyLiked: true },
-        { status: 200 }
-      );
+      });
+    } catch (error: any) {
+      // P2002 is the Prisma error code for unique constraint violation
+      // If the like already exists, that's fine - just continue
+      if (error.code !== 'P2002') {
+        throw error;
+      }
     }
-
-    // Create the like
-    await (prisma as any).userLike.create({
-      data: {
-        likerId: thisUserId,
-        likedId: userId,
-      },
-    });
 
     // Check if it's a mutual like (match)
     const mutualLike = await (prisma as any).userLike.findUnique({

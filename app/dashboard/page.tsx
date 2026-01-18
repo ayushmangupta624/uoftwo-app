@@ -7,7 +7,6 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { prisma } from "@/lib/prisma";
 
-// Cache the Prisma query to avoid duplicate fetches
 const getProfile = cache(async (userId: string) => {
   return await prisma.user.findUnique({
     where: { userId },
@@ -15,10 +14,8 @@ const getProfile = cache(async (userId: string) => {
 });
 
 async function ProfileInfo({ userId }: { userId: string }) {
-  // Get user profile using Prisma (cached)
   const profile = await getProfile(userId);
 
-  // This should already be checked, but double-check for safety
   if (
     !profile ||
     !profile.gender ||
