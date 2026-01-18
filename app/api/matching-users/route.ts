@@ -144,9 +144,6 @@ export async function GET() {
           not: userId,
         },
       },
-      include: {
-        schedule: true,
-      },
       select: {
         id: true,
         userId: true,
