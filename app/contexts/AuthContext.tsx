@@ -28,30 +28,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate checking localStorage for authenticated user
+    // Check localStorage for authenticated user
     const storedUser = localStorage.getItem('uoftwo_user');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
-    } else {
-      // For demo: Create a mock authenticated user with completed onboarding
-      const mockUser: User = {
-        id: '1',
-        name: 'Demo User',
-        email: 'demo@uoft.ca',
-        scheduleSubmitted: true,
-        questionnaireCompleted: true,
-      };
-      setUser(mockUser);
-      localStorage.setItem('uoftwo_user', JSON.stringify(mockUser));
     }
     setIsLoading(false);
   }, []);
 
   const login = async (email: string, password: string) => {
     // Mock login - in production, this would call your API
+    // User name will be fetched from the profile after login
     const mockUser: User = {
       id: '1',
-      name: 'Demo User',
+      name: '',
       email,
       scheduleSubmitted: true,
       questionnaireCompleted: true,

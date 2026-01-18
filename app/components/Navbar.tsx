@@ -73,7 +73,7 @@ export default function Navbar() {
             {isAuthenticated ? (
               <div className="hidden md:flex items-center space-x-4">
                 <span className="text-white/90 font-medium">
-                  Hey, {userName || user?.name || "there"}!
+                  Hey, {userName || "there"}!
                 </span>
                 <Link
                   href="/messages"
