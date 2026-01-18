@@ -2,48 +2,9 @@
 
 import Link from "next/link";
 import { Heart } from "lucide-react";
-import AuthRedirect from "./components/AuthRedirect";
 import HeroSection from "./components/hero-page/hero-section/HeroSection";
-import { useAuth } from "./contexts/AuthContext";
-import { Button } from "@/components/ui/button";
 
 export default function Home() {
-  const { isAuthenticated } = useAuth();
-
-  // Show login/signup buttons for unauthenticated users
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen relative overflow-hidden flex items-center justify-center bg-gradient-to-br from-[#4a2e2e] via-[#6B4646] to-[#5a3939]">
-        <div className="max-w-2xl mx-auto px-4 text-center relative z-10">
-          <div className="backdrop-blur-sm bg-[#8B5F5F]/10 rounded-3xl p-12 border border-[#A67C7C]/20 shadow-2xl">
-            <h1 className="text-5xl font-bold text-[#F5E6E6] mb-6 drop-shadow-2xl">
-              Welcome to UofTwo
-            </h1>
-            <p className="text-xl text-[#E6D4D4]/90 mb-8 drop-shadow-lg font-light">
-              Meet the people you keep seeing in Robarts. Your GPA isn't the
-              only thing worth investing in.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/auth/sign-up">
-                <Button className="w-full sm:w-auto bg-[#D9C4C4] text-[#4a2e2e] hover:bg-[#C9B4B4] font-semibold px-8 py-6 text-lg rounded-full shadow-2xl hover:shadow-[0_20px_60px_rgba(217,196,196,0.3)] hover:scale-105 transition-all">
-                  Create Account
-                </Button>
-              </Link>
-              <Link href="/auth/login">
-                <Button
-                  variant="outline"
-                  className="w-full sm:w-auto border-2 border-[#D9C4C4] text-[#F5E6E6] hover:bg-[#D9C4C4]/10 font-semibold px-8 py-6 text-lg rounded-full shadow-xl transition-all"
-                >
-                  Sign In
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   // Show full landing page for authenticated users
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -60,8 +21,8 @@ export default function Home() {
           </h2>
           <p className="text-center text-[#5a3939] max-w-2xl mx-auto mb-14 leading-relaxed">
             UofTwo is built for meeting people you actually cross paths with.
-            Keep it simple: set up your profile, share your schedule,
-            and start matching.
+            Keep it simple: set up your profile, share your schedule, and start
+            matching.
           </p>
 
           <div className="grid md:grid-cols-3 gap-8">
