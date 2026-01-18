@@ -6,10 +6,10 @@ type Params = { conversationId: string };
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Params | Promise<Params> }
+  context: { params: Promise<Params> }
 ) {
   try {
-    const { conversationId } = await Promise.resolve(params);
+    const { conversationId } = await context.params;
     const currentUserId = await getAuthenticatedUserId();
 
     if (!currentUserId) {
@@ -112,10 +112,10 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: Params | Promise<Params> }
+  context: { params: Promise<Params> }
 ) {
   try {
-    const { conversationId } = await Promise.resolve(params);
+    const { conversationId } = await context.params;
     const currentUserId = await getAuthenticatedUserId();
 
     if (!currentUserId) {
@@ -201,4 +201,3 @@ export async function POST(
     );
   }
 }
-

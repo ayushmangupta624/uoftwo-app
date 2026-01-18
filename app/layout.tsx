@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Manrope } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/Navbar";
 import { AuthProvider } from "./contexts/AuthContext";
+import { Analytics } from "@vercel/analytics/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,7 +22,8 @@ const manrope = Manrope({
 
 export const metadata: Metadata = {
   title: "UofTwo - Find Your Perfect Match at UofT",
-  description: "A dating app exclusively for University of Toronto students. Upload your schedule, discover your dorm archetype, and connect with fellow UofT students.",
+  description:
+    "A dating app exclusively for University of Toronto students. Upload your schedule, discover your dorm archetype, and connect with fellow UofT students.",
 };
 
 export default function RootLayout({
@@ -34,6 +36,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${manrope.variable} antialiased h-full`}
       >
+        <Analytics />
         <AuthProvider>
           <Navbar />
           {children}
