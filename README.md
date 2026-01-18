@@ -1,172 +1,163 @@
-<a href="https://demo-nextjs-with-supabase.vercel.app/">
-  <img alt="Next.js and Supabase Starter Kit - the fastest way to build apps with Next.js and Supabase" src="https://demo-nextjs-with-supabase.vercel.app/opengraph-image.png">
-  <h1 align="center">Next.js and Supabase Starter Kit</h1>
-</a>
+# UofTwo  
+### An identity-first dating app for University of Toronto students
 
-<p align="center">
- The fastest way to build apps with Next.js and Supabase
-</p>
+**UofTwo is the ultimate solution to every UofT student’s dating woes.**  
+But more than that, it’s a technical and philosophical experiment in **identity**, compatibility, and human behavior.
 
-<p align="center">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#demo"><strong>Demo</strong></a> ·
-  <a href="#deploy-to-vercel"><strong>Deploy to Vercel</strong></a> ·
-  <a href="#clone-and-run-locally"><strong>Clone and run locally</strong></a> ·
-  <a href="#feedback-and-issues"><strong>Feedback and issues</strong></a>
-  <a href="#more-supabase-examples"><strong>More Examples</strong></a>
-</p>
-<br/>
+UofTwo prioritizes **who people are**, how they express themselves, and how they behave over time—rather than reducing identity to photos and one-line prompts.
 
-## Features
+---
 
-- Works across the entire [Next.js](https://nextjs.org) stack
-  - App Router
-  - Pages Router
-  - Proxy
-  - Client
-  - Server
-  - It just works!
-- supabase-ssr. A package to configure Supabase Auth to use cookies
-- Password-based authentication block installed via the [Supabase UI Library](https://supabase.com/ui/docs/nextjs/password-based-auth)
-- Styling with [Tailwind CSS](https://tailwindcss.com)
-- Components with [shadcn/ui](https://ui.shadcn.com/)
-- Optional deployment with [Supabase Vercel Integration and Vercel deploy](#deploy-your-own)
-  - Environment variables automatically assigned to Vercel project
+## 🌐 Hackathon Theme: Identity
 
-## Demo
+Identity is not static, binary, or easily captured by a swipe. Sadly, most dating apps treat identity as a handful of photos and a short bio. Using UofTwo, you express your identity through free-response questions to begin with, but your identity evolves over time, moulded by your behaviour. 
 
-You can view a fully working demo at [demo-nextjs-with-supabase.vercel.app](https://demo-nextjs-with-supabase.vercel.app/).
+---
 
-## Deploy to Vercel
+## 🎯 Core Idea
 
-Vercel deployment will guide you through creating a Supabase account and project.
+UofTwo combines:
+- **Self-reported identity** (descriptions, traits, hobbies)
+- **Behavioral signals** (swipe patterns, latency, engagement)
+- **AI interpretation** (LLM-generated summaries and compatibility explanations)
 
-After installation of the Supabase integration, all relevant environment variables will be assigned to the project so the deployment is fully functioning.
+We use this data to create matches that feel more intentional, more interpretable, and more human. 
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&project-name=nextjs-with-supabase&repository-name=nextjs-with-supabase&demo-title=nextjs-with-supabase&demo-description=This+starter+configures+Supabase+Auth+to+use+cookies%2C+making+the+user%27s+session+available+throughout+the+entire+Next.js+app+-+Client+Components%2C+Server+Components%2C+Route+Handlers%2C+Server+Actions+and+Middleware.&demo-url=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2F&external-id=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&demo-image=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2Fopengraph-image.png)
+---
 
-The above will also clone the Starter kit to your GitHub, you can clone that locally and develop locally.
+## ✨ Features
 
-If you wish to just develop locally and not deploy to Vercel, [follow the steps below](#clone-and-run-locally).
+### 🔐 UofT-Only Authentication
+- Access restricted to **University of Toronto students**
+- Authentication handled via **Supabase**
+- Ensures a shared institutional and cultural context
+- Reduces spam, bots, and low-trust interactions
 
-## Clone and run locally
+---
 
-1. You'll first need a Supabase project which can be made [via the Supabase dashboard](https://database.new)
+### 🧾 Identity-First User Profiles
+Profiles are built around **expression**, not optimization.
 
-2. Create a Next.js app using the Supabase Starter template npx command
+Each user provides:
+- Free-response self-description
+- Personality traits
+- Hobbies and interests
+- Editable answers that can evolve over time
 
-   ```bash
-   npx create-next-app --example with-supabase with-supabase-app
-   ```
+Rather than forcing users into rigid categories, UofTwo allows identity to be nuanced and personal.
 
-   ```bash
-   yarn create next-app --example with-supabase with-supabase-app
-   ```
+---
 
-   ```bash
-   pnpm create next-app --example with-supabase with-supabase-app
-   ```
+### 🤖 AI-Generated Profile Summaries
+At signup (and on edits), we:
+- Feed user-written descriptions into an LLM
+- Generate a **concise, readable summary**
+- Preserve tone while improving clarity
 
-3. Use `cd` to change into the app's directory
+This helps:
+- Other users understand someone quickly
+- Reduce performative writing
+- Normalize diverse writing styles
 
-   ```bash
-   cd with-supabase-app
-   ```
+---
 
-4. Rename `.env.example` to `.env.local` and update the following:
+### 💞 AI Compatibility Summaries (Pairwise)
+When viewing another user, UofTwo:
+- Feeds **both users’ free-response descriptions** into an LLM
+- Generates a **natural-language compatibility explanation**
+- Focuses on shared values, complementary traits, and potential dynamics
 
-  ```env
-  NEXT_PUBLIC_SUPABASE_URL=[INSERT SUPABASE PROJECT URL]
-  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=[INSERT SUPABASE PROJECT API PUBLISHABLE OR ANON KEY]
-  ```
-  > [!NOTE]
-  > This example uses `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, which refers to Supabase's new **publishable** key format.
-  > Both legacy **anon** keys and new **publishable** keys can be used with this variable name during the transition period. Supabase's dashboard may show `NEXT_PUBLIC_SUPABASE_ANON_KEY`; its value can be used in this example.
-  > See the [full announcement](https://github.com/orgs/supabase/discussions/29260) for more information.
+Example:
+> “You both value curiosity and long conversations. One of you approaches problems analytically while the other leans intuitive, which could make for a thoughtful and balanced dynamic.”
 
-  Both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` can be found in [your Supabase project's API settings](https://supabase.com/dashboard/project/_?showConnect=true)
+This makes matching:
+- Transparent
+- Explainable
+- Less mysterious than a raw number
 
-5. You can now run the Next.js local development server:
+---
 
-   ```bash
-   npm run dev
-   ```
+### 📊 Compatibility Scoring System
+In addition to AI summaries, UofTwo computes a **compatibility score** using multiple signal types.
 
-   The starter kit should now be running on [localhost:3000](http://localhost:3000/).
+#### Static Signals
+- Similarity between personality traits
+- Overlap in hobbies and interests
+- Semantic similarity between written descriptions (via embeddings)
 
-6. This template comes with the default shadcn/ui style initialized. If you instead want other ui.shadcn styles, delete `components.json` and [re-install shadcn/ui](https://ui.shadcn.com/docs/installation/next)
+#### Behavioral Signals
+We track anonymized interaction metrics such as:
+- Swipe latency (how quickly decisions are made)
+- Swipe frequency
+- Like vs pass ratios
+- Engagement consistency over time
 
-> Check out [the docs for Local Development](https://supabase.com/docs/guides/getting-started/local-development) to also run Supabase locally.
+These signals help infer:
+- Selectiveness
+- Intent
+- Preference patterns
 
-## Feedback and issues
+Compatibility is treated as **learned**, not assumed.
 
-Please file feedback and issues over on the [Supabase GitHub org](https://github.com/supabase/supabase/issues/new/choose).
+---
 
-## More Supabase examples
+### 🔁 Behavioral Learning Loop
+As users interact with the app:
+- Their preferences become clearer
+- Matching adapts over time
+- Identity is refined through action, not just text
 
-- [Next.js Subscription Payments Starter](https://github.com/vercel/nextjs-subscription-payments)
-- [Cookie-based Auth and the Next.js 13 App Router (free course)](https://youtube.com/playlist?list=PL5S4mPUpp4OtMhpnp93EFSo42iQ40XjbF)
-- [Supabase Auth and the Next.js App Router](https://github.com/supabase/supabase/tree/master/examples/auth/nextjs)
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+This creates a feedback loop between:
+> *Who users say they are*  
+> *and how they actually behave*
 
-## UofTwo - University of Toronto Dating App
+---
 
-A dating app exclusively for University of Toronto students. Upload your schedule, discover your dorm archetype, and connect with fellow UofT students through an interactive 3D Planet experience!
+## 🛠️ Tech Stack
 
-### ✨ New Feature: Planet View
+### Frontend
+- **Next.js** (App Router)
+- TypeScript
 
-An interactive Soul App-inspired 3D sphere where you can explore and connect with other UofT students. Each glowing dot represents a user profile!
+### Backend
+- **Node.js**
+- Next.js API routes
+- Prisma ORM
 
-**Features:**
-- 🌍 Interactive 3D sphere with drag-to-rotate
-- 🎨 Color-coded profiles by dorm archetype
-- 👤 Click dots to view profile previews
-- 🔒 Protected route for authenticated users only
+### Database, Auth & Storage
+- **Supabase**
+  - PostgreSQL database
+  - Authentication
 
-See [PLANET_FEATURE_GUIDE.md](./PLANET_FEATURE_GUIDE.md) for detailed documentation.
+### AI
+- Large Language Models for:
+  - Profile summarization
+  - Pairwise compatibility summaries
+- Embedding-based similarity scoring
+- Behavioral analytics pipeline (in-progress / extensible)
 
-### 🧠 New Feature: Preference Learning System
+---
 
-A two-layer matching system that learns from your viewing behavior to refine matches:
-- **Layer 1**: Initial matching from questionnaire (50%)
-- **Layer 2**: Behavioral refinement from viewing history (25%)
-- **Layer 3**: Schedule compatibility placeholder (25%)
+## 🔮 Future Work
 
-As you view profiles, the system learns your preferences and adjusts matches accordingly. Profiles you spend more time viewing influence which archetypes you're matched with next.
+With more time, we would:
+- Introduce FAISS-based large-scale similarity search
+- Precompute embeddings and compatibility summaries
+- Track identity drift over time
+- Add visualizations for behavioral patterns
+- Experiment with multiple matching strategies
+- Conduct A/B tests on explainability vs raw scores
 
-See [PREFERENCE_SYSTEM.md](./PREFERENCE_SYSTEM.md) for full documentation and [PREFERENCE_SETUP.md](./PREFERENCE_SETUP.md) for setup instructions.
+---
 
-## Getting Started
+## 👥 Who This Is For
 
-First, run the development server:
+UofTwo is for UofT students who:
+- Want more meaningful matches
+- Care about personality and values
+- Are tired of shallow dating mechanics
+- Appreciate transparency and explanation
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+It's not UofT, it's UofTwo, mi amor ;)
